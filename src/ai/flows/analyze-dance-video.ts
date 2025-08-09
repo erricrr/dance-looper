@@ -51,7 +51,7 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   output: {schema: AnalyzeDanceVideoOutputSchema},
   prompt: `You are an AI dance analyst and instructor, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
   
-  Your goal is to break down the video into digestible chunks or clips, each representing a distinct dance move or a short combination of moves. For each chunk, you need to identify:
+  Your goal is to break down the video into digestible chunks or clips, each representing a distinct dance move or a short combination of moves. When analyzing, focus on THE FEET ONLY. For each chunk, you need to identify:
   1. A descriptive name for the step.
   2. Its start time in seconds.
   3. Its end time in seconds.
