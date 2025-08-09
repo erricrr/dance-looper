@@ -124,41 +124,39 @@ export default function Home() {
   const handleClipPlayback = (startTime: number, endTime: number) => {
     if (!player) return;
 
+    if (player && typeof player.setPlaybackRate === 'function') {
+      player.setPlaybackRate(playbackSpeed);
+    }
     setCurrentClip({startTime, endTime});
     player.seekTo(startTime, true);
-    // The onPlayerStateChange handler will start the interval check
     player.playVideo();
   };
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
     setPlayer(event.target);
-    event.target.setPlaybackRate(playbackSpeed);
+    if (event.target && typeof event.target.setPlaybackRate === 'function') {
+      event.target.setPlaybackRate(playbackSpeed);
+    }
   };
   
   const onPlayerStateChange = (event: { data: number }) => {
     const isNowPlaying = event.data === YouTube.PlayerState.PLAYING;
     setIsPlaying(isNowPlaying);
-
-    if (isNowPlaying && player) {
-        player.setPlaybackRate(playbackSpeed);
-    }
   };
 
   useEffect(() => {
     if (isPlaying && currentClip && player) {
         clipIntervalRef.current = setInterval(() => {
-            // Guard against player being null or not having getCurrentTime
             if (player && typeof player.getCurrentTime === 'function') {
                 const currentTime = player.getCurrentTime();
                 if (currentTime >= currentClip.endTime) {
                     player.pauseVideo();
-                    setCurrentClip(null); // Clear clip after it finishes
+                    setCurrentClip(null); 
                 }
             }
         }, 100);
     }
     
-    // Cleanup function
     return () => {
       if(clipIntervalRef.current) {
         clearInterval(clipIntervalRef.current);
@@ -171,7 +169,7 @@ export default function Home() {
     if (player && typeof player.setPlaybackRate === 'function') {
       player.setPlaybackRate(playbackSpeed);
     }
-  }, [playbackSpeed, player]);
+  }, [playbackSpeed, player, isPlaying]);
 
   useEffect(() => {
     if (analysis) {
