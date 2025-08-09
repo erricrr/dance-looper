@@ -13,10 +13,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Download, Film, Bot, Music4, Play } from "lucide-react";
-import Image from "next/image";
+import { Loader2, Film, Bot, Music4, Play } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Icons } from "@/components/icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
@@ -239,7 +237,7 @@ export default function Home() {
 
       {analysis && (
         <div ref={resultsRef} className="mt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             <div className="lg:col-span-3">
               <Card className="shadow-lg h-full">
@@ -270,36 +268,6 @@ export default function Home() {
               </Card>
             </div>
             
-            <div className="lg:col-span-2">
-              <Card className="shadow-lg h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Bot />
-                    AI Analysis
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="aspect-video bg-muted rounded-md mb-4 relative overflow-hidden border">
-                    <Image
-                      src="https://placehold.co/1280x720.png"
-                      alt="Annotated Video Placeholder"
-                      width={1280}
-                      height={720}
-                      className="object-cover w-full h-full opacity-30"
-                      data-ai-hint="dance studio"
-                    />
-                    <Icons.PoseSkeleton className="absolute inset-0 m-auto w-1/2 h-1/2 text-primary opacity-50" />
-                    <div className="absolute top-2 left-2 bg-background/80 px-2 py-1 rounded-md text-xs font-semibold">
-                      SKELETON OVERLAY
-                    </div>
-                  </div>
-                  <Button className="w-full" variant="secondary" disabled>
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Processed Video
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </div>
           
           <div className="mt-8">
@@ -361,5 +329,3 @@ export default function Home() {
     </main>
   );
 }
-
-    
