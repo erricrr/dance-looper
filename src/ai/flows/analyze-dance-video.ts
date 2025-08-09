@@ -49,7 +49,7 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance analyst and instructor, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
+  prompt: `You are an AI dance analyst and instructor, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the entire dance video from beginning to end at the following URL: {{{videoUrl}}}. 
   
   Your goal is to break down the video into 8-count segments, which is how dancers count music. For each 8-count chunk, you need to identify:
   1. A descriptive name for the steps in that 8-count.
