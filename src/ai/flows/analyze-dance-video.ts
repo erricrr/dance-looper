@@ -52,8 +52,6 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   output: {schema: AnalyzeDanceVideoOutputSchema},
   prompt: `You are an AI dance instructor specializing in {{danceStyle}}, powered by the Gemini 2.0 Flash model. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}.
 
-  IMPORTANT: You must analyze the video from its start to its actual end. First, determine the total length of the video. All of the timestamps you provide for the dance steps must be less than or equal to the total length of the video. Do not provide timestamps beyond the video's duration.
-  
   Your goal is to break down the choreography into logical, easy-to-learn segments for a beginner learning at home. Instead of a rigid count, watch the footwork and identify natural start and end points for each combination or phrase.
   
   For each segment you identify, you need to provide:
@@ -62,7 +60,9 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   3. Its end time in seconds.
   4. A short, helpful description of how to perform the dance steps for a beginner, focusing on THE FEET ONLY.
   
-  Please provide the output as a list of these logical learning segments. The output must conform to the AnalyzeDanceVideoOutput schema.`,
+  Please provide the output as a list of these logical learning segments. The output must conform to the AnalyzeDanceVideoOutput schema.
+
+  IMPORTANT: YOU MUST ANALYZE THE VIDEO FROM ITS START TO ITS ACTUAL END. FIRST, DETERMINE THE TOTAL LENGTH OF THE VIDEO. ALL OF THE TIMESTAMPS YOU PROVIDE FOR THE DANCE STEPS MUST BE LESS THAN OR EQUAL TO THE TOTAL LENGTH OF THE VIDEO. DO NOT PROVIDE TIMESTAMPS BEYOND THE VIDEO'S DURATION. FAILURE TO ADHERE TO THE VIDEO'S TIMELINE WILL RENDER THE ANALYSIS USELESS.`,
 });
 
 // Define the Genkit flow for analyzing the dance video
