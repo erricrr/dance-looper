@@ -3,9 +3,9 @@
 /**
  * @fileOverview This file defines a Genkit flow for analyzing dance videos using the Gemini API to identify dance steps.
  *
- * - analyzeDanceVideo - A function that accepts a video URL and returns a list of detected dance steps.
- * - AnalyzeDanceVideoInput - The input type for the analyzeDanceVideo function, which includes the video URL.
- * - AnalyzeDanceVideoOutput - The return type for the analyzeDanceVideo function, which includes a list of dance steps with timestamps.
+ * - analyzeDanceVideo - A function that accepts a video URL and dance style, returning a list of detected dance steps.
+ * - AnalyzeDanceVideoInput - The input type for the analyzeDanceVideo function.
+ * - AnalyzeDanceVideoOutput - The return type for the analyzeDanceVideo function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -15,6 +15,7 @@ import {googleAI} from '@genkit-ai/googleai';
 // Define the input schema for the analyzeDanceVideo function
 const AnalyzeDanceVideoInputSchema = z.object({
   videoUrl: z.string().describe('The URL of the dance video to analyze.'),
+  danceStyle: z.string().describe('The style of dance in the video (e.g., Latin, Hip Hop, Ballet).'),
 });
 export type AnalyzeDanceVideoInput = z.infer<typeof AnalyzeDanceVideoInputSchema>;
 
@@ -49,7 +50,7 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance instructor, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the entire dance video from beginning to end at the following URL: {{{videoUrl}}}. 
+  prompt: `You are an AI dance instructor specializing in {{danceStyle}}, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the entire dance video from beginning to end at the following URL: {{{videoUrl}}}. 
   
   Your goal is to break down the choreography into logical, easy-to-learn segments for a beginner learning at home. Instead of a rigid count, watch the footwork and identify natural start and end points for each combination or phrase.
   

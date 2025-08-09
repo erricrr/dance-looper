@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +23,7 @@ const formSchema = z.object({
     .refine(url => url.includes("youtube.com") || url.includes("youtu.be"), {
       message: "Please enter a valid YouTube URL.",
     }),
+  danceStyle: z.string().min(1, { message: "Please select a dance style." }),
 });
 
 type AnalysisResult = AnalyzeDanceVideoOutput & {
@@ -47,6 +49,7 @@ export default function Home() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       youtubeUrl: "",
+      danceStyle: "",
     },
   });
 
@@ -98,7 +101,7 @@ export default function Home() {
         setProgress((prev) => (prev >= 95 ? 95 : prev + 5));
       }, 400);
 
-      const analysisResult = await analyzeDanceVideo({ videoUrl: values.youtubeUrl });
+      const analysisResult = await analyzeDanceVideo({ videoUrl: values.youtubeUrl, danceStyle: values.danceStyle });
       
       clearInterval(progressInterval);
       setProgress(100);
@@ -167,10 +170,10 @@ export default function Home() {
   }, [isPlaying, currentClip, player]);
 
   useEffect(() => {
-    if (player && typeof player.setPlaybackRate === 'function') {
+    if (player && typeof player.setPlaybackRate === 'function' && isPlaying) {
       player.setPlaybackRate(playbackSpeed);
     }
-  }, [playbackSpeed]);
+  }, [playbackSpeed, player, isPlaying]);
 
   useEffect(() => {
     if (analysis) {
@@ -205,7 +208,7 @@ export default function Home() {
             Analyze a Dance Video
           </CardTitle>
           <CardDescription>
-            Enter a YouTube URL below to begin the analysis.
+            Enter a YouTube URL and select the dance style to begin the analysis.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -220,6 +223,32 @@ export default function Home() {
                     <FormControl>
                       <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isLoading} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="danceStyle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dance Style</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a dance style" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="latin">Latin</SelectItem>
+                        <SelectItem value="hip-hop">Hip Hop</SelectItem>
+                        <SelectItem value="ballet">Ballet</SelectItem>
+                        <SelectItem value="jazz">Jazz</SelectItem>
+                        <SelectItem value="tap">Tap</SelectItem>
+                        <SelectItem value="contemporary">Contemporary</SelectItem>
+                        <SelectItem value="other">Other / Not Sure</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
