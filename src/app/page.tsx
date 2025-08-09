@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Bot, Music4, Play } from "lucide-react";
+import { Loader2, Film, Bot, Play } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -190,12 +190,9 @@ export default function Home() {
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
       <header className="text-center mb-12">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <Music4 className="h-10 w-10 text-primary" />
-          <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
-            DanceStep AI
-          </h1>
-        </div>
+        <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight mb-4">
+          DanceStep AI
+        </h1>
         <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Paste a YouTube link of a dance routine, and our AI will break down the steps for you.
         </p>
