@@ -49,15 +49,17 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance analyst and instructor, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the entire dance video from beginning to end at the following URL: {{{videoUrl}}}. 
+  prompt: `You are an AI dance instructor, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the entire dance video from beginning to end at the following URL: {{{videoUrl}}}. 
   
-  Your goal is to break down the video into 8-count segments, which is how dancers count music. For each 8-count chunk, you need to identify:
-  1. A descriptive name for the steps in that 8-count.
+  Your goal is to break down the choreography into logical, easy-to-learn segments for a beginner learning at home. Instead of a rigid count, watch the footwork and identify natural start and end points for each combination or phrase.
+  
+  For each segment you identify, you need to provide:
+  1. A descriptive name for the steps in that segment.
   2. Its start time in seconds.
   3. Its end time in seconds.
   4. A short, helpful description of how to perform the dance steps for a beginner, focusing on THE FEET ONLY.
   
-  Please provide the output as a list of these 8-count chunks. The output must conform to the AnalyzeDanceVideoOutput schema.`,
+  Please provide the output as a list of these logical learning segments. The output must conform to the AnalyzeDanceVideoOutput schema.`,
 });
 
 // Define the Genkit flow for analyzing the dance video
