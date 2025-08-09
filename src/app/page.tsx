@@ -63,6 +63,8 @@ export default function Home() {
           videoId = urlObj.searchParams.get('v');
         } else if (urlObj.pathname.startsWith('/embed/')) {
           videoId = urlObj.pathname.split('/embed/')[1];
+        } else if (urlObj.pathname.startsWith('/v/')) {
+          videoId = urlObj.pathname.split('/v/')[1];
         } else if (urlObj.pathname.startsWith('/shorts/')) {
           videoId = urlObj.pathname.split('/shorts/')[1];
         }
