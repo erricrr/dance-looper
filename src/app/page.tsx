@@ -146,6 +146,7 @@ export default function Home() {
   useEffect(() => {
     if(isPlaying && currentClip) {
       clipIntervalRef.current = setInterval(() => {
+        if (!player || typeof player.getCurrentTime !== 'function') return;
         const currentTime = player.getCurrentTime();
         if(currentTime >= currentClip.endTime) {
             player.pauseVideo();
@@ -176,12 +177,12 @@ export default function Home() {
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
       <header className="text-center mb-12">
-        <div className="inline-block bg-primary/10 p-4 rounded-full mb-4">
-          <Music4 className="h-12 w-12 text-primary" />
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <Music4 className="h-10 w-10 text-primary" />
+          <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
+            DanceStep AI
+          </h1>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
-          DanceStep AI
-        </h1>
         <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Paste a YouTube link of a dance routine, and our AI will break down the steps for you.
         </p>
