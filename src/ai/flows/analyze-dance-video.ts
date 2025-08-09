@@ -24,8 +24,9 @@ const AnalyzeDanceVideoOutputSchema = z.object({
       startTime: z.number().describe('The start time of the dance step in seconds.'),
       endTime: z.number().describe('The end time of the dance step in seconds.'),
       stepName: z.string().describe('The name of the dance step.'),
+      description: z.string().describe('A short, helpful description of how to perform the dance step.'),
     })
-  ).describe('A list of detected dance steps with start and end times, and names.'),
+  ).describe('A list of detected dance steps with start and end times, names, and descriptions.'),
 });
 export type AnalyzeDanceVideoOutput = z.infer<typeof AnalyzeDanceVideoOutputSchema>;
 
@@ -39,9 +40,13 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance analyst. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
+  prompt: `You are an AI dance analyst and instructor. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
   
-  Your goal is to break down the video into digestible chunks or clips, each representing a distinct dance move or a short combination of moves. For each chunk, you need to identify a descriptive name for the step, its start time, and its end time in seconds.
+  Your goal is to break down the video into digestible chunks or clips, each representing a distinct dance move or a short combination of moves. For each chunk, you need to identify:
+  1. A descriptive name for the step.
+  2. Its start time in seconds.
+  3. Its end time in seconds.
+  4. A short, helpful description of how to perform the dance step for a beginner.
   
   Please provide the output as a list of these dance step chunks. The output must conform to the AnalyzeDanceVideoOutput schema.`,
 });

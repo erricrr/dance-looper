@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import YouTube, { YouTubePlayer } from 'react-youtube';
 import { analyzeDanceVideo, AnalyzeDanceVideoOutput } from "@/ai/flows/analyze-dance-video";
-import { generateDanceStepDescriptions } from "@/ai/flows/generate-dance-step-descriptions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Download, Film, Bot, Music4, Play, Pause, RotateCcw } from "lucide-react";
+import { Loader2, Download, Film, Bot, Music4, Play } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Icons } from "@/components/icons";
@@ -27,9 +26,7 @@ const formSchema = z.object({
     }),
 });
 
-type Description = { stepName: string; description: string };
 type AnalysisResult = AnalyzeDanceVideoOutput & {
-  descriptions: Description[];
   videoId: string;
 };
 type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2;
@@ -103,22 +100,11 @@ export default function Home() {
 
       const analysisResult = await analyzeDanceVideo({ videoUrl: values.youtubeUrl });
       
-      const descriptions = await Promise.all(
-        analysisResult.danceSteps.map(async (step) => {
-          const desc = await generateDanceStepDescriptions({
-            danceStep: step.stepName,
-            videoDescription: "A dance video.",
-          });
-          return { stepName: step.stepName, description: desc.description };
-        })
-      );
-      
       clearInterval(progressInterval);
       setProgress(100);
       
       setAnalysis({
         ...analysisResult,
-        descriptions,
         videoId,
       });
 
@@ -356,7 +342,7 @@ export default function Home() {
                               <Play className="mr-2 h-4 w-4" /> Play Clip
                             </Button>
                             <p className="text-base leading-relaxed">
-                              {analysis.descriptions.find(d => d.stepName === step.stepName)?.description || "No description available."}
+                              {step.description || "No description available."}
                             </p>
                           </div>
                         </AccordionContent>
