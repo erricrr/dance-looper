@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import YouTube, { YouTubePlayer } from 'react-youtube';
 import { analyzeDanceVideo, AnalyzeDanceVideoOutput } from "@/ai/flows/analyze-dance-video";
 import { generateDanceStepDescriptions } from "@/ai/flows/generate-dance-step-descriptions";
 import { Button } from "@/components/ui/button";
@@ -13,10 +14,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Download, Film, Bot, Music4 } from "lucide-react";
+import { Loader2, Download, Film, Bot, Music4, Play, Pause, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Icons } from "@/components/icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   youtubeUrl: z.string().url({ message: "Please enter a valid YouTube URL." })
@@ -28,13 +30,21 @@ const formSchema = z.object({
 type Description = { stepName: string; description: string };
 type AnalysisResult = AnalyzeDanceVideoOutput & {
   descriptions: Description[];
-  embedUrl: string;
+  videoId: string;
 };
+type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [progress, setProgress] = useState(0);
+  const [player, setPlayer] = useState<YouTubePlayer | null>(null);
+  const [currentClip, setCurrentClip] = useState<{startTime: number, endTime: number} | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(0.5);
+  const clipIntervalRef = useRef<NodeJS.Timeout>();
+
+
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +55,7 @@ export default function Home() {
     },
   });
 
-  const getYoutubeEmbedUrl = (url: string): string | null => {
+  const getYoutubeVideoId = (url: string): string | null => {
     let videoId: string | null = null;
     try {
       const urlObj = new URL(url);
@@ -63,17 +73,18 @@ export default function Home() {
     } catch (e) {
       return null;
     }
-    
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    return videoId;
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setAnalysis(null);
     setProgress(0);
+    setCurrentClip(null);
+    if(player) player.stopVideo();
 
-    const embedUrl = getYoutubeEmbedUrl(values.youtubeUrl);
-    if (!embedUrl) {
+    const videoId = getYoutubeVideoId(values.youtubeUrl);
+    if (!videoId) {
       toast({
         variant: "destructive",
         title: "Invalid URL",
@@ -108,7 +119,7 @@ export default function Home() {
       setAnalysis({
         ...analysisResult,
         descriptions,
-        embedUrl,
+        videoId,
       });
 
     } catch (error) {
@@ -123,6 +134,44 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+  
+  const handleClipPlayback = (startTime: number, endTime: number) => {
+    if (!player) return;
+
+    setCurrentClip({startTime, endTime});
+    player.seekTo(startTime, true);
+    player.setPlaybackRate(playbackSpeed);
+    player.playVideo();
+  };
+  
+  const onPlayerReady = (event: { target: YouTubePlayer }) => {
+    setPlayer(event.target);
+  };
+  
+  const onPlayerStateChange = (event: { data: number }) => {
+    if (event.data === YouTube.PlayerState.PLAYING) {
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
+    }
+  };
+
+  useEffect(() => {
+    if(isPlaying && currentClip) {
+      clipIntervalRef.current = setInterval(() => {
+        const currentTime = player.getCurrentTime();
+        if(currentTime >= currentClip.endTime) {
+            player.pauseVideo();
+            if(clipIntervalRef.current) clearInterval(clipIntervalRef.current);
+        }
+      }, 100);
+    } else {
+      if(clipIntervalRef.current) clearInterval(clipIntervalRef.current);
+    }
+    return () => {
+      if(clipIntervalRef.current) clearInterval(clipIntervalRef.current);
+    };
+  }, [isPlaying, currentClip, player])
 
   useEffect(() => {
     if (analysis) {
@@ -131,6 +180,16 @@ export default function Home() {
       }, 100);
     }
   }, [analysis]);
+  
+  useEffect(() => {
+    if(player) {
+      player.setPlaybackRate(playbackSpeed);
+    }
+  }, [playbackSpeed, player]);
+
+  const formatTime = (seconds: number) => {
+    return new Date(seconds * 1000).toISOString().substr(14, 5)
+  }
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
@@ -208,14 +267,20 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <div className="aspect-video">
-                    <iframe
-                      className="w-full h-full rounded-md"
-                      src={analysis.embedUrl}
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
+                    <YouTube
+                      videoId={analysis.videoId}
+                      className="w-full h-full"
+                      iframeClassName="w-full h-full rounded-md"
+                      onReady={onPlayerReady}
+                      onStateChange={onPlayerStateChange}
+                      opts={{
+                        playerVars: {
+                          controls: 1,
+                          modestbranding: 1,
+                          rel: 0,
+                        },
+                      }}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -257,7 +322,20 @@ export default function Home() {
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle>Dance Step Timeline</CardTitle>
-                <CardDescription>Click on a step to see its description.</CardDescription>
+                <CardDescription>Click a step to play its segment. Adjust speed below.</CardDescription>
+                <div className="pt-2">
+                  <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-7">
+                      <TabsTrigger value="0.25">0.25x</TabsTrigger>
+                      <TabsTrigger value="0.5">0.5x</TabsTrigger>
+                      <TabsTrigger value="0.75">0.75x</TabsTrigger>
+                      <TabsTrigger value="1">1x</TabsTrigger>
+                      <TabsTrigger value="1.25">1.25x</TabsTrigger>
+                      <TabsTrigger value="1.5">1.5x</TabsTrigger>
+                      <TabsTrigger value="2">2x</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[400px]">
@@ -268,14 +346,19 @@ export default function Home() {
                           <div className="flex items-center justify-between w-full pr-4">
                             <span>{step.stepName}</span>
                             <span className="text-muted-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md">
-                              {new Date(step.timestamp * 1000).toISOString().substr(14, 5)}
+                              {formatTime(step.startTime)} - {formatTime(step.endTime)}
                             </span>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                          <p className="text-base leading-relaxed">
-                            {analysis.descriptions.find(d => d.stepName === step.stepName)?.description || "No description available."}
-                          </p>
+                           <div className="flex items-center gap-4">
+                            <Button onClick={() => handleClipPlayback(step.startTime, step.endTime)}>
+                              <Play className="mr-2 h-4 w-4" /> Play Clip
+                            </Button>
+                            <p className="text-base leading-relaxed">
+                              {analysis.descriptions.find(d => d.stepName === step.stepName)?.description || "No description available."}
+                            </p>
+                          </div>
                         </AccordionContent>
                       </AccordionItem>
                     ))}

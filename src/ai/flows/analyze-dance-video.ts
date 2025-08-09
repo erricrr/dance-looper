@@ -21,10 +21,11 @@ export type AnalyzeDanceVideoInput = z.infer<typeof AnalyzeDanceVideoInputSchema
 const AnalyzeDanceVideoOutputSchema = z.object({
   danceSteps: z.array(
     z.object({
-      timestamp: z.number().describe('The timestamp of the dance step in seconds.'),
+      startTime: z.number().describe('The start time of the dance step in seconds.'),
+      endTime: z.number().describe('The end time of the dance step in seconds.'),
       stepName: z.string().describe('The name of the dance step.'),
     })
-  ).describe('A list of detected dance steps with timestamps and names.'),
+  ).describe('A list of detected dance steps with start and end times, and names.'),
 });
 export type AnalyzeDanceVideoOutput = z.infer<typeof AnalyzeDanceVideoOutputSchema>;
 
@@ -38,7 +39,11 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance analyst. Analyze the dance video at the following URL: {{{videoUrl}}}. Identify the different dance steps performed in the video and provide a list of dance steps with timestamps and names. The output must conform to the AnalyzeDanceVideoOutput schema.`,
+  prompt: `You are an AI dance analyst. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
+  
+  Your goal is to break down the video into digestible chunks or clips, each representing a distinct dance move or a short combination of moves. For each chunk, you need to identify a descriptive name for the step, its start time, and its end time in seconds.
+  
+  Please provide the output as a list of these dance step chunks. The output must conform to the AnalyzeDanceVideoOutput schema.`,
 });
 
 // Define the Genkit flow for analyzing the dance video
