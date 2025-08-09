@@ -168,7 +168,7 @@ export default function Home() {
   }, [analysis]);
   
   useEffect(() => {
-    if(player) {
+    if (player && typeof player.setPlaybackRate === 'function') {
       player.setPlaybackRate(playbackSpeed);
     }
   }, [playbackSpeed, player]);
