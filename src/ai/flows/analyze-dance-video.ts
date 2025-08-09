@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {googleAI} from '@genkit-ai/googleai';
 
 // Define the input schema for the analyzeDanceVideo function
 const AnalyzeDanceVideoInputSchema = z.object({
@@ -19,19 +20,27 @@ export type AnalyzeDanceVideoInput = z.infer<typeof AnalyzeDanceVideoInputSchema
 
 // Define the output schema for the analyzeDanceVideo function
 const AnalyzeDanceVideoOutputSchema = z.object({
-  danceSteps: z.array(
-    z.object({
-      startTime: z.number().describe('The start time of the dance step in seconds.'),
-      endTime: z.number().describe('The end time of the dance step in seconds.'),
-      stepName: z.string().describe('The name of the dance step.'),
-      description: z.string().describe('A short, helpful description of how to perform the dance step.'),
-    })
-  ).describe('A list of detected dance steps with start and end times, names, and descriptions.'),
+  danceSteps: z
+    .array(
+      z.object({
+        startTime: z.number().describe('The start time of the dance step in seconds.'),
+        endTime: z.number().describe('The end time of the dance step in seconds.'),
+        stepName: z.string().describe('The name of the dance step.'),
+        description: z
+          .string()
+          .describe('A short, helpful description of how to perform the dance step.'),
+      })
+    )
+    .describe(
+      'A list of detected dance steps with start and end times, names, and descriptions.'
+    ),
 });
 export type AnalyzeDanceVideoOutput = z.infer<typeof AnalyzeDanceVideoOutputSchema>;
 
 // Exported function that wraps the flow
-export async function analyzeDanceVideo(input: AnalyzeDanceVideoInput): Promise<AnalyzeDanceVideoOutput> {
+export async function analyzeDanceVideo(
+  input: AnalyzeDanceVideoInput
+): Promise<AnalyzeDanceVideoOutput> {
   return analyzeDanceVideoFlow(input);
 }
 
@@ -40,7 +49,7 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance analyst and instructor. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
+  prompt: `You are an AI dance analyst and instructor, powered by the Gemini 1.5 Pro model. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}. 
   
   Your goal is to break down the video into digestible chunks or clips, each representing a distinct dance move or a short combination of moves. For each chunk, you need to identify:
   1. A descriptive name for the step.
