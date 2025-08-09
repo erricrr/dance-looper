@@ -27,7 +27,7 @@ const formSchema = z.object({
 type AnalysisResult = AnalyzeDanceVideoOutput & {
   videoId: string;
 };
-type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2;
+type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -277,14 +277,11 @@ export default function Home() {
                 <CardDescription>Click a step to play its segment. Adjust speed below.</CardDescription>
                 <div className="pt-2">
                   <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-7">
+                    <TabsList className="grid w-full grid-cols-4">
                       <TabsTrigger value="0.25">0.25x</TabsTrigger>
                       <TabsTrigger value="0.5">0.5x</TabsTrigger>
                       <TabsTrigger value="0.75">0.75x</TabsTrigger>
                       <TabsTrigger value="1">1x</TabsTrigger>
-                      <TabsTrigger value="1.25">1.25x</TabsTrigger>
-                      <TabsTrigger value="1.5">1.5x</TabsTrigger>
-                      <TabsTrigger value="2">2x</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
