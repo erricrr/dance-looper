@@ -126,7 +126,7 @@ export default function Home() {
 
     setCurrentClip({startTime, endTime});
     player.seekTo(startTime, true);
-    player.setPlaybackRate(playbackSpeed);
+    // The onPlayerStateChange handler will start the interval check
     player.playVideo();
   };
   
@@ -136,30 +136,42 @@ export default function Home() {
   };
   
   const onPlayerStateChange = (event: { data: number }) => {
-    if (event.data === YouTube.PlayerState.PLAYING) {
-      setIsPlaying(true);
-    } else {
-      setIsPlaying(false);
+    const isNowPlaying = event.data === YouTube.PlayerState.PLAYING;
+    setIsPlaying(isNowPlaying);
+
+    if (isNowPlaying && player) {
+        player.setPlaybackRate(playbackSpeed);
     }
   };
 
   useEffect(() => {
-    if(isPlaying && currentClip) {
-      clipIntervalRef.current = setInterval(() => {
-        if (!player || typeof player.getCurrentTime !== 'function') return;
-        const currentTime = player.getCurrentTime();
-        if(currentTime >= currentClip.endTime) {
-            player.pauseVideo();
-            if(clipIntervalRef.current) clearInterval(clipIntervalRef.current);
-        }
-      }, 100);
-    } else {
-      if(clipIntervalRef.current) clearInterval(clipIntervalRef.current);
+    if (isPlaying && currentClip && player) {
+        clipIntervalRef.current = setInterval(() => {
+            // Guard against player being null or not having getCurrentTime
+            if (player && typeof player.getCurrentTime === 'function') {
+                const currentTime = player.getCurrentTime();
+                if (currentTime >= currentClip.endTime) {
+                    player.pauseVideo();
+                    setCurrentClip(null); // Clear clip after it finishes
+                }
+            }
+        }, 100);
     }
+    
+    // Cleanup function
     return () => {
-      if(clipIntervalRef.current) clearInterval(clipIntervalRef.current);
+      if(clipIntervalRef.current) {
+        clearInterval(clipIntervalRef.current);
+        clipIntervalRef.current = undefined;
+      }
     };
-  }, [isPlaying, currentClip, player])
+  }, [isPlaying, currentClip, player]);
+
+  useEffect(() => {
+    if (player && typeof player.setPlaybackRate === 'function') {
+      player.setPlaybackRate(playbackSpeed);
+    }
+  }, [playbackSpeed, player]);
 
   useEffect(() => {
     if (analysis) {
@@ -168,7 +180,6 @@ export default function Home() {
       }, 100);
     }
   }, [analysis]);
-  
 
   const formatTime = (seconds: number) => {
     return new Date(seconds * 1000).toISOString().substr(14, 5)
