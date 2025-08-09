@@ -56,6 +56,8 @@ export default function Home() {
           videoId = urlObj.searchParams.get('v');
         } else if (urlObj.pathname.startsWith('/embed/')) {
           videoId = urlObj.pathname.split('/embed/')[1];
+        } else if (urlObj.pathname.startsWith('/shorts/')) {
+          videoId = urlObj.pathname.split('/shorts/')[1];
         }
       }
     } catch (e) {
