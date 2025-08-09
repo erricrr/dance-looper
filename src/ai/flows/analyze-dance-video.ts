@@ -50,7 +50,9 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   name: 'analyzeDanceVideoPrompt',
   input: {schema: AnalyzeDanceVideoInputSchema},
   output: {schema: AnalyzeDanceVideoOutputSchema},
-  prompt: `You are an AI dance instructor specializing in {{danceStyle}}, powered by the latest Gemini 2.0 Flash model. Your task is to analyze the entire dance video from beginning to end at the following URL: {{{videoUrl}}}. 
+  prompt: `You are an AI dance instructor specializing in {{danceStyle}}, powered by the Gemini 2.0 Flash model. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}.
+
+  IMPORTANT: You must analyze the video from its start to its actual end. First, determine the total length of the video. All of the timestamps you provide for the dance steps must be less than or equal to the total length of the video. Do not provide timestamps beyond the video's duration.
   
   Your goal is to break down the choreography into logical, easy-to-learn segments for a beginner learning at home. Instead of a rigid count, watch the footwork and identify natural start and end points for each combination or phrase.
   
