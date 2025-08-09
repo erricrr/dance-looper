@@ -133,9 +133,10 @@ export default function Home() {
   };
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
-    setPlayer(event.target);
-    if (event.target && typeof event.target.setPlaybackRate === 'function') {
-      event.target.setPlaybackRate(playbackSpeed);
+    const readyPlayer = event.target;
+    setPlayer(readyPlayer);
+    if (readyPlayer && typeof readyPlayer.setPlaybackRate === 'function') {
+      readyPlayer.setPlaybackRate(playbackSpeed);
     }
   };
   
@@ -169,7 +170,7 @@ export default function Home() {
     if (player && typeof player.setPlaybackRate === 'function') {
       player.setPlaybackRate(playbackSpeed);
     }
-  }, [playbackSpeed, player, isPlaying]);
+  }, [playbackSpeed]);
 
   useEffect(() => {
     if (analysis) {
