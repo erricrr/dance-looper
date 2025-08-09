@@ -134,6 +134,7 @@ export default function Home() {
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
     setPlayer(event.target);
+    event.target.setPlaybackRate(playbackSpeed);
   };
   
   const onPlayerStateChange = (event: { data: number }) => {
@@ -169,11 +170,6 @@ export default function Home() {
     }
   }, [analysis]);
   
-  useEffect(() => {
-    if (player && typeof player.setPlaybackRate === 'function') {
-      player.setPlaybackRate(playbackSpeed);
-    }
-  }, [playbackSpeed, player]);
 
   const formatTime = (seconds: number) => {
     return new Date(seconds * 1000).toISOString().substr(14, 5)
@@ -365,3 +361,5 @@ export default function Home() {
     </main>
   );
 }
+
+    
