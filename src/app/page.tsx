@@ -14,11 +14,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Bot, Play } from "lucide-react";
+import { Loader2, Film, Bot, Play, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   youtubeUrl: z.string().url({ message: "Please enter a valid YouTube URL." })
@@ -42,6 +44,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(0.5);
   const [isLooping, setIsLooping] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(true);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
 
@@ -113,6 +116,8 @@ export default function Home() {
         ...analysisResult,
         videoId,
       });
+      
+      setIsFormOpen(false);
 
     } catch (error) {
       if (progressInterval!) clearInterval(progressInterval!);
@@ -205,72 +210,93 @@ export default function Home() {
         </p>
       </header>
       
-      <Card className="max-w-2xl mx-auto shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bot />
-            Analyze a Dance Video
-          </CardTitle>
-          <CardDescription>
-            Enter a YouTube URL and select the dance style to begin the analysis.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="youtubeUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>YouTube URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isLoading} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="danceStyle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dance Style</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a dance style" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="latin">Latin</SelectItem>
-                        <SelectItem value="hip-hop">Hip Hop</SelectItem>
-                        <SelectItem value="ballet">Ballet</SelectItem>
-                        <SelectItem value="jazz">Jazz</SelectItem>
-                        <SelectItem value="tap">Tap</SelectItem>
-                        <SelectItem value="contemporary">Contemporary</SelectItem>
-                        <SelectItem value="other">Other / Not Sure</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Process Video"
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+      <Collapsible
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        className="max-w-2xl mx-auto"
+      >
+        <Card className="shadow-lg">
+            <CollapsibleTrigger asChild>
+              <div className="flex justify-between items-center p-6 cursor-pointer">
+                <div className="space-y-1.5">
+                  <CardTitle className="flex items-center gap-2">
+                    <Bot />
+                    Analyze a Dance Video
+                  </CardTitle>
+                  <CardDescription>
+                    Enter a YouTube URL and select the dance style to begin the analysis.
+                  </CardDescription>
+                </div>
+                <Button variant="ghost" size="sm" className="w-9 p-0">
+                  <ChevronDown
+                    className={cn(
+                      "h-6 w-6 transition-transform duration-200",
+                      isFormOpen && "rotate-180"
+                    )}
+                  />
+                  <span className="sr-only">Toggle</span>
+                </Button>
+              </div>
+            </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="youtubeUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>YouTube URL</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isLoading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="danceStyle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dance Style</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a dance style" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="latin">Latin</SelectItem>
+                            <SelectItem value="hip-hop">Hip Hop</SelectItem>
+                            <SelectItem value="ballet">Ballet</SelectItem>
+                            <SelectItem value="jazz">Jazz</SelectItem>
+                            <SelectItem value="tap">Tap</SelectItem>
+                            <SelectItem value="contemporary">Contemporary</SelectItem>
+                            <SelectItem value="other">Other / Not Sure</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      "Process Video"
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       {isLoading && (
         <div className="mt-12 max-w-2xl mx-auto text-center">
