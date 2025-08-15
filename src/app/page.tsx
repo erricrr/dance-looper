@@ -424,30 +424,32 @@ export default function Home() {
         className="max-w-2xl mx-auto"
       >
         <Card className="shadow-lg">
-            <CollapsibleTrigger asChild>
-               <div className="flex justify-between items-center p-6 cursor-pointer">
-                <div className="space-y-1.5">
-                  <CardTitle className="flex items-center gap-2">
-                    <Video />
-                    Load a Dance Video
-                  </CardTitle>
-                  <CardDescription>
-                    Enter a YouTube URL to begin.
-                  </CardDescription>
+            <CardHeader className="p-0">
+               <CollapsibleTrigger asChild>
+                 <div className="flex justify-between items-center p-6 cursor-pointer">
+                  <div className="space-y-1.5 text-left">
+                    <CardTitle className="flex items-center gap-2">
+                      <Video />
+                      Load a Dance Video
+                    </CardTitle>
+                    <CardDescription>
+                      Enter a YouTube URL to begin.
+                    </CardDescription>
+                  </div>
+                  <Button variant="ghost" size="sm" className="w-9 p-0">
+                    <ChevronDown
+                      className={cn(
+                        "h-6 w-6 transition-transform duration-200",
+                        isFormOpen && "rotate-180"
+                      )}
+                    />
+                    <span className="sr-only">Toggle</span>
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm" className="w-9 p-0">
-                  <ChevronDown
-                    className={cn(
-                      "h-6 w-6 transition-transform duration-200",
-                      isFormOpen && "rotate-180"
-                    )}
-                  />
-                  <span className="sr-only">Toggle</span>
-                </Button>
-              </div>
-            </CollapsibleTrigger>
+              </CollapsibleTrigger>
+            </CardHeader>
           <CollapsibleContent>
-            <CardContent>
+            <CardContent className="p-6 pt-0">
               <Form {...urlForm}>
                 <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
                   <FormField
