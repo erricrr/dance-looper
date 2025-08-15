@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -366,7 +367,19 @@ export default function Home() {
                     <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
                 </div>
                 <div className="flex flex-col items-center pt-1">
-                    <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop</Label>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Label htmlFor="loop-switch" className="block text-sm font-medium">Loop</Label>
+                       <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Repeats the clip automatically until you stop it.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                    </div>
                   <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                 </div>
               </div>
