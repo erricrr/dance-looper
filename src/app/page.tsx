@@ -256,56 +256,58 @@ export default function Home() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <CardContent className="space-y-6">
-              <div>
-                <Label className="font-semibold">Auto-Segment Video</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                  <Button variant="outline" onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
-                  <Button variant="outline" onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
-                  <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
+              <fieldset disabled={!player || !videoDuration}>
+                <div>
+                  <Label className="font-semibold">Auto-Segment Video</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    <Button variant="outline" onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
+                    <Button variant="outline" onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
+                    <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
+                  </div>
                 </div>
-              </div>
-                <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
-                    <CollapsibleTrigger className="w-full">
-                        <div className="flex items-center gap-2 text-sm font-semibold">
-                             <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
-                             Create Custom Clip
-                        </div>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4">
-                      <Form {...customClipForm}>
-                          <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
-                              <FormField
-                                  control={customClipForm.control}
-                                  name="startTime"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Start</FormLabel>
-                                      <FormControl>
-                                      <Input placeholder="MM:SS" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                               <ChevronsRight className="h-6 w-6 mb-2" />
-                              <FormField
-                                  control={customClipForm.control}
-                                  name="endTime"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>End</FormLabel>
-                                      <FormControl>
-                                      <Input placeholder="MM:SS" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                              <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
-                          </form>
-                      </Form>
-                    </CollapsibleContent>
-                </Collapsible>
+                  <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
+                      <CollapsibleTrigger className="w-full">
+                          <div className="flex items-center gap-2 text-sm font-semibold">
+                              <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
+                              Create Custom Clip
+                          </div>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pt-4">
+                        <Form {...customClipForm}>
+                            <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
+                                <FormField
+                                    control={customClipForm.control}
+                                    name="startTime"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Start</FormLabel>
+                                        <FormControl>
+                                        <Input placeholder="MM:SS" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                                <ChevronsRight className="h-6 w-6 mb-2" />
+                                <FormField
+                                    control={customClipForm.control}
+                                    name="endTime"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>End</FormLabel>
+                                        <FormControl>
+                                        <Input placeholder="MM:SS" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                                <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
+                            </form>
+                        </Form>
+                      </CollapsibleContent>
+                  </Collapsible>
+              </fieldset>
             </CardContent>
           </CollapsibleContent>
         </Card>
@@ -445,7 +447,7 @@ export default function Home() {
         </Card>
       </Collapsible>
       
-      {isLoading && (
+      {isLoading && !videoId && (
          <div className="mt-12 max-w-2xl mx-auto text-center">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
             <p className="text-muted-foreground mt-2">Loading video...</p>
@@ -454,7 +456,7 @@ export default function Home() {
 
       {videoId && (
         <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
-          {player && videoDuration > 0 && createClipsSection}
+          {createClipsSection}
           
           <div className="mt-8">
             <Card className="shadow-lg h-full">
@@ -481,11 +483,17 @@ export default function Home() {
                     }}
                   />
                 </div>
+                {isLoading && (
+                  <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="mt-2 text-muted-foreground">Initializing player...</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
           
-          {player && videoDuration > 0 && practiceClipsSection}
+          {practiceClipsSection}
         </div>
       )}
           
