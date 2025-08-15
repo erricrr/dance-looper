@@ -418,23 +418,17 @@ export default function Home() {
         </p>
       </header>
       
-      <Collapsible
-        open={isFormOpen}
-        onOpenChange={setIsFormOpen}
-        className="max-w-2xl mx-auto"
-      >
+       <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
-          <CollapsibleTrigger asChild>
-             <CardHeader className="p-6 cursor-pointer">
-               <div className="flex justify-between items-center">
+          <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <CollapsibleTrigger asChild>
+              <div className="flex justify-between items-center p-6 cursor-pointer">
                 <div className="space-y-1.5 text-left">
-                  <CardTitle className="flex items-center gap-2">
-                    <Video />
-                    Load a Dance Video
-                  </CardTitle>
-                  <CardDescription>
-                    Enter a YouTube URL to begin.
-                  </CardDescription>
+                    <CardTitle className="flex items-center gap-2">
+                      <Video />
+                      Load a Dance Video
+                    </CardTitle>
+                    {!isFormOpen && <CardDescription>Click to change video</CardDescription>}
                 </div>
                 <Button variant="ghost" size="sm" className="w-9 p-0">
                   <ChevronDown
@@ -446,41 +440,41 @@ export default function Home() {
                   <span className="sr-only">Toggle</span>
                 </Button>
               </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="p-6 pt-0">
-              <Form {...urlForm}>
-                <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
-                  <FormField
-                    control={urlForm.control}
-                    name="youtubeUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>YouTube URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" disabled={isUrlLoading}>
-                    {isUrlLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Loading...
-                      </>
-                    ) : (
-                      "Load Video"
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </CollapsibleContent>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="p-6 pt-0">
+                <Form {...urlForm}>
+                  <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
+                    <FormField
+                      control={urlForm.control}
+                      name="youtubeUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>YouTube URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full" disabled={isUrlLoading}>
+                      {isUrlLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        "Load Video"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
         </Card>
-      </Collapsible>
+      </div>
       
       {isUrlLoading && !videoId && (
          <div className="mt-12 max-w-2xl mx-auto text-center">
@@ -539,3 +533,5 @@ export default function Home() {
     </main>
   );
 }
+
+    
