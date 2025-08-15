@@ -408,22 +408,6 @@ export default function Home() {
                     </TabsList>
                   </Tabs>
                 </div>
-                 <div className="flex flex-col items-center pt-1">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Label htmlFor="mirror-switch" className="block text-sm font-medium">Mirror</Label>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Flips the video horizontally to make it easier to follow along.</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                    </div>
-                    <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
-                </div>
                 <div className="flex flex-col items-center pt-1">
                     <div className="flex items-center gap-2 mb-2">
                       <Label htmlFor="loop-switch" className="block text-sm font-medium">Loop</Label>
@@ -595,11 +579,25 @@ export default function Home() {
           
           <div className="mt-8" ref={videoPlayerRef}>
             <Card className="shadow-lg h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Film />
-                  Original Video
-                </CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Film />
+                    Video
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                        <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Flips the video horizontally to make it easier to follow along.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                    <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className={cn("aspect-video relative bg-muted rounded-md flex items-center justify-center transition-transform duration-300", isMirrored && "scale-x-[-1]")}>
