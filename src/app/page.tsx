@@ -351,7 +351,7 @@ export default function Home() {
                 </div>
                  <div className="flex flex-col items-center pt-1">
                     <div className="flex items-center gap-2 mb-2">
-                        <Label htmlFor="mirror-switch" className="block text-sm font-medium">Mirror Video</Label>
+                        <Label htmlFor="mirror-switch" className="block text-sm font-medium">Mirror</Label>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -366,7 +366,7 @@ export default function Home() {
                     <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
                 </div>
                 <div className="flex flex-col items-center pt-1">
-                    <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
+                    <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop</Label>
                   <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                 </div>
               </div>
