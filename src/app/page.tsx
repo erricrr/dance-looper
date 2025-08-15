@@ -365,7 +365,7 @@ export default function Home() {
                                   </FormItem>
                                   )}
                               />
-                              <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
+                              <Button type="submit" variant="mystic" size="icon" className="mb-1"><Plus/></Button>
                           </form>
                       </Form>
                     </CollapsibleContent>
@@ -378,7 +378,7 @@ export default function Home() {
     </div>
   );
 
-  const practiceClipsSection = clips.length > 0 && (
+  const practiceClipsSection = clips.length > 0 ? (
     <div className="mt-8" key="practice" ref={practiceClipsRef}>
       <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
         <Card className="shadow-lg">
@@ -434,7 +434,7 @@ export default function Home() {
                       <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
                         {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
                       </span>
-                      <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm">
+                      <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm" variant="mystic">
                         <Play className="mr-2 h-4 w-4" />
                         Play Clip
                       </Button>
@@ -447,7 +447,7 @@ export default function Home() {
         </Card>
       </Collapsible>
     </div>
-  );
+  ) : null;
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
@@ -466,7 +466,7 @@ export default function Home() {
             <CollapsibleTrigger asChild>
                 <button className="w-full p-6">
                     <div className="flex justify-between items-center">
-                        <div className="text-left">
+                        <div className="text-left flex items-center gap-4">
                           <div>
                               <CardTitle>Load a Dance Video</CardTitle>
                               <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or select a saved one below.</CardDescription>
@@ -515,7 +515,7 @@ export default function Home() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={isUrlLoading}>
+                    <Button type="submit" variant="mystic" className="w-full" disabled={isUrlLoading}>
                       {isUrlLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
