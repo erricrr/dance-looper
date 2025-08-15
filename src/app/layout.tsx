@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'DanceStep AI',
-  description: 'Learn dance moves from YouTube videos with AI analysis.',
+  title: 'Dance Looper',
+  description: 'Learn dance moves from YouTube videos with custom looping clips.',
 };
 
 export default function RootLayout({

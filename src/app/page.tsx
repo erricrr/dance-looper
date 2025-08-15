@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Bot, Play, ChevronDown, Plus, ChevronsRight, ArrowUpDown } from "lucide-react";
+import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, ArrowUpDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -365,10 +365,10 @@ export default function Home() {
     <main className="container mx-auto px-4 py-8 md:py-16">
       <header className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight mb-4">
-          DanceStep AI
+          Dance Looper
         </h1>
         <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Paste a YouTube link of a dance routine, and our AI will break down the steps for you.
+          Paste a YouTube link to create custom loops for practicing dance routines.
         </p>
       </header>
       
@@ -382,7 +382,7 @@ export default function Home() {
               <div className="flex justify-between items-center p-6 cursor-pointer">
                 <div className="space-y-1.5">
                   <CardTitle className="flex items-center gap-2">
-                    <Bot />
+                    <Video />
                     Load a Dance Video
                   </CardTitle>
                   <CardDescription>
@@ -484,8 +484,8 @@ export default function Home() {
       {player && videoDuration > 0 && componentOrder.map(key => sections[key])}
           
       <footer className="text-center mt-16 text-muted-foreground text-sm">
-        <p>Built with Next.js, Genkit, and shadcn/ui.</p>
-        <p>DanceStep AI &copy; {new Date().getFullYear()}</p>
+        <p>Built with Next.js and shadcn/ui.</p>
+        <p>Dance Looper &copy; {new Date().getFullYear()}</p>
       </footer>
     </main>
   );
