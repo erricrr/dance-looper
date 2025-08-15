@@ -10,12 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight } from "lucide-react";
+import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -243,7 +244,7 @@ export default function Home() {
 
   const createClipsSection = (
     <div className="mt-8" key="create">
-      <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen}>
+      <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen} disabled={!player || !videoDuration || isPlayerLoading}>
         <Card className="shadow-lg">
           <CollapsibleTrigger asChild>
             <div className="flex justify-between items-center p-6 cursor-pointer">
@@ -349,7 +350,19 @@ export default function Home() {
                   </Tabs>
                 </div>
                  <div className="flex flex-col items-center pt-1">
-                    <Label htmlFor="mirror-switch" className="mb-2 block text-sm font-medium">Mirror Video</Label>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Label htmlFor="mirror-switch" className="block text-sm font-medium">Mirror Video</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Flips the video horizontally to make it easier to follow along.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                    </div>
                     <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
                 </div>
                 <div className="flex flex-col items-center pt-1">
