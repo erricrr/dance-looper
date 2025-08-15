@@ -58,7 +58,10 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   1. A descriptive name for the steps in that segment.
   2. Its start time in seconds.
   3. Its end time in seconds.
-  4. A short, helpful description of how to perform the dance steps for a beginner, focusing on THE FEET ONLY.
+  4. A detailed, step-by-step description of the footwork for a beginner. Be extremely specific. For each movement, you must specify:
+    - Which foot is being used (left or right).
+    - The type of step (e.g., toe tap, heel tap, stomp, slide).
+    - The direction of the movement (e.g., in front, behind, to the side, in place).
   
   Please provide the output as a list of these logical learning segments. The output must conform to the AnalyzeDanceVideoOutput schema.
 
