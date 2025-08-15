@@ -328,48 +328,48 @@ export default function Home() {
                     <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
                   </div>
                 </div>
-                  <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
-                      <CollapsibleTrigger className="w-full">
-                          <div className="flex items-center gap-2 text-sm font-semibold pt-4">
-                              <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
-                              Create Custom Clip
-                          </div>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="pt-4">
-                        <Form {...customClipForm}>
-                            <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
-                                <FormField
-                                    control={customClipForm.control}
-                                    name="startTime"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Start</FormLabel>
-                                        <FormControl>
-                                        <Input placeholder="MM:SS" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                                <ChevronsRight className="h-6 w-6 mb-2" />
-                                <FormField
-                                    control={customClipForm.control}
-                                    name="endTime"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>End</FormLabel>
-                                        <FormControl>
-                                        <Input placeholder="MM:SS" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                                <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
-                            </form>
-                        </Form>
-                      </CollapsibleContent>
-                  </Collapsible>
+                <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
+                    <CollapsibleTrigger className="w-full">
+                        <div className="flex items-center gap-2 text-sm font-semibold pt-4">
+                            <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
+                            Create Custom Clip
+                        </div>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-4">
+                      <Form {...customClipForm}>
+                          <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
+                              <FormField
+                                  control={customClipForm.control}
+                                  name="startTime"
+                                  render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>Start</FormLabel>
+                                      <FormControl>
+                                      <Input placeholder="MM:SS" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                                  )}
+                              />
+                              <ChevronsRight className="h-6 w-6 mb-2" />
+                              <FormField
+                                  control={customClipForm.control}
+                                  name="endTime"
+                                  render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>End</FormLabel>
+                                      <FormControl>
+                                      <Input placeholder="MM:SS" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                                  )}
+                              />
+                              <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
+                          </form>
+                      </Form>
+                    </CollapsibleContent>
+                </Collapsible>
               </fieldset>
             </CardContent>
           </CollapsibleContent>
@@ -425,7 +425,7 @@ export default function Home() {
                   <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                 </div>
               </div>
-              </div>
+            </div>
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-2">
@@ -544,7 +544,7 @@ export default function Home() {
                               <div key={url} className="flex items-center justify-between gap-2 p-2 rounded-md hover:bg-muted">
                                 <span className="text-sm text-muted-foreground truncate flex-1" title={url}>{url}</span>
                                 <div className="flex gap-2">
-                                  <Button size="sm" variant="outline" onClick={()={() => loadSavedUrl(url)}}>Load</Button>
+                                  <Button size="sm" variant="outline" onClick={() => loadSavedUrl(url)}>Load</Button>
                                   <Button size="icon" variant="ghost" onClick={() => removeUrl(url)}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
