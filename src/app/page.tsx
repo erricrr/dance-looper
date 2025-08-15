@@ -479,16 +479,18 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-             <CollapsibleTrigger asChild>
+            <CollapsibleTrigger asChild>
                 <button className="w-full">
                   <div className="flex justify-between items-center p-6" role="button">
-                      <CardHeader className="p-0 text-left">
-                          <CardTitle className="flex items-center gap-2">
-                              <Video />
-                              Load a Dance Video
-                          </CardTitle>
-                          {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
-                      </CardHeader>
+                      <div className="p-0 text-left flex items-center gap-2">
+                          <Video />
+                          <div className="flex flex-col">
+                            <CardTitle>
+                                Load a Dance Video
+                            </CardTitle>
+                            {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
+                          </div>
+                      </div>
                       <div className="p-0">
                           <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
                           <span className="sr-only">Toggle</span>
@@ -550,7 +552,7 @@ export default function Home() {
                    <Collapsible open={isSavedVideosOpen} onOpenChange={setIsSavedVideosOpen} className="mt-6">
                         <CollapsibleTrigger className="w-full">
                           <div className="flex items-center gap-2 text-sm font-semibold">
-                              <ListVideo className="h-4 w-4" />
+                              <Bookmark className="h-4 w-4" />
                               Saved Videos ({savedUrls.length}/{MAX_SAVED_URLS})
                               <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
                           </div>
