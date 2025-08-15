@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, ListVideo, Bookmark } from "lucide-react";
+import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, Bookmark } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -579,25 +579,11 @@ export default function Home() {
           
           <div className="mt-8" ref={videoPlayerRef}>
             <Card className="shadow-lg h-full">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Film />
                     Video
                   </CardTitle>
-                  <div className="flex items-center gap-2">
-                        <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Flips the video horizontally to make it easier to follow along.</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                    <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
-                </div>
               </CardHeader>
               <CardContent>
                 <div className={cn("aspect-video relative bg-muted rounded-md flex items-center justify-center transition-transform duration-300", isMirrored && "scale-x-[-1]")}>
@@ -623,6 +609,22 @@ export default function Home() {
                   />
                 </div>
               </CardContent>
+              <CardFooter className="flex-row-reverse pt-6">
+                <div className="flex items-center gap-2">
+                    <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Flips the video horizontally to make it easier to follow along.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
+                </div>
+              </CardFooter>
             </Card>
           </div>
           
