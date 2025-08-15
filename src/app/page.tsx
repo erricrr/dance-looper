@@ -58,6 +58,7 @@ export default function Home() {
 
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
+  const practiceClipsRef = useRef<HTMLDivElement>(null);
 
   const urlForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -147,6 +148,13 @@ export default function Home() {
       return (minutes * 60) + seconds;
   };
 
+  const scrollToPracticeClips = () => {
+    setIsPracticeClipsOpen(true);
+    setTimeout(() => {
+        practiceClipsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+  }
+
   const handleCustomClipSubmit = (values: z.infer<typeof customClipSchema>) => {
       const startTime = parseTimeToSeconds(values.startTime);
       const endTime = parseTimeToSeconds(values.endTime);
@@ -168,6 +176,7 @@ export default function Home() {
 
       setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
       customClipForm.reset({startTime: "00:00", endTime: "00:00"});
+      scrollToPracticeClips();
   };
 
   const segmentVideo = (segmentDuration: number) => {
@@ -183,7 +192,7 @@ export default function Home() {
       });
     }
     setClips(newClips);
-    setIsPracticeClipsOpen(true);
+    scrollToPracticeClips();
   };
 
   useEffect(() => {
@@ -302,7 +311,7 @@ export default function Home() {
       </div>
     ),
     practice: clips.length > 0 && (
-      <div className="mt-8" key="practice">
+      <div className="mt-8" key="practice" ref={practiceClipsRef}>
         <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
           <Card className="shadow-lg">
             <CollapsibleTrigger asChild>
@@ -490,3 +499,5 @@ export default function Home() {
     </main>
   );
 }
+
+    
