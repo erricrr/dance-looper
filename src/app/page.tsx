@@ -17,6 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Film, Bot, Play } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   youtubeUrl: z.string().url({ message: "Please enter a valid YouTube URL." })
@@ -39,6 +41,7 @@ export default function Home() {
   const [currentClip, setCurrentClip] = useState<{startTime: number, endTime: number} | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(0.5);
+  const [isLooping, setIsLooping] = useState(false);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
 
@@ -154,8 +157,12 @@ export default function Home() {
             if (player && typeof player.getCurrentTime === 'function') {
                 const currentTime = player.getCurrentTime();
                 if (currentTime >= currentClip.endTime) {
-                    player.pauseVideo();
-                    setCurrentClip(null); 
+                    if (isLooping) {
+                      player.seekTo(currentClip.startTime, true);
+                    } else {
+                      player.pauseVideo();
+                      setCurrentClip(null); 
+                    }
                 }
             }
         }, 100);
@@ -167,7 +174,7 @@ export default function Home() {
         clipIntervalRef.current = undefined;
       }
     };
-  }, [isPlaying, currentClip, player]);
+  }, [isPlaying, currentClip, player, isLooping]);
 
   useEffect(() => {
     if (player && typeof player.setPlaybackRate === 'function' && isPlaying) {
@@ -311,16 +318,23 @@ export default function Home() {
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle>Dance Step Timeline</CardTitle>
-                <CardDescription>Click a step to play its segment. Adjust speed below.</CardDescription>
-                <div className="pt-2">
-                  <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
-                      <TabsTrigger value="0.25">0.25x</TabsTrigger>
-                      <TabsTrigger value="0.5">0.5x</TabsTrigger>
-                      <TabsTrigger value="0.75">0.75x</TabsTrigger>
-                      <TabsTrigger value="1">1x</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+                <CardDescription>Click a step to play its segment. Adjust speed and looping below.</CardDescription>
+                <div className="pt-4 flex items-center gap-6">
+                  <div className="flex-1">
+                    <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
+                    <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
+                      <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="0.25">0.25x</TabsTrigger>
+                        <TabsTrigger value="0.5">0.5x</TabsTrigger>
+                        <TabsTrigger value="0.75">0.75x</TabsTrigger>
+                        <TabsTrigger value="1">1x</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+                  <div className="flex flex-col items-center pt-1">
+                     <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
+                    <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
