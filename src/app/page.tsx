@@ -51,6 +51,7 @@ export default function Home() {
   const [isLooping, setIsLooping] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
+  const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
@@ -263,41 +264,48 @@ export default function Home() {
                   <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
                 </div>
               </div>
-              <div>
-                  <Label className="font-semibold">Create Custom Clip</Label>
-                  <Form {...customClipForm}>
-                      <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
-                          <FormField
-                              control={customClipForm.control}
-                              name="startTime"
-                              render={({ field }) => (
-                              <FormItem>
-                                  <FormLabel>Start</FormLabel>
-                                  <FormControl>
-                                  <Input placeholder="MM:SS" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                              )}
-                          />
-                           <ChevronsRight className="h-6 w-6 mb-2" />
-                          <FormField
-                              control={customClipForm.control}
-                              name="endTime"
-                              render={({ field }) => (
-                              <FormItem>
-                                  <FormLabel>End</FormLabel>
-                                  <FormControl>
-                                  <Input placeholder="MM:SS" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                              </FormItem>
-                              )}
-                          />
-                          <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
-                      </form>
-                  </Form>
-              </div>
+                <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
+                    <CollapsibleTrigger className="w-full">
+                        <div className="flex items-center gap-2 text-sm font-semibold">
+                             <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
+                             Create Custom Clip
+                        </div>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-4">
+                      <Form {...customClipForm}>
+                          <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
+                              <FormField
+                                  control={customClipForm.control}
+                                  name="startTime"
+                                  render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>Start</FormLabel>
+                                      <FormControl>
+                                      <Input placeholder="MM:SS" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                                  )}
+                              />
+                               <ChevronsRight className="h-6 w-6 mb-2" />
+                              <FormField
+                                  control={customClipForm.control}
+                                  name="endTime"
+                                  render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>End</FormLabel>
+                                      <FormControl>
+                                      <Input placeholder="MM:SS" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                                  )}
+                              />
+                              <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
+                          </form>
+                      </Form>
+                    </CollapsibleContent>
+                </Collapsible>
             </CardContent>
           </CollapsibleContent>
         </Card>
