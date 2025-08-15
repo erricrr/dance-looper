@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, ListVideo } from "lucide-react";
+import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, ListVideo, Bookmark } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -39,6 +39,8 @@ type Clip = {
 };
 
 type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
+
+const MAX_SAVED_URLS = 5;
 
 export default function Home() {
   const [isUrlLoading, setIsUrlLoading] = useState(false);
@@ -86,14 +88,30 @@ export default function Home() {
     }
   }, []);
 
-  const saveUrl = (url: string) => {
+  const saveUrl = () => {
     try {
+      const urlToSave = urlForm.getValues("youtubeUrl");
+      if (!urlToSave || getYoutubeVideoId(urlToSave) === null) {
+        toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid YouTube URL to save." });
+        return;
+      }
+      
       setSavedUrls(prevUrls => {
-        const newUrls = [...new Set([url, ...prevUrls])];
+        if (prevUrls.length >= MAX_SAVED_URLS) {
+          toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
+          return prevUrls;
+        }
+        if (prevUrls.includes(urlToSave)) {
+          toast({ title: "Already Saved", description: "This video is already in your saved list." });
+          return prevUrls;
+        }
+        const newUrls = [urlToSave, ...prevUrls];
         localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
+        toast({ title: "Video Saved!", description: "It has been added to your saved list." });
         return newUrls;
       });
     } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Could not save the URL."});
       console.error("Failed to save URL to localStorage", error);
     }
   };
@@ -154,7 +172,6 @@ export default function Home() {
       return;
     }
     setVideoId(extractedVideoId);
-    saveUrl(values.youtubeUrl);
     // The video player will be rendered, and its onReady event will handle the rest.
   };
 
@@ -465,23 +482,25 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-             <CollapsibleTrigger asChild>
-                <div className="flex justify-between items-center p-6 cursor-pointer" role="button">
-                    <CardHeader className="p-0">
-                        <CardTitle className="flex items-center gap-2">
-                            <Video />
-                            Load a Dance Video
-                        </CardTitle>
-                        {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
-                    </CardHeader>
-                    <Button variant="ghost" size="sm" className="w-9 p-0">
-                        <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                        <span className="sr-only">Toggle</span>
-                    </Button>
-                </div>
-            </CollapsibleTrigger>
+             <div className="p-6 pb-0" role="button">
+                <CollapsibleTrigger asChild>
+                    <div className="flex justify-between items-center cursor-pointer">
+                        <CardHeader className="p-0">
+                            <CardTitle className="flex items-center gap-2">
+                                <Video />
+                                Load a Dance Video
+                            </CardTitle>
+                            {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
+                        </CardHeader>
+                        <Button variant="ghost" size="sm" className="w-9 p-0">
+                            <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
+                            <span className="sr-only">Toggle</span>
+                        </Button>
+                    </div>
+                </CollapsibleTrigger>
+            </div>
             <CollapsibleContent>
-              <CardContent className="p-6 pt-0">
+              <CardContent className="p-6 pt-4">
                 <Form {...urlForm}>
                   <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
                     <FormField
@@ -490,9 +509,30 @@ export default function Home() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>YouTube URL</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
-                          </FormControl>
+                          <div className="flex gap-2">
+                             <FormControl>
+                                <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
+                             </FormControl>
+                             <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            size="icon" 
+                                            onClick={saveUrl} 
+                                            disabled={!urlForm.formState.isValid || isUrlLoading}
+                                            aria-label="Save video for later"
+                                        >
+                                            <Bookmark/>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Save video for later</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                             </TooltipProvider>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -514,7 +554,7 @@ export default function Home() {
                         <CollapsibleTrigger className="w-full">
                           <div className="flex items-center gap-2 text-sm font-semibold">
                               <ListVideo className="h-4 w-4" />
-                              Saved Videos
+                              Saved Videos ({savedUrls.length}/{MAX_SAVED_URLS})
                               <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
                           </div>
                       </CollapsibleTrigger>
@@ -600,5 +640,3 @@ export default function Home() {
     </main>
   );
 }
-
-    
