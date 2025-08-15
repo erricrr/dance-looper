@@ -89,31 +89,31 @@ export default function Home() {
   }, []);
 
   const saveUrl = () => {
-    try {
-      const urlToSave = urlForm.getValues("youtubeUrl");
-      if (!urlToSave || getYoutubeVideoId(urlToSave) === null) {
+    const urlToSave = urlForm.getValues("youtubeUrl");
+    if (!urlToSave || getYoutubeVideoId(urlToSave) === null) {
         toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid YouTube URL to save." });
         return;
-      }
-      if (savedUrls.includes(urlToSave)) {
+    }
+    if (savedUrls.includes(urlToSave)) {
         toast({ title: "Already Saved", description: "This video is already in your saved list." });
         return;
-      }
-      if (savedUrls.length >= MAX_SAVED_URLS) {
+    }
+    if (savedUrls.length >= MAX_SAVED_URLS) {
         toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
         return;
-      }
-      
+    }
+
+    try {
       const newUrls = [urlToSave, ...savedUrls];
       setSavedUrls(newUrls);
       localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
       toast({ title: "Video Saved!", description: "It has been added to your saved list." });
-
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "Could not save the URL."});
       console.error("Failed to save URL to localStorage", error);
     }
   };
+
 
   const removeUrl = (urlToRemove: string) => {
     try {
@@ -463,23 +463,21 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <div className="flex justify-between items-center p-6" role="button">
-                <div className="p-0 text-left flex items-center gap-2">
-                    <Video />
-                    <div className="flex flex-col h-[2.75rem] justify-center">
-                      <CardTitle>
-                          Load a Dance Video
-                      </CardTitle>
-                      <CardDescription className={cn("pt-1.5", isFormOpen && "hidden")}>Click to change video</CardDescription>
+            <CollapsibleTrigger asChild>
+                <button className="w-full p-6">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2 text-left">
+                            <Video />
+                            <div>
+                                <CardTitle>Load a Dance Video</CardTitle>
+                                <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or select a saved one below.</CardDescription>
+                                <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
+                            </div>
+                        </div>
+                        <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
                     </div>
-                </div>
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                    <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                    <span className="sr-only">Toggle</span>
-                  </Button>
-                </CollapsibleTrigger>
-            </div>
+                </button>
+            </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent className="p-6 pt-0">
                 <Form {...urlForm}>
@@ -546,7 +544,7 @@ export default function Home() {
                               <div key={url} className="flex items-center justify-between gap-2 p-2 rounded-md hover:bg-muted">
                                 <span className="text-sm text-muted-foreground truncate flex-1" title={url}>{url}</span>
                                 <div className="flex gap-2">
-                                  <Button size="sm" variant="outline" onClick={() => loadSavedUrl(url)}>Load</Button>
+                                  <Button size="sm" variant="outline" onClick={()={() => loadSavedUrl(url)}}>Load</Button>
                                   <Button size="icon" variant="ghost" onClick={() => removeUrl(url)}>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
