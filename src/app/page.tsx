@@ -368,8 +368,8 @@ export default function Home() {
                   <Accordion type="single" collapsible className="w-full">
                     {analysis.danceSteps.map((step, index) => (
                       <AccordionItem value={`item-${index}`} key={index}>
-                        <AccordionTrigger>
-                          <div className="flex items-center justify-between w-full pr-4">
+                        <AccordionTrigger className="pr-4">
+                          <div className="flex items-center justify-between w-full">
                             <span>{step.stepName}</span>
                             <span className="text-muted-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md">
                               {formatTime(step.startTime)} - {formatTime(step.endTime)}
