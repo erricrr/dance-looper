@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -95,20 +95,18 @@ export default function Home() {
         toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid YouTube URL to save." });
         return;
       }
-      if (savedUrls.length >= MAX_SAVED_URLS) {
-        toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
-        return;
-      }
       if (savedUrls.includes(urlToSave)) {
         toast({ title: "Already Saved", description: "This video is already in your saved list." });
         return;
       }
-
-      setSavedUrls(prevUrls => {
-        const newUrls = [urlToSave, ...prevUrls];
-        localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-        return newUrls;
-      });
+      if (savedUrls.length >= MAX_SAVED_URLS) {
+        toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
+        return;
+      }
+      
+      const newUrls = [urlToSave, ...savedUrls];
+      setSavedUrls(newUrls);
+      localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
       toast({ title: "Video Saved!", description: "It has been added to your saved list." });
 
     } catch (error) {
@@ -119,11 +117,9 @@ export default function Home() {
 
   const removeUrl = (urlToRemove: string) => {
     try {
-      setSavedUrls(prevUrls => {
-        const newUrls = prevUrls.filter(url => url !== urlToRemove);
-        localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-        return newUrls;
-      });
+      const newUrls = savedUrls.filter(url => url !== urlToRemove);
+      setSavedUrls(newUrls);
+      localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
       toast({ title: "Video removed from saved list." });
     } catch (error) {
       console.error("Failed to remove URL from localStorage", error);
@@ -483,20 +479,22 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <CollapsibleTrigger className="w-full">
-              <div className="flex justify-between items-center p-6" role="button">
-                  <CardHeader className="p-0">
-                      <CardTitle className="flex items-center gap-2">
-                          <Video />
-                          Load a Dance Video
-                      </CardTitle>
-                      {!isFormOpen && <CardDescription className="pt-1.5 text-left">Click to change video</CardDescription>}
-                  </CardHeader>
-                  <Button variant="ghost" size="sm" className="w-9 p-0">
-                      <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                      <span className="sr-only">Toggle</span>
-                  </Button>
-              </div>
+             <CollapsibleTrigger asChild>
+                <button className="w-full">
+                  <div className="flex justify-between items-center p-6" role="button">
+                      <CardHeader className="p-0 text-left">
+                          <CardTitle className="flex items-center gap-2">
+                              <Video />
+                              Load a Dance Video
+                          </CardTitle>
+                          {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
+                      </CardHeader>
+                      <div className="p-0">
+                          <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
+                          <span className="sr-only">Toggle</span>
+                      </div>
+                  </div>
+                </button>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent className="p-6 pt-0">
