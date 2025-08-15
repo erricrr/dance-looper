@@ -425,7 +425,7 @@ export default function Home() {
                   <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                 </div>
               </div>
-            </div>
+              </div>
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-2">
