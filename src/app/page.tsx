@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, Bookmark } from "lucide-react";
+import { Loader2, Film, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, Bookmark } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -318,7 +318,7 @@ export default function Home() {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pt-6">
               <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
                 <div>
                   <Label className="font-semibold">Auto-Segment Video</Label>
@@ -425,7 +425,7 @@ export default function Home() {
                   <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                 </div>
               </div>
-            </div>
+              </div>
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-2">
@@ -466,13 +466,12 @@ export default function Home() {
             <CollapsibleTrigger asChild>
                 <button className="w-full p-6">
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-left">
-                            <Video />
-                            <div>
-                                <CardTitle>Load a Dance Video</CardTitle>
-                                <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or select a saved one below.</CardDescription>
-                                <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
-                            </div>
+                        <div className="text-left">
+                          <div>
+                              <CardTitle>Load a Dance Video</CardTitle>
+                              <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or select a saved one below.</CardDescription>
+                              <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
+                          </div>
                         </div>
                         <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
                     </div>
