@@ -239,6 +239,7 @@ export default function Home() {
   }
 
   const formatTime = (seconds: number) => {
+    if (isNaN(seconds) || seconds < 0) return "00:00";
     return new Date(seconds * 1000).toISOString().substr(14, 5)
   }
 
@@ -311,7 +312,7 @@ export default function Home() {
       </div>
     ),
     practice: clips.length > 0 && (
-      <div className="mt-8" key="practice" ref={practiceClipsRef}>
+      <div className="mt-8 lg:mt-0" key="practice" ref={practiceClipsRef}>
         <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
           <Card className="shadow-lg">
             <CollapsibleTrigger asChild>
@@ -388,7 +389,7 @@ export default function Home() {
       >
         <Card className="shadow-lg">
             <CollapsibleTrigger asChild>
-              <div className="flex justify-between items-center p-6 cursor-pointer">
+               <div className="flex justify-between items-center p-6 cursor-pointer">
                 <div className="space-y-1.5">
                   <CardTitle className="flex items-center gap-2">
                     <Video />
