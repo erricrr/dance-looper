@@ -34,7 +34,6 @@ const customClipSchema = z.object({
 type Clip = {
   startTime: number;
   endTime: number;
-  stepName: string;
 };
 
 type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
@@ -59,6 +58,7 @@ export default function Home() {
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
   const practiceClipsRef = useRef<HTMLDivElement>(null);
+  const videoPlayerRef = useRef<HTMLDivElement>(null);
 
   const urlForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -125,6 +125,7 @@ export default function Home() {
     setCurrentClip({startTime, endTime});
     player.seekTo(startTime, true);
     player.playVideo();
+    videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
@@ -173,7 +174,6 @@ export default function Home() {
       const newClip: Clip = {
         startTime,
         endTime,
-        stepName: `Custom Clip ${clips.length + 1} (${values.startTime} - ${values.endTime})`,
       };
 
       setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
@@ -190,7 +190,6 @@ export default function Home() {
       newClips.push({
         startTime,
         endTime,
-        stepName: `Segment ${formatTime(startTime)} - ${formatTime(endTime)}`
       });
     }
     setClips(newClips);
@@ -270,7 +269,7 @@ export default function Home() {
                 </div>
                   <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
                       <CollapsibleTrigger className="w-full">
-                          <div className="flex items-center gap-2 text-sm font-semibold">
+                          <div className="flex items-center gap-2 text-sm font-semibold pt-4">
                               <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
                               Create Custom Clip
                           </div>
@@ -461,7 +460,7 @@ export default function Home() {
         <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
           {createClipsSection}
           
-          <div className="mt-8">
+          <div className="mt-8" ref={videoPlayerRef}>
             <Card className="shadow-lg h-full">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
