@@ -318,7 +318,7 @@ export default function Home() {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <CardContent className="space-y-6 pt-6">
+            <CardContent className="space-y-6 pt-2">
               <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
                 <div>
                   <Label className="font-semibold">Auto-Segment Video</Label>
@@ -395,7 +395,7 @@ export default function Home() {
              </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="px-6 pb-6">
+            <div className="px-6 pb-6 pt-0">
               <div className="pt-4 flex items-center gap-6 justify-between">
                 <div className="flex-1">
                   <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
@@ -425,7 +425,7 @@ export default function Home() {
                   <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                 </div>
               </div>
-              </div>
+            </div>
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-2">
@@ -575,8 +575,7 @@ export default function Home() {
           <div className="mt-8" ref={videoPlayerRef}>
             <Card className="shadow-lg h-full">
               <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Film />
+                  <CardTitle>
                     Video
                   </CardTitle>
               </CardHeader>
