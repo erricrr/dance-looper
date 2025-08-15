@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info } from "lucide-react";
+import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, ListVideo } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -56,6 +56,8 @@ export default function Home() {
   const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
   const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
+  const [isSavedVideosOpen, setIsSavedVideosOpen] = useState(false);
+  const [savedUrls, setSavedUrls] = useState<string[]>([]);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -72,6 +74,42 @@ export default function Home() {
     resolver: zodResolver(customClipSchema),
     defaultValues: { startTime: "00:00", endTime: "00:00" },
   });
+
+  useEffect(() => {
+    try {
+      const storedUrls = localStorage.getItem("danceLooperUrls");
+      if (storedUrls) {
+        setSavedUrls(JSON.parse(storedUrls));
+      }
+    } catch (error) {
+      console.error("Failed to load saved URLs from localStorage", error);
+    }
+  }, []);
+
+  const saveUrl = (url: string) => {
+    try {
+      setSavedUrls(prevUrls => {
+        const newUrls = [...new Set([url, ...prevUrls])];
+        localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
+        return newUrls;
+      });
+    } catch (error) {
+      console.error("Failed to save URL to localStorage", error);
+    }
+  };
+
+  const removeUrl = (urlToRemove: string) => {
+    try {
+      setSavedUrls(prevUrls => {
+        const newUrls = prevUrls.filter(url => url !== urlToRemove);
+        localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
+        return newUrls;
+      });
+      toast({ title: "Video removed from saved list." });
+    } catch (error) {
+      console.error("Failed to remove URL from localStorage", error);
+    }
+  };
 
   const getYoutubeVideoId = (url: string): string | null => {
     let videoId: string | null = null;
@@ -116,7 +154,13 @@ export default function Home() {
       return;
     }
     setVideoId(extractedVideoId);
+    saveUrl(values.youtubeUrl);
     // The video player will be rendered, and its onReady event will handle the rest.
+  };
+
+  const loadSavedUrl = (url: string) => {
+    urlForm.setValue("youtubeUrl", url);
+    onUrlSubmit({ youtubeUrl: url });
   };
   
   const handleClipPlayback = (startTime: number, endTime: number) => {
@@ -421,25 +465,20 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <CollapsibleTrigger asChild>
-              <div className="flex justify-between items-center p-6 cursor-pointer">
-                <div className="space-y-1.5 text-left">
-                    <CardTitle className="flex items-center gap-2">
-                      <Video />
-                      Load a Dance Video
-                    </CardTitle>
-                    {!isFormOpen && <CardDescription>Click to change video</CardDescription>}
+             <CollapsibleTrigger asChild>
+                <div className="flex justify-between items-center p-6 cursor-pointer" role="button">
+                    <CardHeader className="p-0">
+                        <CardTitle className="flex items-center gap-2">
+                            <Video />
+                            Load a Dance Video
+                        </CardTitle>
+                        {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
+                    </CardHeader>
+                    <Button variant="ghost" size="sm" className="w-9 p-0">
+                        <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
+                        <span className="sr-only">Toggle</span>
+                    </Button>
                 </div>
-                <Button variant="ghost" size="sm" className="w-9 p-0">
-                  <ChevronDown
-                    className={cn(
-                      "h-6 w-6 transition-transform duration-200",
-                      isFormOpen && "rotate-180"
-                    )}
-                  />
-                  <span className="sr-only">Toggle</span>
-                </Button>
-              </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent className="p-6 pt-0">
@@ -470,6 +509,34 @@ export default function Home() {
                     </Button>
                   </form>
                 </Form>
+                {savedUrls.length > 0 && (
+                   <Collapsible open={isSavedVideosOpen} onOpenChange={setIsSavedVideosOpen} className="mt-6">
+                        <CollapsibleTrigger className="w-full">
+                          <div className="flex items-center gap-2 text-sm font-semibold">
+                              <ListVideo className="h-4 w-4" />
+                              Saved Videos
+                              <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
+                          </div>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pt-4">
+                        <ScrollArea className="h-40 rounded-md border">
+                          <div className="p-4 space-y-2">
+                            {savedUrls.map(url => (
+                              <div key={url} className="flex items-center justify-between gap-2 p-2 rounded-md hover:bg-muted">
+                                <span className="text-sm text-muted-foreground truncate flex-1" title={url}>{url}</span>
+                                <div className="flex gap-2">
+                                  <Button size="sm" variant="outline" onClick={() => loadSavedUrl(url)}>Load</Button>
+                                  <Button size="icon" variant="ghost" onClick={() => removeUrl(url)}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </CollapsibleContent>
+                   </Collapsible>
+                )}
               </CardContent>
             </CollapsibleContent>
           </Collapsible>
