@@ -60,6 +60,7 @@ export default function Home() {
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
   const [isSavedVideosOpen, setIsSavedVideosOpen] = useState(false);
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
+  const [selectedSegment, setSelectedSegment] = useState<number | null>(null);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -156,6 +157,7 @@ export default function Home() {
     setVideoId(null);
     setVideoDuration(0);
     setCurrentClip(null);
+    setSelectedSegment(null);
     if(player) player.stopVideo();
 
     const extractedVideoId = getYoutubeVideoId(values.youtubeUrl);
@@ -237,6 +239,7 @@ export default function Home() {
         endTime,
       };
 
+      setSelectedSegment(null);
       setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
       customClipForm.reset({startTime: "00:00", endTime: "00:00"});
       scrollToPracticeClips();
@@ -244,6 +247,7 @@ export default function Home() {
 
   const segmentVideo = (segmentDuration: number) => {
     if (!videoDuration) return;
+    setSelectedSegment(segmentDuration);
     const newClips: Clip[] = [];
     for (let i = 0; i < videoDuration; i += segmentDuration) {
       const startTime = i;
@@ -323,9 +327,9 @@ export default function Home() {
                 <div>
                   <Label className="font-semibold">Auto-Segment Video</Label>
                   <div className="grid grid-cols-3 gap-2 mt-2">
-                    <Button variant="outline" onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
-                    <Button variant="outline" onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
-                    <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
+                    <Button variant={selectedSegment === 3 ? "mystic" : "outline"} onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
+                    <Button variant={selectedSegment === 5 ? "mystic" : "outline"} onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
+                    <Button variant={selectedSegment === 10 ? "mystic" : "outline"} onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
                   </div>
                 </div>
                 <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
