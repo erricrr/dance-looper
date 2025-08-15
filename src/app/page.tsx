@@ -244,7 +244,7 @@ export default function Home() {
 
   const sections = {
     create: (
-      <div className="mt-8" key="create">
+      <div className="mt-8 lg:mt-0" key="create">
         <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen}>
           <Card className="shadow-lg">
             <CollapsibleTrigger asChild>
@@ -452,45 +452,51 @@ export default function Home() {
 
       {videoId && (
         <div ref={resultsRef} className="mt-16">
-            <Card className="shadow-lg h-full lg:col-span-3">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Film />
-                  Original Video
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-video">
-                  <YouTube
-                    videoId={videoId}
-                    className="w-full h-full"
-                    iframeClassName="w-full h-full rounded-md"
-                    onReady={onPlayerReady}
-                    onStateChange={onPlayerStateChange}
-                    opts={{
-                      playerVars: {
-                        controls: 1,
-                        modestbranding: 1,
-                        rel: 0,
-                      },
-                    }}
-                  />
+          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+            <div className="lg:col-span-2">
+              <Card className="shadow-lg h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Film />
+                    Original Video
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="aspect-video">
+                    <YouTube
+                      videoId={videoId}
+                      className="w-full h-full"
+                      iframeClassName="w-full h-full rounded-md"
+                      onReady={onPlayerReady}
+                      onStateChange={onPlayerStateChange}
+                      opts={{
+                        playerVars: {
+                          controls: 1,
+                          modestbranding: 1,
+                          rel: 0,
+                        },
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="lg:col-span-1">
+              {player && videoDuration > 0 && clips.length > 0 && (
+                <div className="mt-4 -mb-4 lg:mt-0 lg:mb-0 flex justify-end">
+                  <Button variant="ghost" onClick={toggleOrder}>
+                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                    Switch Order
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
+              )}
+              
+              {player && videoDuration > 0 && componentOrder.map(key => sections[key])}
+            </div>
+          </div>
         </div>
       )}
-
-      {player && videoDuration > 0 && clips.length > 0 && (
-          <div className="mt-4 -mb-4 flex justify-end">
-            <Button variant="ghost" onClick={toggleOrder}>
-              <ArrowUpDown className="mr-2 h-4 w-4" />
-              Switch Order
-            </Button>
-          </div>
-        )}
-      
-      {player && videoDuration > 0 && componentOrder.map(key => sections[key])}
           
       <footer className="text-center mt-16 text-muted-foreground text-sm">
         <p>Built with Next.js and shadcn/ui.</p>
