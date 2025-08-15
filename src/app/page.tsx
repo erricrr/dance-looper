@@ -481,7 +481,7 @@ export default function Home() {
         </div>
       )}
 
-      {player && videoDuration > 0 && (
+      {player && videoDuration > 0 && clips.length > 0 && (
           <div className="mt-4 -mb-4 flex justify-end">
             <Button variant="ghost" onClick={toggleOrder}>
               <ArrowUpDown className="mr-2 h-4 w-4" />
@@ -499,5 +499,3 @@ export default function Home() {
     </main>
   );
 }
-
-    
