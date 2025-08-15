@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Lato', 'sans-serif'],
-        headline: ['Cinzel', 'serif'],
+        headline: ['"Cinzel Decorative"', 'serif'],
         code: ['monospace'],
       },
       colors: {
