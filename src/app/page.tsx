@@ -40,7 +40,8 @@ type Clip = {
 type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUrlLoading, setIsUrlLoading] = useState(false);
+  const [isPlayerLoading, setIsPlayerLoading] = useState(true);
   const [videoId, setVideoId] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState(0);
   const [clips, setClips] = useState<Clip[]>([]);
@@ -93,7 +94,8 @@ export default function Home() {
   };
 
   const onUrlSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+    setIsUrlLoading(true);
+    setIsPlayerLoading(true);
     setClips([]);
     setVideoId(null);
     setVideoDuration(0);
@@ -107,7 +109,7 @@ export default function Home() {
         title: "Invalid URL",
         description: "Could not extract video ID from the YouTube URL.",
       });
-      setIsLoading(false);
+      setIsUrlLoading(false);
       return;
     }
     setVideoId(extractedVideoId);
@@ -133,7 +135,8 @@ export default function Home() {
     if (readyPlayer && typeof readyPlayer.setPlaybackRate === 'function') {
       readyPlayer.setPlaybackRate(playbackSpeed);
     }
-    setIsLoading(false);
+    setIsUrlLoading(false);
+    setIsPlayerLoading(false);
     setIsFormOpen(false);
   };
   
@@ -256,7 +259,7 @@ export default function Home() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <CardContent className="space-y-6">
-              <fieldset disabled={!player || !videoDuration}>
+              <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
                 <div>
                   <Label className="font-semibold">Auto-Segment Video</Label>
                   <div className="grid grid-cols-3 gap-2 mt-2">
@@ -424,14 +427,14 @@ export default function Home() {
                       <FormItem>
                         <FormLabel>YouTube URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isLoading} />
+                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? (
+                  <Button type="submit" className="w-full" disabled={isUrlLoading}>
+                    {isUrlLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Loading...
@@ -447,7 +450,7 @@ export default function Home() {
         </Card>
       </Collapsible>
       
-      {isLoading && !videoId && (
+      {isUrlLoading && !videoId && (
          <div className="mt-12 max-w-2xl mx-auto text-center">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
             <p className="text-muted-foreground mt-2">Loading video...</p>
@@ -467,10 +470,16 @@ export default function Home() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="aspect-video">
+                <div className="aspect-video relative bg-muted rounded-md flex items-center justify-center">
+                  {isPlayerLoading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <p className="mt-2 text-sm">Initializing player...</p>
+                    </div>
+                  )}
                   <YouTube
                     videoId={videoId}
-                    className="w-full h-full"
+                    className={cn("w-full h-full", isPlayerLoading && "invisible")}
                     iframeClassName="w-full h-full rounded-md"
                     onReady={onPlayerReady}
                     onStateChange={onPlayerStateChange}
@@ -483,12 +492,6 @@ export default function Home() {
                     }}
                   />
                 </div>
-                {isLoading && (
-                  <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                    <p className="mt-2 text-muted-foreground">Initializing player...</p>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>
