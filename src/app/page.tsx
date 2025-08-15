@@ -5,16 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import YouTube, { YouTubePlayer } from 'react-youtube';
-import { analyzeDanceVideo, AnalyzeDanceVideoOutput } from "@/ai/flows/analyze-dance-video";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Bot, Play, ChevronDown } from "lucide-react";
+import { Loader2, Film, Bot, Play, ChevronDown, scissors, Plus, ChevronsRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -27,18 +24,27 @@ const formSchema = z.object({
     .refine(url => url.includes("youtube.com") || url.includes("youtu.be"), {
       message: "Please enter a valid YouTube URL.",
     }),
-  danceStyle: z.string().min(1, { message: "Please select a dance style." }),
 });
 
-type AnalysisResult = AnalyzeDanceVideoOutput & {
-  videoId: string;
+const customClipSchema = z.object({
+  startTime: z.string().refine(val => /^\d{1,2}:\d{2}$/.test(val), { message: "Use MM:SS" }),
+  endTime: z.string().refine(val => /^\d{1,2}:\d{2}$/.test(val), { message: "Use MM:SS" }),
+});
+
+
+type Clip = {
+  startTime: number;
+  endTime: number;
+  stepName: string;
 };
+
 type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
-  const [progress, setProgress] = useState(0);
+  const [videoId, setVideoId] = useState<string | null>(null);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [clips, setClips] = useState<Clip[]>([]);
   const [player, setPlayer] = useState<YouTubePlayer | null>(null);
   const [currentClip, setCurrentClip] = useState<{startTime: number, endTime: number} | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -47,16 +53,17 @@ export default function Home() {
   const [isFormOpen, setIsFormOpen] = useState(true);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
-
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const urlForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      youtubeUrl: "",
-      danceStyle: "",
-    },
+    defaultValues: { youtubeUrl: "" },
+  });
+  
+  const customClipForm = useForm<z.infer<typeof customClipSchema>>({
+    resolver: zodResolver(customClipSchema),
+    defaultValues: { startTime: "00:00", endTime: "00:00" },
   });
 
   const getYoutubeVideoId = (url: string): string | null => {
@@ -82,15 +89,16 @@ export default function Home() {
     return videoId;
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onUrlSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    setAnalysis(null);
-    setProgress(0);
+    setClips([]);
+    setVideoId(null);
+    setVideoDuration(0);
     setCurrentClip(null);
     if(player) player.stopVideo();
 
-    const videoId = getYoutubeVideoId(values.youtubeUrl);
-    if (!videoId) {
+    const extractedVideoId = getYoutubeVideoId(values.youtubeUrl);
+    if (!extractedVideoId) {
       toast({
         variant: "destructive",
         title: "Invalid URL",
@@ -99,37 +107,8 @@ export default function Home() {
       setIsLoading(false);
       return;
     }
-
-    let progressInterval: NodeJS.Timeout;
-
-    try {
-      progressInterval = setInterval(() => {
-        setProgress((prev) => (prev >= 95 ? 95 : prev + 5));
-      }, 400);
-
-      const analysisResult = await analyzeDanceVideo({ videoUrl: values.youtubeUrl, danceStyle: values.danceStyle });
-      
-      clearInterval(progressInterval);
-      setProgress(100);
-      
-      setAnalysis({
-        ...analysisResult,
-        videoId,
-      });
-      
-      setIsFormOpen(false);
-
-    } catch (error) {
-      if (progressInterval!) clearInterval(progressInterval!);
-      console.error(error);
-      toast({
-        variant: "destructive",
-        title: "Analysis Failed",
-        description: "There was an error processing the video. Please try another one.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setVideoId(extractedVideoId);
+    // The video player will be rendered, and its onReady event will handle the rest.
   };
   
   const handleClipPlayback = (startTime: number, endTime: number) => {
@@ -146,14 +125,61 @@ export default function Home() {
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
     const readyPlayer = event.target;
     setPlayer(readyPlayer);
+    const duration = readyPlayer.getDuration();
+    setVideoDuration(duration);
     if (readyPlayer && typeof readyPlayer.setPlaybackRate === 'function') {
       readyPlayer.setPlaybackRate(playbackSpeed);
     }
+    setIsLoading(false);
+    setIsFormOpen(false);
   };
   
   const onPlayerStateChange = (event: { data: number }) => {
     const isNowPlaying = event.data === YouTube.PlayerState.PLAYING;
     setIsPlaying(isNowPlaying);
+  };
+
+  const parseTimeToSeconds = (time: string): number => {
+      const [minutes, seconds] = time.split(':').map(Number);
+      return (minutes * 60) + seconds;
+  };
+
+  const handleCustomClipSubmit = (values: z.infer<typeof customClipSchema>) => {
+      const startTime = parseTimeToSeconds(values.startTime);
+      const endTime = parseTimeToSeconds(values.endTime);
+
+      if (startTime >= endTime) {
+          toast({ variant: "destructive", title: "Invalid Time", description: "Start time must be before end time." });
+          return;
+      }
+      if (endTime > videoDuration) {
+          toast({ variant: "destructive", title: "Invalid Time", description: `End time cannot exceed video duration (${formatTime(videoDuration)}).` });
+          return;
+      }
+      
+      const newClip: Clip = {
+        startTime,
+        endTime,
+        stepName: `Custom Clip ${clips.length + 1} (${values.startTime} - ${values.endTime})`,
+      };
+
+      setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
+      customClipForm.reset({startTime: "00:00", endTime: "00:00"});
+  };
+
+  const segmentVideo = (segmentDuration: number) => {
+    if (!videoDuration) return;
+    const newClips: Clip[] = [];
+    for (let i = 0; i < videoDuration; i += segmentDuration) {
+      const startTime = i;
+      const endTime = Math.min(i + segmentDuration, videoDuration);
+      newClips.push({
+        startTime,
+        endTime,
+        stepName: `Segment ${formatTime(startTime)} - ${formatTime(endTime)}`
+      });
+    }
+    setClips(newClips);
   };
 
   useEffect(() => {
@@ -188,12 +214,12 @@ export default function Home() {
   }, [playbackSpeed, player, isPlaying]);
 
   useEffect(() => {
-    if (analysis) {
+    if (videoId) {
       setTimeout(() => {
         resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
     }
-  }, [analysis]);
+  }, [videoId]);
 
   const formatTime = (seconds: number) => {
     return new Date(seconds * 1000).toISOString().substr(14, 5)
@@ -221,10 +247,10 @@ export default function Home() {
                 <div className="space-y-1.5">
                   <CardTitle className="flex items-center gap-2">
                     <Bot />
-                    Analyze a Dance Video
+                    Load a Dance Video
                   </CardTitle>
                   <CardDescription>
-                    Enter a YouTube URL and select the dance style to begin the analysis.
+                    Enter a YouTube URL to begin.
                   </CardDescription>
                 </div>
                 <Button variant="ghost" size="sm" className="w-9 p-0">
@@ -240,10 +266,10 @@ export default function Home() {
             </CollapsibleTrigger>
           <CollapsibleContent>
             <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <Form {...urlForm}>
+                <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
                   <FormField
-                    control={form.control}
+                    control={urlForm.control}
                     name="youtubeUrl"
                     render={({ field }) => (
                       <FormItem>
@@ -255,40 +281,14 @@ export default function Home() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="danceStyle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Dance Style</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a dance style" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="latin">Latin</SelectItem>
-                            <SelectItem value="hip-hop">Hip Hop</SelectItem>
-                            <SelectItem value="ballet">Ballet</SelectItem>
-                            <SelectItem value="jazz">Jazz</SelectItem>
-                            <SelectItem value="tap">Tap</SelectItem>
-                            <SelectItem value="contemporary">Contemporary</SelectItem>
-                            <SelectItem value="other">Other / Not Sure</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
+                        Loading...
                       </>
                     ) : (
-                      "Process Video"
+                      "Load Video"
                     )}
                   </Button>
                 </form>
@@ -297,102 +297,151 @@ export default function Home() {
           </CollapsibleContent>
         </Card>
       </Collapsible>
-
+      
       {isLoading && (
-        <div className="mt-12 max-w-2xl mx-auto text-center">
-            <p className="text-muted-foreground mb-2">Analyzing... please wait.</p>
-            <Progress value={progress} className="w-full" />
+         <div className="mt-12 max-w-2xl mx-auto text-center">
+            <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-muted-foreground mt-2">Loading video...</p>
         </div>
       )}
 
-      {analysis && (
+      {videoId && (
         <div ref={resultsRef} className="mt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <div className="lg:col-span-3">
-              <Card className="shadow-lg h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Film />
-                    Original Video
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="aspect-video">
-                    <YouTube
-                      videoId={analysis.videoId}
-                      className="w-full h-full"
-                      iframeClassName="w-full h-full rounded-md"
-                      onReady={onPlayerReady}
-                      onStateChange={onPlayerStateChange}
-                      opts={{
-                        playerVars: {
-                          controls: 1,
-                          modestbranding: 1,
-                          rel: 0,
-                        },
-                      }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-          </div>
-          
+            <Card className="shadow-lg h-full lg:col-span-3">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Film />
+                  Original Video
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-video">
+                  <YouTube
+                    videoId={videoId}
+                    className="w-full h-full"
+                    iframeClassName="w-full h-full rounded-md"
+                    onReady={onPlayerReady}
+                    onStateChange={onPlayerStateChange}
+                    opts={{
+                      playerVars: {
+                        controls: 1,
+                        modestbranding: 1,
+                        rel: 0,
+                      },
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+        </div>
+      )}
+
+      {player && videoDuration > 0 && (
           <div className="mt-8">
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle>Dance Step Timeline</CardTitle>
-                <CardDescription>Click a step to play its segment. Adjust speed and looping below.</CardDescription>
-                <div className="pt-4 flex items-center gap-6">
-                  <div className="flex-1">
-                    <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
-                    <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
-                      <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="0.25">0.25x</TabsTrigger>
-                        <TabsTrigger value="0.5">0.5x</TabsTrigger>
-                        <TabsTrigger value="0.75">0.75x</TabsTrigger>
-                        <TabsTrigger value="1">1x</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
-                  <div className="flex flex-col items-center pt-1">
-                     <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
-                    <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
+                <CardTitle>Create Practice Clips</CardTitle>
+                <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label className="font-semibold">Auto-Segment Video</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    <Button variant="outline" onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
+                    <Button variant="outline" onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
+                    <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px]">
-                  <Accordion type="single" collapsible className="w-full">
-                    {analysis.danceSteps.map((step, index) => (
-                      <AccordionItem value={`item-${index}`} key={index}>
-                        <AccordionTrigger className="pr-4">
-                          <div className="flex items-center justify-between w-full">
-                            <span>{step.stepName}</span>
-                            <span className="text-muted-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md">
-                              {formatTime(step.startTime)} - {formatTime(step.endTime)}
-                            </span>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                           <div className="flex items-center gap-4">
-                            <Button onClick={() => handleClipPlayback(step.startTime, step.endTime)}>
-                              <Play className="mr-2 h-4 w-4" /> Play Clip
-                            </Button>
-                            <p className="text-base leading-relaxed">
-                              {step.description || "No description available."}
-                            </p>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </ScrollArea>
+                <div>
+                    <Label className="font-semibold">Create Custom Clip</Label>
+                    <Form {...customClipForm}>
+                        <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
+                            <FormField
+                                control={customClipForm.control}
+                                name="startTime"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Start</FormLabel>
+                                    <FormControl>
+                                    <Input placeholder="MM:SS" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                             <ChevronsRight className="h-6 w-6 mb-2" />
+                            <FormField
+                                control={customClipForm.control}
+                                name="endTime"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>End</FormLabel>
+                                    <FormControl>
+                                    <Input placeholder="MM:SS" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
+                            <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
+                        </form>
+                    </Form>
+                </div>
               </CardContent>
             </Card>
           </div>
+        )}
+          
+      {clips.length > 0 && (
+        <div className="mt-8">
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle>Your Practice Clips</CardTitle>
+              <CardDescription>Click a clip to play it. Adjust speed and looping below.</CardDescription>
+              <div className="pt-4 flex items-center gap-6">
+                <div className="flex-1">
+                  <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
+                  <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="0.25">0.25x</TabsTrigger>
+                      <TabsTrigger value="0.5">0.5x</TabsTrigger>
+                      <TabsTrigger value="0.75">0.75x</TabsTrigger>
+                      <TabsTrigger value="1">1x</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+                <div className="flex flex-col items-center pt-1">
+                    <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
+                  <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[400px]">
+                <Accordion type="single" collapsible className="w-full">
+                  {clips.map((step, index) => (
+                    <AccordionItem value={`item-${index}`} key={index}>
+                      <AccordionTrigger className="pr-4">
+                        <div className="flex items-center justify-between w-full">
+                          <span>{step.stepName}</span>
+                          <span className="text-muted-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md">
+                            {formatTime(step.startTime)} - {formatTime(step.endTime)}
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                          <div className="flex items-center gap-4">
+                          <Button onClick={() => handleClipPlayback(step.startTime, step.endTime)}>
+                            <Play className="mr-2 h-4 w-4" /> Play Clip
+                          </Button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </ScrollArea>
+            </CardContent>
+          </Card>
         </div>
       )}
 
