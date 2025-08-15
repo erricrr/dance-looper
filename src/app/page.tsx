@@ -10,13 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight, ArrowUpDown } from "lucide-react";
+import { Loader2, Film, Video, Play, ChevronDown, Plus, ChevronsRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -53,7 +52,6 @@ export default function Home() {
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
-  const [componentOrder, setComponentOrder] = useState<('create' | 'practice')[]>(['create', 'practice']);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -234,142 +232,137 @@ export default function Home() {
     }
   }, [videoId]);
   
-  const toggleOrder = () => {
-    setComponentOrder(prev => [...prev].reverse());
-  }
-
   const formatTime = (seconds: number) => {
     if (isNaN(seconds) || seconds < 0) return "00:00";
     return new Date(seconds * 1000).toISOString().substr(14, 5)
   }
 
-  const sections = {
-    create: (
-      <div className="mt-8 lg:mt-0" key="create">
-        <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen}>
-          <Card className="shadow-lg">
-            <CollapsibleTrigger asChild>
-              <div className="flex justify-between items-center p-6 cursor-pointer">
-                <div className="text-left">
-                  <CardTitle>Create Practice Clips</CardTitle>
-                  <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
-                </div>
-                 <Button variant="ghost" size="sm" className="w-9 p-0">
-                    <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isCreateClipsOpen && "rotate-180")} />
-                    <span className="sr-only">Toggle</span>
-                  </Button>
+  const createClipsSection = (
+    <div className="mt-8" key="create">
+      <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen}>
+        <Card className="shadow-lg">
+          <CollapsibleTrigger asChild>
+            <div className="flex justify-between items-center p-6 cursor-pointer">
+              <div className="text-left">
+                <CardTitle>Create Practice Clips</CardTitle>
+                <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
               </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label className="font-semibold">Auto-Segment Video</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    <Button variant="outline" onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
-                    <Button variant="outline" onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
-                    <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
-                  </div>
-                </div>
-                <div>
-                    <Label className="font-semibold">Create Custom Clip</Label>
-                    <Form {...customClipForm}>
-                        <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
-                            <FormField
-                                control={customClipForm.control}
-                                name="startTime"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Start</FormLabel>
-                                    <FormControl>
-                                    <Input placeholder="MM:SS" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                             <ChevronsRight className="h-6 w-6 mb-2" />
-                            <FormField
-                                control={customClipForm.control}
-                                name="endTime"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>End</FormLabel>
-                                    <FormControl>
-                                    <Input placeholder="MM:SS" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                            <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
-                        </form>
-                    </Form>
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
-      </div>
-    ),
-    practice: clips.length > 0 && (
-      <div className="mt-8 lg:mt-0" key="practice" ref={practiceClipsRef}>
-        <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
-          <Card className="shadow-lg">
-            <CollapsibleTrigger asChild>
-               <div className="flex justify-between items-center p-6 cursor-pointer">
-                 <div className="text-left">
-                  <CardTitle>Your Practice Clips</CardTitle>
-                  <CardDescription>Click a clip to play it. Adjust speed and looping below.</CardDescription>
-                 </div>
-                 <Button variant="ghost" size="sm" className="w-9 p-0">
-                  <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
+               <Button variant="ghost" size="sm" className="w-9 p-0">
+                  <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isCreateClipsOpen && "rotate-180")} />
                   <span className="sr-only">Toggle</span>
                 </Button>
-               </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="px-6 pb-6">
-                <div className="pt-4 flex items-center gap-6">
-                  <div className="flex-1">
-                    <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
-                    <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
-                      <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="0.25">0.25x</TabsTrigger>
-                        <TabsTrigger value="0.5">0.5x</TabsTrigger>
-                        <TabsTrigger value="0.75">0.75x</TabsTrigger>
-                        <TabsTrigger value="1">1x</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
-                  <div className="flex flex-col items-center pt-1">
-                      <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
-                    <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
-                  </div>
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="space-y-6">
+              <div>
+                <Label className="font-semibold">Auto-Segment Video</Label>
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                  <Button variant="outline" onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
+                  <Button variant="outline" onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
+                  <Button variant="outline" onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
                 </div>
               </div>
-              <CardContent>
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-2">
-                    {clips.map((clip, index) => (
-                      <div key={index} className="flex items-center justify-between rounded-lg border p-3">
-                        <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
-                          {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
-                        </span>
-                        <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm">
-                          <Play className="mr-2 h-4 w-4" />
-                          Play Clip
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
-      </div>
-    ),
-  };
+              <div>
+                  <Label className="font-semibold">Create Custom Clip</Label>
+                  <Form {...customClipForm}>
+                      <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
+                          <FormField
+                              control={customClipForm.control}
+                              name="startTime"
+                              render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel>Start</FormLabel>
+                                  <FormControl>
+                                  <Input placeholder="MM:SS" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                              )}
+                          />
+                           <ChevronsRight className="h-6 w-6 mb-2" />
+                          <FormField
+                              control={customClipForm.control}
+                              name="endTime"
+                              render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel>End</FormLabel>
+                                  <FormControl>
+                                  <Input placeholder="MM:SS" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                              )}
+                          />
+                          <Button type="submit" size="icon" className="mb-1"><Plus/></Button>
+                      </form>
+                  </Form>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+    </div>
+  );
+
+  const practiceClipsSection = clips.length > 0 && (
+    <div className="mt-8" key="practice" ref={practiceClipsRef}>
+      <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
+        <Card className="shadow-lg">
+          <CollapsibleTrigger asChild>
+             <div className="flex justify-between items-center p-6 cursor-pointer">
+               <div className="text-left">
+                <CardTitle>Your Practice Clips</CardTitle>
+                <CardDescription>Click a clip to play it. Adjust speed and looping below.</CardDescription>
+               </div>
+               <Button variant="ghost" size="sm" className="w-9 p-0">
+                <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
+                <span className="sr-only">Toggle</span>
+              </Button>
+             </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="px-6 pb-6">
+              <div className="pt-4 flex items-center gap-6">
+                <div className="flex-1">
+                  <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
+                  <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="0.25">0.25x</TabsTrigger>
+                      <TabsTrigger value="0.5">0.5x</TabsTrigger>
+                      <TabsTrigger value="0.75">0.75x</TabsTrigger>
+                      <TabsTrigger value="1">1x</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+                <div className="flex flex-col items-center pt-1">
+                    <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
+                  <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
+                </div>
+              </div>
+            </div>
+            <CardContent>
+              <ScrollArea className="h-[400px]">
+                <div className="space-y-2">
+                  {clips.map((clip, index) => (
+                    <div key={index} className="flex items-center justify-between rounded-lg border p-3">
+                      <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
+                        {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
+                      </span>
+                      <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm">
+                        <Play className="mr-2 h-4 w-4" />
+                        Play Clip
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+    </div>
+  );
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
@@ -452,50 +445,39 @@ export default function Home() {
       )}
 
       {videoId && (
-        <div ref={resultsRef} className="mt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
-            <div className="lg:col-span-2">
-              <Card className="shadow-lg h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Film />
-                    Original Video
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="aspect-video">
-                    <YouTube
-                      videoId={videoId}
-                      className="w-full h-full"
-                      iframeClassName="w-full h-full rounded-md"
-                      onReady={onPlayerReady}
-                      onStateChange={onPlayerStateChange}
-                      opts={{
-                        playerVars: {
-                          controls: 1,
-                          modestbranding: 1,
-                          rel: 0,
-                        },
-                      }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="lg:col-span-1">
-              {player && videoDuration > 0 && clips.length > 0 && (
-                <div className="mt-4 -mb-4 lg:mt-0 lg:mb-0 flex justify-end">
-                  <Button variant="ghost" onClick={toggleOrder}>
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    Switch Order
-                  </Button>
+        <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
+          {player && videoDuration > 0 && createClipsSection}
+          
+          <div className="mt-8">
+            <Card className="shadow-lg h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Film />
+                  Original Video
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-video">
+                  <YouTube
+                    videoId={videoId}
+                    className="w-full h-full"
+                    iframeClassName="w-full h-full rounded-md"
+                    onReady={onPlayerReady}
+                    onStateChange={onPlayerStateChange}
+                    opts={{
+                      playerVars: {
+                        controls: 1,
+                        modestbranding: 1,
+                        rel: 0,
+                      },
+                    }}
+                  />
                 </div>
-              )}
-              
-              {player && videoDuration > 0 && componentOrder.map(key => sections[key])}
-            </div>
+              </CardContent>
+            </Card>
           </div>
+          
+          {player && videoDuration > 0 && practiceClipsSection}
         </div>
       )}
           
