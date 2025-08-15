@@ -9,14 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Bot, Play, ChevronDown, scissors, Plus, ChevronsRight } from "lucide-react";
+import { Loader2, Film, Bot, Play, ChevronDown, Plus, ChevronsRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -418,27 +418,19 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[400px]">
-                <Accordion type="single" collapsible className="w-full">
-                  {clips.map((step, index) => (
-                    <AccordionItem value={`item-${index}`} key={index}>
-                      <AccordionTrigger className="pr-4">
-                        <div className="flex items-center justify-between w-full">
-                          <span>{step.stepName}</span>
-                          <span className="text-muted-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md">
-                            {formatTime(step.startTime)} - {formatTime(step.endTime)}
-                          </span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                          <div className="flex items-center gap-4">
-                          <Button onClick={() => handleClipPlayback(step.startTime, step.endTime)}>
-                            <Play className="mr-2 h-4 w-4" /> Play Clip
-                          </Button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
+                 <div className="space-y-2">
+                  {clips.map((clip, index) => (
+                    <div key={index} className="flex items-center justify-between rounded-lg border p-3">
+                       <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
+                        {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
+                      </span>
+                      <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm">
+                        <Play className="mr-2 h-4 w-4" />
+                        Play Clip
+                      </Button>
+                    </div>
                   ))}
-                </Accordion>
+                </div>
               </ScrollArea>
             </CardContent>
           </Card>
