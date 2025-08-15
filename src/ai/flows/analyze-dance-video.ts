@@ -52,7 +52,7 @@ const analyzeDanceVideoPrompt = ai.definePrompt({
   output: {schema: AnalyzeDanceVideoOutputSchema},
   prompt: `You are an AI dance instructor specializing in {{danceStyle}}, powered by the Gemini 2.0 Flash model. Your task is to analyze the dance video at the following URL: {{{videoUrl}}}.
 
-  Your goal is to break down the choreography into logical, easy-to-learn segments for a beginner learning at home. Instead of a rigid count, watch the footwork and identify natural start and end points for each combination or phrase.
+  Your goal is to break down the choreography into logical, easy-to-learn segments for a beginner learning at home. To do this, you MUST FOCUS EXCLUSIVELY ON THE DANCER'S LEGS AND FEET. Ignore all arm, head, and torso movements.
   
   For each segment you identify, you need to provide:
   1. A descriptive name for the steps in that segment.
