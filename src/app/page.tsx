@@ -463,25 +463,23 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <CollapsibleTrigger asChild>
-                <button className="w-full">
-                  <div className="flex justify-between items-center p-6" role="button">
-                      <div className="p-0 text-left flex items-center gap-2">
-                          <Video />
-                          <div className="flex flex-col">
-                            <CardTitle>
-                                Load a Dance Video
-                            </CardTitle>
-                            {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
-                          </div>
-                      </div>
-                      <div className="p-0">
-                          <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                          <span className="sr-only">Toggle</span>
-                      </div>
-                  </div>
-                </button>
-            </CollapsibleTrigger>
+            <div className="flex justify-between items-center p-6" role="button">
+                <div className="p-0 text-left flex items-center gap-2">
+                    <Video />
+                    <div className="flex flex-col h-[2.75rem] justify-center">
+                      <CardTitle>
+                          Load a Dance Video
+                      </CardTitle>
+                      <CardDescription className={cn("pt-1.5", isFormOpen && "hidden")}>Click to change video</CardDescription>
+                    </div>
+                </div>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
+                    <span className="sr-only">Toggle</span>
+                  </Button>
+                </CollapsibleTrigger>
+            </div>
             <CollapsibleContent>
               <CardContent className="p-6 pt-0">
                 <Form {...urlForm}>
