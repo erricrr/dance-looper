@@ -95,21 +95,22 @@ export default function Home() {
         toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid YouTube URL to save." });
         return;
       }
-      
+      if (savedUrls.length >= MAX_SAVED_URLS) {
+        toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
+        return;
+      }
+      if (savedUrls.includes(urlToSave)) {
+        toast({ title: "Already Saved", description: "This video is already in your saved list." });
+        return;
+      }
+
       setSavedUrls(prevUrls => {
-        if (prevUrls.length >= MAX_SAVED_URLS) {
-          toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
-          return prevUrls;
-        }
-        if (prevUrls.includes(urlToSave)) {
-          toast({ title: "Already Saved", description: "This video is already in your saved list." });
-          return prevUrls;
-        }
         const newUrls = [urlToSave, ...prevUrls];
         localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-        toast({ title: "Video Saved!", description: "It has been added to your saved list." });
         return newUrls;
       });
+      toast({ title: "Video Saved!", description: "It has been added to your saved list." });
+
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "Could not save the URL."});
       console.error("Failed to save URL to localStorage", error);
@@ -482,25 +483,23 @@ export default function Home() {
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-             <div className="p-6 pb-0" role="button">
-                <CollapsibleTrigger asChild>
-                    <div className="flex justify-between items-center cursor-pointer">
-                        <CardHeader className="p-0">
-                            <CardTitle className="flex items-center gap-2">
-                                <Video />
-                                Load a Dance Video
-                            </CardTitle>
-                            {!isFormOpen && <CardDescription className="pt-1.5">Click to change video</CardDescription>}
-                        </CardHeader>
-                        <Button variant="ghost" size="sm" className="w-9 p-0">
-                            <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                            <span className="sr-only">Toggle</span>
-                        </Button>
-                    </div>
-                </CollapsibleTrigger>
-            </div>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex justify-between items-center p-6" role="button">
+                  <CardHeader className="p-0">
+                      <CardTitle className="flex items-center gap-2">
+                          <Video />
+                          Load a Dance Video
+                      </CardTitle>
+                      {!isFormOpen && <CardDescription className="pt-1.5 text-left">Click to change video</CardDescription>}
+                  </CardHeader>
+                  <Button variant="ghost" size="sm" className="w-9 p-0">
+                      <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
+                      <span className="sr-only">Toggle</span>
+                  </Button>
+              </div>
+            </CollapsibleTrigger>
             <CollapsibleContent>
-              <CardContent className="p-6 pt-4">
+              <CardContent className="p-6 pt-0">
                 <Form {...urlForm}>
                   <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
                     <FormField
