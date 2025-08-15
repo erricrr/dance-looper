@@ -49,6 +49,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(0.5);
   const [isLooping, setIsLooping] = useState(false);
+  const [isMirrored, setIsMirrored] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
   const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
@@ -335,7 +336,7 @@ export default function Home() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="px-6 pb-6">
-              <div className="pt-4 flex items-center gap-6">
+              <div className="pt-4 flex items-center gap-6 justify-between">
                 <div className="flex-1">
                   <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
                   <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
@@ -346,6 +347,10 @@ export default function Home() {
                       <TabsTrigger value="1">1x</TabsTrigger>
                     </TabsList>
                   </Tabs>
+                </div>
+                 <div className="flex flex-col items-center pt-1">
+                    <Label htmlFor="mirror-switch" className="mb-2 block text-sm font-medium">Mirror Video</Label>
+                    <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
                 </div>
                 <div className="flex flex-col items-center pt-1">
                     <Label htmlFor="loop-switch" className="mb-2 block text-sm font-medium">Loop Clip</Label>
@@ -469,7 +474,7 @@ export default function Home() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="aspect-video relative bg-muted rounded-md flex items-center justify-center">
+                <div className={cn("aspect-video relative bg-muted rounded-md flex items-center justify-center transition-transform duration-300", isMirrored && "scale-x-[-1]")}>
                   {isPlayerLoading && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                       <Loader2 className="h-8 w-8 animate-spin" />
