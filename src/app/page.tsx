@@ -238,7 +238,7 @@ export default function Home() {
       <div className="mt-8" key="create">
         <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen}>
           <Card className="shadow-lg">
-            <CollapsibleTrigger className="w-full">
+            <CollapsibleTrigger asChild>
               <div className="flex justify-between items-center p-6 cursor-pointer">
                 <div className="text-left">
                   <CardTitle>Create Practice Clips</CardTitle>
@@ -305,7 +305,7 @@ export default function Home() {
       <div className="mt-8" key="practice">
         <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
           <Card className="shadow-lg">
-            <CollapsibleTrigger className="w-full">
+            <CollapsibleTrigger asChild>
                <div className="flex justify-between items-center p-6 cursor-pointer">
                  <div className="text-left">
                   <CardTitle>Your Practice Clips</CardTitle>
