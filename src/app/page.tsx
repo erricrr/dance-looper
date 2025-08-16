@@ -6,42 +6,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import YouTube, { YouTubePlayer } from 'react-youtube';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Film, Play, ChevronDown, Plus, ChevronsRight, Info, Trash2, Bookmark } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-
-const formSchema = z.object({
-  youtubeUrl: z.string().url({ message: "Please enter a valid YouTube URL." })
-    .refine(url => url.includes("youtube.com") || url.includes("youtu.be"), {
-      message: "Please enter a valid YouTube URL.",
-    }),
-});
-
-const customClipSchema = z.object({
-  startTime: z.string().refine(val => /^\d{1,2}:\d{2}$/.test(val), { message: "Use MM:SS" }),
-  endTime: z.string().refine(val => /^\d{1,2}:\d{2}$/.test(val), { message: "Use MM:SS" }),
-});
-
-
-type Clip = {
-  startTime: number;
-  endTime: number;
-  isCustom?: boolean;
-};
-
-type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
-
-const MAX_SAVED_URLS = 5;
+import { Loader2 } from "lucide-react";
+import { Clip, PlaybackSpeed, formSchema } from "@/lib/types";
+import { getYoutubeVideoId } from "@/lib/utils";
+import { UrlForm } from "@/components/looper/UrlForm";
+import { ClipCreator } from "@/components/looper/ClipCreator";
+import { VideoPlayer } from "@/components/looper/VideoPlayer";
+import { PracticeClips } from "@/components/looper/PracticeClips";
 
 export default function Home() {
   const [isUrlLoading, setIsUrlLoading] = useState(false);
@@ -56,12 +28,7 @@ export default function Home() {
   const [isLooping, setIsLooping] = useState(false);
   const [isMirrored, setIsMirrored] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
-  const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
-  const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
-  const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
-  const [isSavedVideosOpen, setIsSavedVideosOpen] = useState(false);
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
-  const [selectedSegment, setSelectedSegment] = useState<number | null>(null);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -72,11 +39,6 @@ export default function Home() {
   const urlForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { youtubeUrl: "" },
-  });
-
-  const customClipForm = useForm<z.infer<typeof customClipSchema>>({
-    resolver: zodResolver(customClipSchema),
-    defaultValues: { startTime: "00:00", endTime: "00:00" },
   });
 
   useEffect(() => {
@@ -90,67 +52,6 @@ export default function Home() {
     }
   }, []);
 
-  const saveUrl = () => {
-    const urlToSave = urlForm.getValues("youtubeUrl");
-    if (!urlToSave || getYoutubeVideoId(urlToSave) === null) {
-        toast({ variant: "destructive", title: "Invalid URL", description: "Please enter a valid YouTube URL to save." });
-        return;
-    }
-    if (savedUrls.includes(urlToSave)) {
-        toast({ title: "Already Saved", description: "This link is already in your saved list." });
-        return;
-    }
-    if (savedUrls.length >= MAX_SAVED_URLS) {
-        toast({ variant: "destructive", title: "Saved list is full", description: `You can only save up to ${MAX_SAVED_URLS} videos. Please remove one to add another.` });
-        return;
-    }
-
-    try {
-      const newUrls = [urlToSave, ...savedUrls];
-      setSavedUrls(newUrls);
-      localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-      toast({ title: "Link Saved!", description: "It has been added to your saved list." });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Could not save the URL."});
-      console.error("Failed to save URL to localStorage", error);
-    }
-  };
-
-
-  const removeUrl = (urlToRemove: string) => {
-    try {
-      const newUrls = savedUrls.filter(url => url !== urlToRemove);
-      setSavedUrls(newUrls);
-      localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-      toast({ title: "Video removed from saved list." });
-    } catch (error) {
-      console.error("Failed to remove URL from localStorage", error);
-    }
-  };
-
-  const getYoutubeVideoId = (url: string): string | null => {
-    let videoId: string | null = null;
-    try {
-      const urlObj = new URL(url);
-      if (urlObj.hostname === 'youtu.be') {
-        videoId = urlObj.pathname.slice(1);
-      } else if (urlObj.hostname.includes('youtube.com')) {
-        if (urlObj.pathname === '/watch') {
-          videoId = urlObj.searchParams.get('v');
-        } else if (urlObj.pathname.startsWith('/embed/')) {
-          videoId = urlObj.pathname.split('/embed/')[1];
-        } else if (urlObj.pathname.startsWith('/v/')) {
-          videoId = urlObj.pathname.split('/v/')[1];
-        } else if (urlObj.pathname.startsWith('/shorts/')) {
-          videoId = urlObj.pathname.split('/shorts/')[1];
-        }
-      }
-    } catch (e) {
-      return null;
-    }
-    return videoId;
-  };
-
   const onUrlSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsUrlLoading(true);
     setIsPlayerLoading(true);
@@ -158,7 +59,6 @@ export default function Home() {
     setVideoId(null);
     setVideoDuration(0);
     setCurrentClip(null);
-    setSelectedSegment(null);
     if(player) player.stopVideo();
 
     const extractedVideoId = getYoutubeVideoId(values.youtubeUrl);
@@ -172,7 +72,6 @@ export default function Home() {
       return;
     }
     setVideoId(extractedVideoId);
-    // The video player will be rendered, and its onReady event will handle the rest.
   };
 
   const loadSavedUrl = (url: string) => {
@@ -208,75 +107,6 @@ export default function Home() {
   const onPlayerStateChange = (event: { data: number }) => {
     const isNowPlaying = event.data === YouTube.PlayerState.PLAYING;
     setIsPlaying(isNowPlaying);
-  };
-
-  const parseTimeToSeconds = (time: string): number => {
-      const [minutes, seconds] = time.split(':').map(Number);
-      return (minutes * 60) + seconds;
-  };
-
-  const scrollToPracticeClips = () => {
-    setIsPracticeClipsOpen(true);
-    setTimeout(() => {
-        practiceClipsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 100);
-  }
-
-  const handleCustomClipSubmit = (values: z.infer<typeof customClipSchema>) => {
-      const startTime = parseTimeToSeconds(values.startTime);
-      const endTime = parseTimeToSeconds(values.endTime);
-
-      if (startTime >= endTime) {
-          toast({ variant: "destructive", title: "Invalid Time", description: "Start time must be before end time." });
-          return;
-      }
-      if (endTime > videoDuration) {
-          toast({ variant: "destructive", title: "Invalid Time", description: `End time cannot exceed video duration (${formatTime(videoDuration)}).` });
-          return;
-      }
-
-      const newClip: Clip = {
-        startTime,
-        endTime,
-        isCustom: true,
-      };
-
-      setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
-      customClipForm.reset({startTime: "00:00", endTime: "00:00"});
-      scrollToPracticeClips();
-  };
-
-  const segmentVideo = (segmentDuration: number) => {
-    if (!videoDuration) return;
-
-    // If the same segment is already selected, remove auto-segmented clips and keep only custom clips
-    if (selectedSegment === segmentDuration) {
-      const customClips = clips.filter(clip => clip.isCustom);
-      setClips(customClips);
-      setSelectedSegment(null);
-      return;
-    }
-
-    setSelectedSegment(segmentDuration);
-
-    // Keep existing custom clips and add new auto-segmented clips
-    const customClips = clips.filter(clip => clip.isCustom);
-    const newAutoClips: Clip[] = [];
-
-    for (let i = 0; i < videoDuration; i += segmentDuration) {
-      const startTime = i;
-      const endTime = Math.min(i + segmentDuration, videoDuration);
-      newAutoClips.push({
-        startTime,
-        endTime,
-        isCustom: false,
-      });
-    }
-
-    // Combine custom clips with new auto-segmented clips and sort by start time
-    const allClips = [...customClips, ...newAutoClips].sort((a, b) => a.startTime - b.startTime);
-    setClips(allClips);
-    scrollToPracticeClips();
   };
 
   useEffect(() => {
@@ -318,159 +148,6 @@ export default function Home() {
     }
   }, [videoId]);
 
-  const formatTime = (seconds: number) => {
-    if (isNaN(seconds) || seconds < 0) return "00:00";
-    return new Date(seconds * 1000).toISOString().substr(14, 5)
-  }
-
-  const createClipsSection = (
-    <div className="mt-8" key="create">
-      <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen} disabled={!player || !videoDuration || isPlayerLoading}>
-        <Card className="shadow-lg">
-          <CollapsibleTrigger asChild>
-            <div className="flex justify-between items-center p-6 cursor-pointer">
-              <div className="text-left">
-                <CardTitle>Create Clips</CardTitle>
-                <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
-              </div>
-               <Button variant="ghost" size="sm" className="w-9 p-0">
-                  <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isCreateClipsOpen && "rotate-180")} />
-                  <span className="sr-only">Toggle</span>
-                </Button>
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-6 pt-2">
-              <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
-                <div>
-                  <Label className="font-semibold">Auto-Segment Video</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    <Button variant={selectedSegment === 3 ? "mystic" : "outline"} onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
-                    <Button variant={selectedSegment === 5 ? "mystic" : "outline"} onClick={() => segmentVideo(5)}>Every 5 Secs</Button>
-                    <Button variant={selectedSegment === 10 ? "mystic" : "outline"} onClick={() => segmentVideo(10)}>Every 10 Secs</Button>
-                  </div>
-                </div>
-                <Collapsible open={isCustomClipOpen} onOpenChange={setIsCustomClipOpen}>
-                    <CollapsibleTrigger className="w-full">
-                        <div className="flex items-center gap-2 text-sm font-semibold pt-4">
-                            <Plus className={cn("h-4 w-4 transition-transform duration-200", isCustomClipOpen && "rotate-45")} />
-                            Create Custom Clip
-                        </div>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4">
-                      <Form {...customClipForm}>
-                          <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 mt-2">
-                              <FormField
-                                  control={customClipForm.control}
-                                  name="startTime"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Start</FormLabel>
-                                      <FormControl>
-                                      <Input placeholder="MM:SS" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                              <ChevronsRight className="h-6 w-6 mb-2" />
-                              <FormField
-                                  control={customClipForm.control}
-                                  name="endTime"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>End</FormLabel>
-                                      <FormControl>
-                                      <Input placeholder="MM:SS" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                              <Button type="submit" variant="mystic" size="icon" className="mb-1"><Plus/></Button>
-                          </form>
-                      </Form>
-                    </CollapsibleContent>
-                </Collapsible>
-              </fieldset>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
-    </div>
-  );
-
-  const practiceClipsSection = clips.length > 0 ? (
-    <div className="mt-8" key="practice" ref={practiceClipsRef}>
-      <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
-        <Card className="shadow-lg">
-          <CollapsibleTrigger asChild>
-             <div className="flex justify-between items-center p-6 cursor-pointer">
-               <div className="text-left">
-                <CardTitle>Your Clips</CardTitle>
-                <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
-               </div>
-               <Button variant="ghost" size="sm" className="w-9 p-0">
-                <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
-                <span className="sr-only">Toggle</span>
-              </Button>
-             </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="px-6 pb-6 pt-0">
-              <div className="pt-4 flex items-center gap-6 justify-between">
-                <div className="flex-1">
-                  <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
-                  <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
-                      <TabsTrigger value="0.25">0.25x</TabsTrigger>
-                      <TabsTrigger value="0.5">0.5x</TabsTrigger>
-                      <TabsTrigger value="0.75">0.75x</TabsTrigger>
-                      <TabsTrigger value="1">1x</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-                <div className="flex flex-col items-center pt-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Label htmlFor="loop-switch" className="block text-sm font-medium">Loop</Label>
-                       <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Repeats the clip automatically until you stop it.</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                    </div>
-                  <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
-                </div>
-              </div>
-            </div>
-            <CardContent>
-              <ScrollArea className="h-[400px]">
-                <div className="space-y-2">
-                  {clips.map((clip, index) => (
-                    <div key={index} className="flex items-center justify-between rounded-lg border p-3">
-                      <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
-                        {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
-                      </span>
-                      <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm" variant="mystic">
-                        <Play className="mr-2 h-4 w-4" />
-                        Play Clip
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
-    </div>
-  ) : null;
-
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
       <header className="text-center mb-12">
@@ -482,106 +159,15 @@ export default function Home() {
         </p>
       </header>
 
-       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-lg">
-          <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <CollapsibleTrigger asChild>
-                <button className="w-full p-6">
-                    <div className="flex justify-between items-center">
-                        <div className="text-left flex items-center gap-4">
-                          <div>
-                              <CardTitle>Paste a YouTube Link</CardTitle>
-                              <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or pick from your saved links (if you have any)</CardDescription>
-                              <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
-                          </div>
-                        </div>
-                        <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                    </div>
-                </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="p-6 pt-0">
-                <Form {...urlForm}>
-                  <form onSubmit={urlForm.handleSubmit(onUrlSubmit)} className="space-y-4">
-                    <FormField
-                      control={urlForm.control}
-                      name="youtubeUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>YouTube Link</FormLabel>
-                          <div className="flex gap-2">
-                             <FormControl>
-                                <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
-                             </FormControl>
-                             <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={saveUrl}
-                                            disabled={!urlForm.formState.isValid || isUrlLoading}
-                                            aria-label="Save video for later"
-                                        >
-                                            <Bookmark/>
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Save video for later</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                             </TooltipProvider>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" variant="mystic" className="w-full" disabled={isUrlLoading}>
-                      {isUrlLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Loading...
-                        </>
-                      ) : (
-                        "Load Video"
-                      )}
-                    </Button>
-                  </form>
-                </Form>
-                {savedUrls.length > 0 && (
-                   <Collapsible open={isSavedVideosOpen} onOpenChange={setIsSavedVideosOpen} className="mt-6">
-                        <CollapsibleTrigger className="w-full">
-                          <div className="flex items-center gap-2 text-sm font-semibold">
-                              <Bookmark className="h-4 w-4" />
-                              Saved Links ({savedUrls.length}/{MAX_SAVED_URLS})
-                              <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
-                          </div>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="pt-4">
-                        <ScrollArea className="h-40 rounded-md border">
-                          <div className="p-4 space-y-2">
-                            {savedUrls.map(url => (
-                              <div key={url} className="flex items-center justify-between gap-2 p-2 rounded-md hover:bg-muted">
-                                <span className="text-sm text-muted-foreground truncate flex-1" title={url}>{url}</span>
-                                <div className="flex gap-2">
-                                  <Button size="sm" variant="outline" onClick={() => loadSavedUrl(url)}>Load</Button>
-                                  <Button size="icon" variant="ghost" onClick={() => removeUrl(url)}>
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </ScrollArea>
-                      </CollapsibleContent>
-                   </Collapsible>
-                )}
-              </CardContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </Card>
-      </div>
+      <UrlForm
+        isUrlLoading={isUrlLoading}
+        onUrlSubmit={onUrlSubmit}
+        savedUrls={savedUrls}
+        setSavedUrls={setSavedUrls}
+        loadSavedUrl={loadSavedUrl}
+        isFormOpen={isFormOpen}
+        setIsFormOpen={setIsFormOpen}
+      />
 
       {isUrlLoading && !videoId && (
          <div className="mt-12 max-w-2xl mx-auto text-center">
@@ -592,59 +178,34 @@ export default function Home() {
 
       {videoId && (
         <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
-          {createClipsSection}
+          <ClipCreator
+            player={player}
+            videoDuration={videoDuration}
+            isPlayerLoading={isPlayerLoading}
+            clips={clips}
+            setClips={setClips}
+            practiceClipsRef={practiceClipsRef}
+          />
 
-          <div className="mt-8" ref={videoPlayerRef}>
-            <Card className="shadow-lg h-full">
-              <CardHeader>
-                  <CardTitle>
-                    Video
-                  </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className={cn("aspect-video relative bg-muted rounded-md flex items-center justify-center transition-transform duration-300", isMirrored && "scale-x-[-1]")}>
-                  {isPlayerLoading && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                      <Loader2 className="h-8 w-8 animate-spin" />
-                      <p className="mt-2 text-sm">Initializing player...</p>
-                    </div>
-                  )}
-                  <YouTube
-                    videoId={videoId}
-                    className={cn("w-full h-full", isPlayerLoading && "invisible")}
-                    iframeClassName="w-full h-full rounded-md"
-                    onReady={onPlayerReady}
-                    onStateChange={onPlayerStateChange}
-                    opts={{
-                      playerVars: {
-                        controls: 1,
-                        modestbranding: 1,
-                        rel: 0,
-                      },
-                    }}
-                  />
-                </div>
-              </CardContent>
-              <CardFooter className="flex-row-reverse pt-6">
-                <div className="flex items-center gap-2">
-                    <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Flips the video horizontally to make it easier to follow along.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
-                </div>
-              </CardFooter>
-            </Card>
-          </div>
+          <VideoPlayer
+            videoId={videoId}
+            isPlayerLoading={isPlayerLoading}
+            isMirrored={isMirrored}
+            setIsMirrored={setIsMirrored}
+            onPlayerReady={onPlayerReady}
+            onPlayerStateChange={onPlayerStateChange}
+            videoPlayerRef={videoPlayerRef}
+          />
 
-          {practiceClipsSection}
+          <PracticeClips
+            clips={clips}
+            playbackSpeed={playbackSpeed}
+            setPlaybackSpeed={setPlaybackSpeed}
+            isLooping={isLooping}
+            setIsLooping={setIsLooping}
+            handleClipPlayback={handleClipPlayback}
+            practiceClipsRef={practiceClipsRef}
+          />
         </div>
       )}
 
