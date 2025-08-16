@@ -311,7 +311,7 @@ export default function Home() {
           <CollapsibleTrigger asChild>
             <div className="flex justify-between items-center p-6 cursor-pointer">
               <div className="text-left">
-                <CardTitle>Create Practice Clips</CardTitle>
+                <CardTitle>Create Clips</CardTitle>
                 <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
               </div>
                <Button variant="ghost" size="sm" className="w-9 p-0">
@@ -388,7 +388,7 @@ export default function Home() {
           <CollapsibleTrigger asChild>
              <div className="flex justify-between items-center p-6 cursor-pointer">
                <div className="text-left">
-                <CardTitle>Your Practice Clips</CardTitle>
+                <CardTitle>Your Clips</CardTitle>
                 <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
                </div>
                <Button variant="ghost" size="sm" className="w-9 p-0">
@@ -471,8 +471,8 @@ export default function Home() {
                     <div className="flex justify-between items-center">
                         <div className="text-left flex items-center gap-4">
                           <div>
-                              <CardTitle>Load a Dance Video</CardTitle>
-                              <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or select a saved one below.</CardDescription>
+                              <CardTitle>Paste a YouTube link</CardTitle>
+                              <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or pick from your saved links (if you have any)</CardDescription>
                               <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
                           </div>
                         </div>
@@ -535,7 +535,7 @@ export default function Home() {
                         <CollapsibleTrigger className="w-full">
                           <div className="flex items-center gap-2 text-sm font-semibold">
                               <Bookmark className="h-4 w-4" />
-                              Saved Videos ({savedUrls.length}/{MAX_SAVED_URLS})
+                              Saved Links ({savedUrls.length}/{MAX_SAVED_URLS})
                               <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
                           </div>
                       </CollapsibleTrigger>
@@ -630,8 +630,7 @@ export default function Home() {
       )}
 
       <footer className="text-center mt-16 text-muted-foreground text-sm">
-        <p>Built with Next.js and shadcn/ui.</p>
-        <p>dalooper &copy; {new Date().getFullYear()}</p>
+        <p>DALOOPER &copy; {new Date().getFullYear()}</p>
       </footer>
     </main>
   );

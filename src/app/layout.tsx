@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'dalooper',
+  title: 'DALOOPER',
   description: 'Turn YouTube into your personal tutor — one loop at a time.',
 };
 
