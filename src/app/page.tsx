@@ -36,6 +36,7 @@ const customClipSchema = z.object({
 type Clip = {
   startTime: number;
   endTime: number;
+  isCustom?: boolean;
 };
 
 type PlaybackSpeed = 0.25 | 0.5 | 0.75 | 1;
@@ -96,7 +97,7 @@ export default function Home() {
         return;
     }
     if (savedUrls.includes(urlToSave)) {
-        toast({ title: "Already Saved", description: "This video is already in your saved list." });
+        toast({ title: "Already Saved", description: "This link is already in your saved list." });
         return;
     }
     if (savedUrls.length >= MAX_SAVED_URLS) {
@@ -108,7 +109,7 @@ export default function Home() {
       const newUrls = [urlToSave, ...savedUrls];
       setSavedUrls(newUrls);
       localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-      toast({ title: "Video Saved!", description: "It has been added to your saved list." });
+      toast({ title: "Link Saved!", description: "It has been added to your saved list." });
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "Could not save the URL."});
       console.error("Failed to save URL to localStorage", error);
@@ -237,6 +238,7 @@ export default function Home() {
       const newClip: Clip = {
         startTime,
         endTime,
+        isCustom: true,
       };
 
       setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
@@ -246,17 +248,34 @@ export default function Home() {
 
   const segmentVideo = (segmentDuration: number) => {
     if (!videoDuration) return;
+
+    // If the same segment is already selected, remove auto-segmented clips and keep only custom clips
+    if (selectedSegment === segmentDuration) {
+      const customClips = clips.filter(clip => clip.isCustom);
+      setClips(customClips);
+      setSelectedSegment(null);
+      return;
+    }
+
     setSelectedSegment(segmentDuration);
-    const newClips: Clip[] = [];
+
+    // Keep existing custom clips and add new auto-segmented clips
+    const customClips = clips.filter(clip => clip.isCustom);
+    const newAutoClips: Clip[] = [];
+
     for (let i = 0; i < videoDuration; i += segmentDuration) {
       const startTime = i;
       const endTime = Math.min(i + segmentDuration, videoDuration);
-      newClips.push({
+      newAutoClips.push({
         startTime,
         endTime,
+        isCustom: false,
       });
     }
-    setClips(newClips);
+
+    // Combine custom clips with new auto-segmented clips and sort by start time
+    const allClips = [...customClips, ...newAutoClips].sort((a, b) => a.startTime - b.startTime);
+    setClips(allClips);
     scrollToPracticeClips();
   };
 
@@ -471,7 +490,7 @@ export default function Home() {
                     <div className="flex justify-between items-center">
                         <div className="text-left flex items-center gap-4">
                           <div>
-                              <CardTitle>Paste a YouTube link</CardTitle>
+                              <CardTitle>Paste a YouTube Link</CardTitle>
                               <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or pick from your saved links (if you have any)</CardDescription>
                               <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
                           </div>
@@ -489,7 +508,7 @@ export default function Home() {
                       name="youtubeUrl"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>YouTube URL</FormLabel>
+                          <FormLabel>YouTube Link</FormLabel>
                           <div className="flex gap-2">
                              <FormControl>
                                 <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
