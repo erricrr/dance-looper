@@ -220,6 +220,7 @@ export default function Home() {
             setIsLooping={setIsLooping}
             handleClipPlayback={handleClipPlayback}
             practiceClipsRef={practiceClipsRef}
+            setClips={setClips}
           />
         </div>
       )}
