@@ -72,7 +72,7 @@ export default function Home() {
     resolver: zodResolver(formSchema),
     defaultValues: { youtubeUrl: "" },
   });
-  
+
   const customClipForm = useForm<z.infer<typeof customClipSchema>>({
     resolver: zodResolver(customClipSchema),
     defaultValues: { startTime: "00:00", endTime: "00:00" },
@@ -178,7 +178,7 @@ export default function Home() {
     urlForm.setValue("youtubeUrl", url);
     onUrlSubmit({ youtubeUrl: url });
   };
-  
+
   const handleClipPlayback = (startTime: number, endTime: number) => {
     if (!player) return;
 
@@ -190,7 +190,7 @@ export default function Home() {
     player.playVideo();
     videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
-  
+
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
     const readyPlayer = event.target;
     setPlayer(readyPlayer);
@@ -203,7 +203,7 @@ export default function Home() {
     setIsPlayerLoading(false);
     setIsFormOpen(false);
   };
-  
+
   const onPlayerStateChange = (event: { data: number }) => {
     const isNowPlaying = event.data === YouTube.PlayerState.PLAYING;
     setIsPlaying(isNowPlaying);
@@ -233,7 +233,7 @@ export default function Home() {
           toast({ variant: "destructive", title: "Invalid Time", description: `End time cannot exceed video duration (${formatTime(videoDuration)}).` });
           return;
       }
-      
+
       const newClip: Clip = {
         startTime,
         endTime,
@@ -271,13 +271,13 @@ export default function Home() {
                       player.seekTo(currentClip.startTime, true);
                     } else {
                       player.pauseVideo();
-                      setCurrentClip(null); 
+                      setCurrentClip(null);
                     }
                 }
             }
         }, 100);
     }
-    
+
     return () => {
       if(clipIntervalRef.current) {
         clearInterval(clipIntervalRef.current);
@@ -299,7 +299,7 @@ export default function Home() {
       }, 100);
     }
   }, [videoId]);
-  
+
   const formatTime = (seconds: number) => {
     if (isNaN(seconds) || seconds < 0) return "00:00";
     return new Date(seconds * 1000).toISOString().substr(14, 5)
@@ -390,7 +390,7 @@ export default function Home() {
              <div className="flex justify-between items-center p-6 cursor-pointer">
                <div className="text-left">
                 <CardTitle>Your Practice Clips</CardTitle>
-                <CardDescription>Click a clip to play it. Adjust speed and looping below.</CardDescription>
+                <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
                </div>
                <Button variant="ghost" size="sm" className="w-9 p-0">
                 <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
@@ -457,13 +457,13 @@ export default function Home() {
     <main className="container mx-auto px-4 py-8 md:py-16">
       <header className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight mb-4">
-          Dance Looper
+          dalooper
         </h1>
         <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Paste a YouTube link to create custom loops for practicing dance routines.
+        Paste a YouTube link to break videos into clips — loop them as you learn.
         </p>
       </header>
-      
+
        <div className="max-w-2xl mx-auto">
         <Card className="shadow-lg">
           <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
@@ -498,11 +498,11 @@ export default function Home() {
                              <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button 
-                                            type="button" 
-                                            variant="outline" 
-                                            size="icon" 
-                                            onClick={saveUrl} 
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={saveUrl}
                                             disabled={!urlForm.formState.isValid || isUrlLoading}
                                             aria-label="Save video for later"
                                         >
@@ -564,7 +564,7 @@ export default function Home() {
           </Collapsible>
         </Card>
       </div>
-      
+
       {isUrlLoading && !videoId && (
          <div className="mt-12 max-w-2xl mx-auto text-center">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
@@ -575,7 +575,7 @@ export default function Home() {
       {videoId && (
         <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
           {createClipsSection}
-          
+
           <div className="mt-8" ref={videoPlayerRef}>
             <Card className="shadow-lg h-full">
               <CardHeader>
@@ -625,14 +625,14 @@ export default function Home() {
               </CardFooter>
             </Card>
           </div>
-          
+
           {practiceClipsSection}
         </div>
       )}
-          
+
       <footer className="text-center mt-16 text-muted-foreground text-sm">
         <p>Built with Next.js and shadcn/ui.</p>
-        <p>Dance Looper &copy; {new Date().getFullYear()}</p>
+        <p>dalooper &copy; {new Date().getFullYear()}</p>
       </footer>
     </main>
   );

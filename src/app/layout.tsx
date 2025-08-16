@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Dance Looper',
-  description: 'Learn dance moves from YouTube videos with custom looping clips.',
+  title: 'dalooper',
+  description: 'Turn YouTube into your personal tutor — one loop at a time.',
 };
 
 export default function RootLayout({
