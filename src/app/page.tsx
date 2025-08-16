@@ -239,7 +239,6 @@ export default function Home() {
         endTime,
       };
 
-      setSelectedSegment(null);
       setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
       customClipForm.reset({startTime: "00:00", endTime: "00:00"});
       scrollToPracticeClips();
