@@ -69,7 +69,10 @@ export function VideoPlayer({
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Flips the video horizontally to make it easier to follow along.</p>
+                    <div className="text-center">
+                      <p>Flips the video horizontally</p>
+                      <p>to make it easier to follow along.</p>
+                    </div>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

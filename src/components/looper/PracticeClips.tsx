@@ -76,7 +76,10 @@ export function PracticeClips({
                               <Info className="h-4 w-4 text-muted-foreground" />
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Repeats the clip automatically until you stop it.</p>
+                              <div className="text-center">
+                                <p>Repeats the clip automatically</p>
+                                <p>until you stop it.</p>
+                              </div>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

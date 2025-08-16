@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, Plus, ChevronsRight } from "lucide-react";
+import { ChevronDown, Plus, ChevronsRight, Info } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { customClipSchema, Clip } from "@/lib/types";
@@ -142,7 +143,23 @@ export function ClipCreator({
             <CardContent className="space-y-6 pt-2">
               <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
                 <div>
-                  <Label className="font-semibold">Auto-Segment Video</Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="font-semibold">Auto-Segment Video</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-center">
+                            <p>Clip end times may appear 1 second</p>
+                            <p>longer due to fractional seconds</p>
+                            <p>in the video duration.</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     <Button variant={selectedSegment === 3 ? "mystic" : "outline"} onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
                     <Button variant={selectedSegment === 5 ? "mystic" : "outline"} onClick={() => segmentVideo(5)}>Every 5 Secs</Button>

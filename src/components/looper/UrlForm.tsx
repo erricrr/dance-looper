@@ -130,7 +130,9 @@ export function UrlForm({
                                       </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                      <p>Save video for later</p>
+                                      <div className="text-center">
+                                        <p>Save video for later</p>
+                                      </div>
                                   </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
