@@ -77,9 +77,9 @@ export function UrlForm({
       const newUrls = savedUrls.filter(url => url !== urlToRemove);
       setSavedUrls(newUrls);
       localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-      toast({ title: "Video removed from saved list." });
+      toast({ title: "Link removed from saved list." });
     } catch (error) {
-      console.error("Failed to remove URL from localStorage", error);
+      console.error("Failed to remove link from localStorage", error);
     }
   };
 

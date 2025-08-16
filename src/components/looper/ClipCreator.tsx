@@ -89,6 +89,7 @@ export function ClipCreator({
     const customClips = clips.filter(clip => clip.isCustom);
     const newAutoClips: Clip[] = [];
 
+    // Create initial segments
     for (let i = 0; i < videoDuration; i += segmentDuration) {
       const startTime = i;
       const endTime = Math.min(i + segmentDuration, videoDuration);
@@ -97,6 +98,23 @@ export function ClipCreator({
         endTime,
         isCustom: false,
       });
+    }
+
+    // Handle short last clip: merge it with the previous clip if it's too short
+    if (newAutoClips.length >= 2) {
+      const lastClip = newAutoClips[newAutoClips.length - 1];
+      const lastClipDuration = lastClip.endTime - lastClip.startTime;
+
+      // If the last clip is less than 50% of the target segment duration, merge it with the previous clip
+      const minClipDuration = segmentDuration * 0.5;
+
+      if (lastClipDuration < minClipDuration) {
+        const secondToLastClip = newAutoClips[newAutoClips.length - 2];
+        // Extend the second-to-last clip to include the short last clip
+        secondToLastClip.endTime = lastClip.endTime;
+        // Remove the short last clip
+        newAutoClips.pop();
+      }
     }
 
     const allClips = [...customClips, ...newAutoClips].sort((a, b) => a.startTime - b.startTime);

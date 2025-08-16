@@ -107,6 +107,12 @@ export default function Home() {
   const onPlayerStateChange = (event: { data: number }) => {
     const isNowPlaying = event.data === YouTube.PlayerState.PLAYING;
     setIsPlaying(isNowPlaying);
+
+    // Handle video ending - if we're looping and have a current clip, restart it
+    if (event.data === YouTube.PlayerState.ENDED && isLooping && currentClip && player) {
+      player.seekTo(currentClip.startTime, true);
+      player.playVideo();
+    }
   };
 
   useEffect(() => {
@@ -114,7 +120,16 @@ export default function Home() {
         clipIntervalRef.current = setInterval(() => {
             if (player && typeof player.getCurrentTime === 'function') {
                 const currentTime = player.getCurrentTime();
-                if (currentTime >= currentClip.endTime) {
+                // Add a small tolerance (0.1 seconds) to handle cases where currentTime
+                // might not exactly reach endTime, especially for clips ending at video duration
+                const tolerance = 0.1;
+                const isClipFinished = currentTime >= (currentClip.endTime - tolerance);
+
+                // Special handling for clips that end at or very close to video duration
+                const isLastClip = Math.abs(currentClip.endTime - videoDuration) < 0.5;
+                const isAtVideoEnd = Math.abs(currentTime - videoDuration) < 0.5;
+
+                if (isClipFinished || (isLastClip && isAtVideoEnd)) {
                     if (isLooping) {
                       player.seekTo(currentClip.startTime, true);
                     } else {
@@ -132,7 +147,7 @@ export default function Home() {
         clipIntervalRef.current = undefined;
       }
     };
-  }, [isPlaying, currentClip, player, isLooping]);
+  }, [isPlaying, currentClip, player, isLooping, videoDuration]);
 
   useEffect(() => {
     if (player && typeof player.setPlaybackRate === 'function' && isPlaying) {
