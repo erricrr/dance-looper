@@ -1,9 +1,22 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { Rubik, Changa } from 'next/font/google';
+
+const rubik = Rubik({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-rubik',
+});
+
+const changa = Changa({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-changa',
+});
 
 export const metadata: Metadata = {
-  title: 'DALOOPER',
+  title: 'Dalooper',
   description: 'Turn YouTube into your personal tutor — one loop at a time.',
 };
 
@@ -13,12 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet"></link>
-      </head>
+    <html lang="en" className={`${rubik.variable} ${changa.variable} dark`}>
+      <head />
       <body className="font-body antialiased" suppressHydrationWarning>
         {children}
         <Toaster />

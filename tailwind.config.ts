@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Lato', 'sans-serif'],
-        headline: ['"Cinzel Decorative"', 'serif'],
+        body: ['var(--font-rubik)', 'sans-serif'],
+        headline: ['var(--font-changa)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

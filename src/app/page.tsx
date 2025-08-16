@@ -151,8 +151,8 @@ export default function Home() {
   return (
     <main className="container mx-auto px-4 py-8 md:py-16">
       <header className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight mb-4">
-          dalooper
+        <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-tight mb-4">
+          Dalooper
         </h1>
         <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
         Paste a YouTube link to break videos into clips — loop them as you learn.
@@ -210,7 +210,7 @@ export default function Home() {
       )}
 
       <footer className="text-center mt-16 text-muted-foreground text-sm">
-        <p>DALOOPER &copy; {new Date().getFullYear()}</p>
+        <p>Dalooper &copy; {new Date().getFullYear()}</p>
       </footer>
     </main>
   );
