@@ -29,18 +29,26 @@ export function AboutDrawer() {
     </Button>
   </SheetTrigger>
 
-    <SheetContent
+      <SheetContent
     side="bottom"
-    className="h-[90vh] sm:h-[85vh] max-h-[800px] min-h-[400px] flex flex-col [&>button]:hidden"
+    className="h-[75vh] sm:h-[70vh] max-h-[700px] min-h-[350px] flex flex-col [&>button]:hidden rounded-t-xl shadow-lg"
+    role="dialog"
+    aria-modal="true"
   >
-    <SheetHeader className="flex-shrink-0 pb-4">
+    <SheetHeader className="flex-shrink-0 pb-2">
       <SheetTitle className="text-2xl font-bold">About Dalooper</SheetTitle>
       <SheetDescription className="text-base">
         Master any skill through the power of repetition
       </SheetDescription>
     </SheetHeader>
 
-    <div className="flex-1 overflow-y-auto space-y-6 pr-2">
+    <div
+      className="flex-1 overflow-y-auto space-y-6 pr-4 scrollbar-thin scrollbar-thumb-accent/40 scrollbar-track-accent/5 hover:scrollbar-thumb-accent/60"
+      role="region"
+      aria-label="About content"
+      tabIndex={0}
+    >
+      <div className="space-y-6 pr-2">
       <section>
         <h3 className="text-lg font-semibold mb-3">The Birth of Dalooper</h3>
         <p className="text-muted-foreground leading-relaxed">
@@ -75,16 +83,21 @@ export function AboutDrawer() {
         </a>
       </section>
 
-      <footer className="text-center pt-4 pb-4">
+      <footer className="text-center">
         <p className="text-xs text-muted-foreground">
           Dalooper &copy; {new Date().getFullYear()}
         </p>
       </footer>
+      </div>
     </div>
 
-    <div className="flex-shrink-0 pt-4 border-t">
+    <div className="flex-shrink-0 pt-4 border-t bg-background/80 backdrop-blur-sm">
       <SheetClose asChild>
-        <Button variant="mystic" className="w-full">
+        <Button
+          variant="mystic"
+          className="w-full"
+          aria-label="Close about drawer"
+        >
           Close
         </Button>
       </SheetClose>
