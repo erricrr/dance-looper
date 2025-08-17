@@ -14,6 +14,7 @@ import { UrlForm } from "@/components/looper/UrlForm";
 import { ClipCreator } from "@/components/looper/ClipCreator";
 import { VideoPlayer } from "@/components/looper/VideoPlayer";
 import { PracticeClips } from "@/components/looper/PracticeClips";
+import { AboutDrawer } from "@/components/AboutDrawer";
 
 export default function Home() {
   const [isUrlLoading, setIsUrlLoading] = useState(false);
@@ -225,9 +226,7 @@ export default function Home() {
         </div>
       )}
 
-      <footer className="text-center mt-16 text-muted-foreground text-sm">
-        <p>Dalooper &copy; {new Date().getFullYear()}</p>
-      </footer>
+      <AboutDrawer />
     </main>
   );
 }
