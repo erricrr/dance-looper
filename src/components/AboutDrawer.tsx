@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -28,14 +29,18 @@ export function AboutDrawer() {
     </Button>
   </SheetTrigger>
 
-  <SheetContent side="bottom" className="h-[98vh] sm:h-[95vh] max-h-[900px] min-h-[650px]">    <SheetHeader>
+    <SheetContent
+    side="bottom"
+    className="h-[90vh] sm:h-[85vh] max-h-[800px] min-h-[400px] flex flex-col [&>button]:hidden"
+  >
+    <SheetHeader className="flex-shrink-0 pb-4">
       <SheetTitle className="text-2xl font-bold">About Dalooper</SheetTitle>
       <SheetDescription className="text-base">
         Master any skill through the power of repetition
       </SheetDescription>
     </SheetHeader>
 
-    <div className="mt-6 space-y-6 overflow-y-auto flex-1">
+    <div className="flex-1 overflow-y-auto space-y-6 pr-2">
       <section>
         <h3 className="text-lg font-semibold mb-3">The Birth of Dalooper</h3>
         <p className="text-muted-foreground leading-relaxed">
@@ -70,11 +75,19 @@ export function AboutDrawer() {
         </a>
       </section>
 
-      <footer className="text-center pt-4">
+      <footer className="text-center pt-4 pb-4">
         <p className="text-xs text-muted-foreground">
           Dalooper &copy; {new Date().getFullYear()}
         </p>
       </footer>
+    </div>
+
+    <div className="flex-shrink-0 pt-4 border-t">
+      <SheetClose asChild>
+        <Button variant="mystic" className="w-full">
+          Close
+        </Button>
+      </SheetClose>
     </div>
   </SheetContent>
 </Sheet>
