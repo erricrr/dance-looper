@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function AboutDrawer() {
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="mt-16 flex justify-center">
       <Sheet>
   <SheetTrigger asChild>
     <Button
@@ -28,8 +28,7 @@ export function AboutDrawer() {
     </Button>
   </SheetTrigger>
 
-  <SheetContent side="bottom" className="h-[80vh] max-h-[600px]">
-    <SheetHeader>
+  <SheetContent side="bottom" className="h-[98vh] sm:h-[95vh] max-h-[900px] min-h-[650px]">    <SheetHeader>
       <SheetTitle className="text-2xl font-bold">About Dalooper</SheetTitle>
       <SheetDescription className="text-base">
         Master any skill through the power of repetition
