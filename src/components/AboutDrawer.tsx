@@ -15,13 +15,13 @@ import { Separator } from "@/components/ui/separator";
 
 export function AboutDrawer() {
   return (
-    <div className="mt-16 flex justify-center">
+    <div className="mt-10 flex justify-center">
       <Sheet>
   <SheetTrigger asChild>
     <Button
       variant="outline"
       size="icon"
-      className="h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm border-border/50 hover:bg-accent/80 shadow-lg"
+      className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border-border/50 hover:bg-accent/80 shadow-lg"
       aria-label="About this app"
     >
       <HelpCircle className="h-5 w-5" />
