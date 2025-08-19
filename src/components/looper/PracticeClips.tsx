@@ -127,10 +127,7 @@ export function PracticeClips({
     handleClipPlayback(startClip.startTime, endClip.endTime);
   };
 
-  const clearSequence = () => {
-    setSequenceStartIndex(null);
-    setSequenceEndIndex(null);
-  };
+
 
   const getSequenceClips = () => {
     if (sequenceStartIndex === null || sequenceEndIndex === null) return [];
@@ -233,7 +230,7 @@ export function PracticeClips({
                       </Button>
                     </div>
                                      ) : isSequenceMode ? (
-                     <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                     <div className="flex items-center justify-start w-full sm:w-auto">
                        <div className="flex items-center gap-2 relative">
                          <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
                          <button
@@ -269,18 +266,7 @@ export function PracticeClips({
                          </Button>
 
 
-                         {(sequenceStartIndex !== null || sequenceEndIndex !== null) && (
-                           <Button
-                             variant="ghost"
-                             size="sm"
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               clearSequence();
-                             }}
-                           >
-                             Clear
-                           </Button>
-                         )}
+
                        </div>
                      </div>
                   ) : (
