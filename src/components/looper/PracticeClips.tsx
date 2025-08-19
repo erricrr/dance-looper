@@ -69,18 +69,17 @@ export function PracticeClips({
       <Collapsible open={isPracticeClipsOpen} onOpenChange={setIsPracticeClipsOpen}>
         <Card className="shadow-lg">
           <CollapsibleTrigger asChild>
-             <div className="flex justify-between items-center p-6 cursor-pointer">
-               <div className="text-left">
-                <CardTitle>Your Clips</CardTitle>
-                <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
-               </div>
-                              <div>
-                <Button variant="ghost" size="sm" className="w-9 p-0">
-                  <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
-                  <span className="sr-only">Toggle</span>
-                </Button>
-               </div>
-             </div>
+            <button className="w-full p-6">
+              <div className="flex justify-between items-center">
+                <div className="text-left flex items-center gap-4">
+                  <div>
+                    <CardTitle>Your Clips</CardTitle>
+                    <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
+                  </div>
+                </div>
+                <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
+              </div>
+            </button>
           </CollapsibleTrigger>
           <CollapsibleContent>
                                     <div className="px-6 pb-6 pt-0">

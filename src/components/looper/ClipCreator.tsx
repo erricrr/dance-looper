@@ -128,16 +128,17 @@ export function ClipCreator({
       <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen} disabled={!player || !videoDuration || isPlayerLoading}>
         <Card className="shadow-lg">
           <CollapsibleTrigger asChild>
-            <div className="flex justify-between items-center p-6 cursor-pointer">
-              <div className="text-left">
-                <CardTitle>Create Clips</CardTitle>
-                <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
+            <button className="w-full p-6">
+              <div className="flex justify-between items-center">
+                <div className="text-left flex items-center gap-4">
+                  <div>
+                    <CardTitle>Create Clips</CardTitle>
+                    <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
+                  </div>
+                </div>
+                <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isCreateClipsOpen && "rotate-180")} />
               </div>
-               <Button variant="ghost" size="sm" className="w-9 p-0">
-                  <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isCreateClipsOpen && "rotate-180")} />
-                  <span className="sr-only">Toggle</span>
-                </Button>
-            </div>
+            </button>
           </CollapsibleTrigger>
           <CollapsibleContent>
             <CardContent className="space-y-6 pt-2">
