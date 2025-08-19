@@ -436,12 +436,14 @@ export function PracticeClips({
                         )}
                         {isSequenceMode && sequenceStartIndex === index && (
                           <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                            <Play className="w-3 h-3 text-white" />
+                            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
                           </div>
                         )}
                         {isSequenceMode && sequenceEndIndex === index && (
                           <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                            <div className="w-3 h-3 bg-white rounded-sm"></div>
+                            <div className="w-2.5 h-2.5 bg-white rounded-none"></div>
                           </div>
                         )}
                         {isSequenceMode && sequenceStartIndex !== null && sequenceEndIndex !== null &&
