@@ -186,18 +186,21 @@ export function PracticeClips({
                         </TabsList>
                       </Tabs>
                     )}
-                    <Button
-                      variant={isSequenceMode ? "default" : "outline"}
-                      size="sm"
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleSequenceMode();
                       }}
-                      className="shrink-0"
+                      className={cn(
+                        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 shrink-0",
+                        isSequenceMode
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+                          : "border border-input bg-background hover:bg-muted/50 hover:border-muted-foreground/30 hover:shadow-sm"
+                      )}
                     >
-                      <List className="h-4 w-4 mr-2" />
+                      <List className={cn("h-4 w-4 mr-2 transition-transform duration-200", isSequenceMode && "scale-110")} />
                       Create Sequence
-                    </Button>
+                    </button>
                   </div>
                 </div>
 
