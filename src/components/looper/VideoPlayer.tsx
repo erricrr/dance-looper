@@ -1,14 +1,13 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import YouTube, { YouTubePlayer } from 'react-youtube';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Loader2, Info, Maximize2, Minimize2, X } from "lucide-react";
+import { Info, Maximize2, Minimize2, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
 
 type VideoPlayerProps = {
   videoId: string;
@@ -30,7 +29,21 @@ export function VideoPlayer({
   videoPlayerRef
 }: VideoPlayerProps) {
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showMirrorInfo, setShowMirrorInfo] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  // Close info panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('[data-info-button]')) {
+        setShowMirrorInfo(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
@@ -98,41 +111,34 @@ export function VideoPlayer({
             </div>
           </CardContent>
           <CardFooter className="flex justify-between pt-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative">
               <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className="text-center">
-                      <p>Flips the video horizontally</p>
-                      <p>to make it easier to follow along.</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <button
+                data-info-button
+                className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                onClick={() => setShowMirrorInfo(!showMirrorInfo)}
+              >
+                <Info className="h-4 w-4 text-muted-foreground" />
+              </button>
+              {showMirrorInfo && (
+                <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+                  <div className="text-center">
+                    <p>Flips the video horizontally</p>
+                    <p>to make it easier to follow along.</p>
+                  </div>
+                </div>
+              )}
               <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
             </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleFullScreen}
-                    className="flex items-center gap-2"
-                  >
-                    {isFullScreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                    {isFullScreen ? "Exit Full Window" : "Full Window"}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Toggle full window mode</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleFullScreen}
+              className="flex items-center gap-2"
+            >
+              {isFullScreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              {isFullScreen ? "Exit Full Window" : "Full Window"}
+            </Button>
           </CardFooter>
         </Card>
       </div>

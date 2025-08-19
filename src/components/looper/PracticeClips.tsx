@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { Play, ChevronDown, Info, Trash2, X, List, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Clip, PlaybackSpeed } from "@/lib/types";
@@ -42,6 +42,26 @@ export function PracticeClips({
   const [selectedClips, setSelectedClips] = useState<number[]>([]);
   const [sequenceStartIndex, setSequenceStartIndex] = useState<number | null>(null);
   const [sequenceEndIndex, setSequenceEndIndex] = useState<number | null>(null);
+  const [showLoopInfo1, setShowLoopInfo1] = useState(false);
+  const [showLoopInfo2, setShowLoopInfo2] = useState(false);
+  const [showLoopInfo3, setShowLoopInfo3] = useState(false);
+  const [showSequenceInfo, setShowSequenceInfo] = useState(false);
+
+  // Close info panels when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('[data-info-button]')) {
+        setShowLoopInfo1(false);
+        setShowLoopInfo2(false);
+        setShowLoopInfo3(false);
+        setShowSequenceInfo(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleDeleteMode = () => {
     setIsDeleteMode(!isDeleteMode);
@@ -194,21 +214,23 @@ export function PracticeClips({
                     </div>
                                      ) : isSequenceMode ? (
                      <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                       <div className="flex items-center gap-2">
+                       <div className="flex items-center gap-2 relative">
                          <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                         <TooltipProvider>
-                           <Tooltip>
-                             <TooltipTrigger asChild>
-                               <Info className="h-4 w-4 text-muted-foreground" />
-                             </TooltipTrigger>
-                             <TooltipContent>
-                               <div className="text-center">
-                                 <p>Repeats the clip automatically</p>
-                                 <p>until you stop it.</p>
-                               </div>
-                             </TooltipContent>
-                           </Tooltip>
-                         </TooltipProvider>
+                         <button
+                           data-info-button
+                           className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                           onClick={() => setShowLoopInfo1(!showLoopInfo1)}
+                         >
+                           <Info className="h-4 w-4 text-muted-foreground" />
+                         </button>
+                         {showLoopInfo1 && (
+                           <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+                             <div className="text-center">
+                               <p>Repeats the clip automatically</p>
+                               <p>until you stop it.</p>
+                             </div>
+                           </div>
+                         )}
                          <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                        </div>
 
@@ -243,26 +265,23 @@ export function PracticeClips({
                      </div>
                   ) : (
                     <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 relative">
                         <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                        <TooltipProvider>
-                          <Tooltip delayDuration={0}>
-                            <TooltipTrigger asChild>
-                              <button
-                                className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors touch-manipulation"
-                                onTouchStart={(e) => e.currentTarget.click()}
-                              >
-                                <Info className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="z-50">
-                              <div className="text-center">
-                                <p>Repeats the clip automatically</p>
-                                <p>until you stop it.</p>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <button
+                          data-info-button
+                          className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                          onClick={() => setShowLoopInfo2(!showLoopInfo2)}
+                        >
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                        {showLoopInfo2 && (
+                          <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+                            <div className="text-center">
+                              <p>Repeats the clip automatically</p>
+                              <p>until you stop it.</p>
+                            </div>
+                          </div>
+                        )}
                         <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                       </div>
 
@@ -286,26 +305,23 @@ export function PracticeClips({
 
                                  {/* Loop toggle - always visible in delete mode */}
                  {isDeleteMode && (
-                   <div className="flex items-center gap-2">
+                   <div className="flex items-center gap-2 relative">
                      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                                            <TooltipProvider>
-                         <Tooltip delayDuration={0}>
-                           <TooltipTrigger asChild>
-                             <button
-                               className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors touch-manipulation"
-                               onTouchStart={(e) => e.currentTarget.click()}
-                             >
-                               <Info className="h-4 w-4 text-muted-foreground" />
-                             </button>
-                           </TooltipTrigger>
-                           <TooltipContent side="top" className="z-50">
-                             <div className="text-center">
-                               <p>Repeats the clip automatically</p>
-                               <p>until you stop it.</p>
-                             </div>
-                           </TooltipContent>
-                         </Tooltip>
-                       </TooltipProvider>
+                     <button
+                       data-info-button
+                       className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                       onClick={() => setShowLoopInfo3(!showLoopInfo3)}
+                     >
+                       <Info className="h-4 w-4 text-muted-foreground" />
+                     </button>
+                     {showLoopInfo3 && (
+                       <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+                         <div className="text-center">
+                           <p>Repeats the clip automatically</p>
+                           <p>until you stop it.</p>
+                         </div>
+                       </div>
+                     )}
                      <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                    </div>
                  )}
@@ -313,29 +329,26 @@ export function PracticeClips({
                 {/* Sequence Selection Display */}
                 {isSequenceMode && (
                   <div className="bg-muted/30 rounded-lg p-3 border">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2 relative">
                       <List className="h-4 w-4" />
                       <span className="text-sm font-medium">Sequence Selection</span>
-                      <TooltipProvider>
-                        <Tooltip delayDuration={0}>
-                          <TooltipTrigger asChild>
-                            <button
-                              className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors touch-manipulation"
-                              onTouchStart={(e) => e.currentTarget.click()}
-                            >
-                              <Info className="h-4 w-4 text-muted-foreground" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs z-50">
-                            <div className="text-center">
-                              <p className="font-medium mb-1">How to create a sequence:</p>
-                              <p>1. Click on the first clip you want to start with</p>
-                              <p>2. Click on the last clip you want to end with</p>
-                              <p>3. Click "Play Sequence" to practice all clips in order</p>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <button
+                        data-info-button
+                        className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                        onClick={() => setShowSequenceInfo(!showSequenceInfo)}
+                      >
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      {showSequenceInfo && (
+                        <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 max-w-xs">
+                          <div className="text-center">
+                            <p className="font-medium mb-1">How to create a sequence:</p>
+                            <p>1. Click on the first clip you want to start with</p>
+                            <p>2. Click on the last clip you want to end with</p>
+                            <p>3. Click "Play Sequence" to practice all clips in order</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     {(sequenceStartIndex !== null || sequenceEndIndex !== null) ? (
                       <div className="space-y-1">

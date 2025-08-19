@@ -1,22 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import YouTube, { YouTubePlayer } from 'react-youtube';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, Plus, ChevronsRight, Info } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ChevronDown, Plus, ChevronsRight, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { customClipSchema, Clip } from "@/lib/types";
-import { parseTimeToSeconds, formatTime } from "@/lib/utils";
-import { YouTubePlayer } from "react-youtube";
+import { Clip, customClipSchema } from "@/lib/types";
 
 type ClipCreatorProps = {
   player: YouTubePlayer | null;
@@ -38,87 +35,83 @@ export function ClipCreator({
   const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
   const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<number | null>(null);
-  const { toast } = useToast();
+  const [showAutoSegmentInfo, setShowAutoSegmentInfo] = useState(false);
+
+  // Close info panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('[data-info-button]')) {
+        setShowAutoSegmentInfo(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const customClipForm = useForm<z.infer<typeof customClipSchema>>({
     resolver: zodResolver(customClipSchema),
-    defaultValues: { startTime: "00:00", endTime: "00:00" },
+    defaultValues: {
+      startTime: "",
+      endTime: ""
+    }
   });
 
   const scrollToPracticeClips = () => {
     setTimeout(() => {
-        practiceClipsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      practiceClipsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
-  }
-
-  const handleCustomClipSubmit = (values: z.infer<typeof customClipSchema>) => {
-      const startTime = parseTimeToSeconds(values.startTime);
-      const endTime = parseTimeToSeconds(values.endTime);
-
-      if (startTime >= endTime) {
-          toast({ variant: "destructive", title: "Invalid Time", description: "Start time must be before end time." });
-          return;
-      }
-      if (endTime > videoDuration) {
-          toast({ variant: "destructive", title: "Invalid Time", description: `End time cannot exceed video duration (${formatTime(videoDuration)}).` });
-          return;
-      }
-
-      const newClip: Clip = {
-        startTime,
-        endTime,
-        isCustom: true,
-      };
-
-      setClips(prev => [...prev, newClip].sort((a,b) => a.startTime - b.startTime));
-      customClipForm.reset({startTime: "00:00", endTime: "00:00"});
-      scrollToPracticeClips();
   };
 
-  const segmentVideo = (segmentDuration: number) => {
-    if (!videoDuration) return;
+  const segmentVideo = (seconds: number) => {
+    if (!player || !videoDuration) return;
 
-    if (selectedSegment === segmentDuration) {
-      const customClips = clips.filter(clip => clip.isCustom);
-      setClips(customClips);
-      setSelectedSegment(null);
+    setSelectedSegment(seconds);
+    const newClips: Clip[] = [];
+
+    for (let startTime = 0; startTime < videoDuration; startTime += seconds) {
+      const endTime = Math.min(startTime + seconds, videoDuration);
+      newClips.push({ startTime, endTime });
+    }
+
+    setClips(newClips);
+    scrollToPracticeClips();
+  };
+
+  const handleCustomClipSubmit = (values: z.infer<typeof customClipSchema>) => {
+    if (!player || !videoDuration) return;
+
+    const parseTime = (timeStr: string): number => {
+      const [minutes, seconds] = timeStr.split(':').map(Number);
+      return minutes * 60 + seconds;
+    };
+
+    const startTime = parseTime(values.startTime);
+    const endTime = parseTime(values.endTime);
+
+    if (startTime >= endTime || endTime > videoDuration) {
       return;
     }
 
-    setSelectedSegment(segmentDuration);
+    const newCustomClip: Clip = { startTime, endTime, isCustom: true };
+    const existingCustomClips = clips.filter(clip => clip.isCustom);
+    const existingAutoClips = clips.filter(clip => !clip.isCustom);
+
+    const allClips = [...existingCustomClips, newCustomClip, ...existingAutoClips].sort((a, b) => a.startTime - b.startTime);
+    setClips(allClips);
+    scrollToPracticeClips();
+
+    customClipForm.reset();
+  };
+
+  const addAllClips = () => {
+    if (!player || !videoDuration) return;
 
     const customClips = clips.filter(clip => clip.isCustom);
-    const newAutoClips: Clip[] = [];
+    const autoClips = clips.filter(clip => !clip.isCustom);
 
-    // Create initial segments
-    for (let i = 0; i < videoDuration; i += segmentDuration) {
-      const startTime = i;
-      const endTime = Math.min(i + segmentDuration, videoDuration);
-      newAutoClips.push({
-        startTime,
-        endTime,
-        isCustom: false,
-      });
-    }
-
-    // Handle short last clip: merge it with the previous clip if it's too short
-    if (newAutoClips.length >= 2) {
-      const lastClip = newAutoClips[newAutoClips.length - 1];
-      const lastClipDuration = lastClip.endTime - lastClip.startTime;
-
-      // If the last clip is less than 50% of the target segment duration, merge it with the previous clip
-      const minClipDuration = segmentDuration * 0.5;
-
-      if (lastClipDuration < minClipDuration) {
-        const secondToLastClip = newAutoClips[newAutoClips.length - 2];
-        // Extend the second-to-last clip to include the short last clip
-        secondToLastClip.endTime = lastClip.endTime;
-        // Remove the short last clip
-        newAutoClips.pop();
-      }
-    }
-
-    const allClips = [...customClips, ...newAutoClips].sort((a, b) => a.startTime - b.startTime);
+    const allClips = [...customClips, ...autoClips].sort((a, b) => a.startTime - b.startTime);
     setClips(allClips);
     scrollToPracticeClips();
   };
@@ -144,22 +137,24 @@ export function ClipCreator({
             <CardContent className="space-y-6 pt-2">
               <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 relative">
                     <Label className="font-semibold">Auto-Segment Video</Label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <div className="text-center">
-                            <p>Clip end times may appear 1 second</p>
-                            <p>longer due to fractional seconds</p>
-                            <p>in the video duration.</p>
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <button
+                      data-info-button
+                      className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                      onClick={() => setShowAutoSegmentInfo(!showAutoSegmentInfo)}
+                    >
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                    {showAutoSegmentInfo && (
+                      <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+                        <div className="text-center">
+                          <p>Clip end times may appear 1 second</p>
+                          <p>longer due to fractional seconds</p>
+                          <p>in the video duration.</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     <Button variant={selectedSegment === 3 ? "mystic" : "outline"} onClick={() => segmentVideo(3)}>Every 3 Secs</Button>
