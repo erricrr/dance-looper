@@ -84,7 +84,7 @@ export function PracticeClips({
           <CollapsibleContent>
                                     <div className="px-6 pb-6 pt-0">
               {/* Controls Section */}
-              <div className="pt-4 space-y-4">
+              <div className="pt-1 space-y-4">
                 {/* Playback Speed */}
                 <div>
                   <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
