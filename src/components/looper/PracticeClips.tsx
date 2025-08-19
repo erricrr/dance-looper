@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,6 +15,7 @@ import { Play, ChevronDown, Info, Trash2, X, List, ArrowRight } from "lucide-rea
 import { cn } from "@/lib/utils";
 import { Clip, PlaybackSpeed } from "@/lib/types";
 import { formatTime } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type PracticeClipsProps = {
   clips: Clip[];
@@ -36,6 +38,7 @@ export function PracticeClips({
   practiceClipsRef,
   setClips
 }: PracticeClipsProps) {
+  const isMobile = useIsMobile();
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [isSequenceMode, setIsSequenceMode] = useState(false);
@@ -161,14 +164,28 @@ export function PracticeClips({
                 <div>
                   <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
                   <div className="flex items-center gap-4">
-                    <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
-                      <TabsList className="grid w-full grid-cols-4 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
-                        <TabsTrigger value="0.25">0.25x</TabsTrigger>
-                        <TabsTrigger value="0.5">0.5x</TabsTrigger>
-                        <TabsTrigger value="0.75">0.75x</TabsTrigger>
-                        <TabsTrigger value="1">1x</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
+                    {isMobile ? (
+                      <Select value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select speed" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0.25">0.25x</SelectItem>
+                          <SelectItem value="0.5">0.5x</SelectItem>
+                          <SelectItem value="0.75">0.75x</SelectItem>
+                          <SelectItem value="1">1x</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
+                        <TabsList className="grid w-full grid-cols-4 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
+                          <TabsTrigger value="0.25">0.25x</TabsTrigger>
+                          <TabsTrigger value="0.5">0.5x</TabsTrigger>
+                          <TabsTrigger value="0.75">0.75x</TabsTrigger>
+                          <TabsTrigger value="1">1x</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    )}
                     <Button
                       variant={isSequenceMode ? "default" : "outline"}
                       size="sm"
