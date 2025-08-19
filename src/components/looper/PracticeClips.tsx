@@ -246,13 +246,16 @@ export function PracticeClips({
                       <div className="flex items-center gap-2">
                         <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
                         <TooltipProvider>
-                          <Tooltip>
+                          <Tooltip delayDuration={0}>
                             <TooltipTrigger asChild>
-                              <button className="p-1 rounded-md hover:bg-muted transition-colors">
+                              <button
+                                className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors touch-manipulation"
+                                onTouchStart={(e) => e.currentTarget.click()}
+                              >
                                 <Info className="h-4 w-4 text-muted-foreground" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent side="top" className="z-50">
                               <div className="text-center">
                                 <p>Repeats the clip automatically</p>
                                 <p>until you stop it.</p>
@@ -285,21 +288,24 @@ export function PracticeClips({
                  {isDeleteMode && (
                    <div className="flex items-center gap-2">
                      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                     <TooltipProvider>
-                       <Tooltip>
-                         <TooltipTrigger asChild>
-                           <button className="p-1 rounded-md hover:bg-muted transition-colors">
-                             <Info className="h-4 w-4 text-muted-foreground" />
-                           </button>
-                         </TooltipTrigger>
-                         <TooltipContent>
-                           <div className="text-center">
-                             <p>Repeats the clip automatically</p>
-                             <p>until you stop it.</p>
-                           </div>
-                         </TooltipContent>
-                       </Tooltip>
-                     </TooltipProvider>
+                                            <TooltipProvider>
+                         <Tooltip delayDuration={0}>
+                           <TooltipTrigger asChild>
+                             <button
+                               className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors touch-manipulation"
+                               onTouchStart={(e) => e.currentTarget.click()}
+                             >
+                               <Info className="h-4 w-4 text-muted-foreground" />
+                             </button>
+                           </TooltipTrigger>
+                           <TooltipContent side="top" className="z-50">
+                             <div className="text-center">
+                               <p>Repeats the clip automatically</p>
+                               <p>until you stop it.</p>
+                             </div>
+                           </TooltipContent>
+                         </Tooltip>
+                       </TooltipProvider>
                      <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                    </div>
                  )}
@@ -311,13 +317,16 @@ export function PracticeClips({
                       <List className="h-4 w-4" />
                       <span className="text-sm font-medium">Sequence Selection</span>
                       <TooltipProvider>
-                        <Tooltip>
+                        <Tooltip delayDuration={0}>
                           <TooltipTrigger asChild>
-                            <button className="p-1 rounded-md hover:bg-muted transition-colors">
+                            <button
+                              className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors touch-manipulation"
+                              onTouchStart={(e) => e.currentTarget.click()}
+                            >
                               <Info className="h-4 w-4 text-muted-foreground" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
+                          <TooltipContent side="top" className="max-w-xs z-50">
                             <div className="text-center">
                               <p className="font-medium mb-1">How to create a sequence:</p>
                               <p>1. Click on the first clip you want to start with</p>
