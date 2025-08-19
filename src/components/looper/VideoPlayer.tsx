@@ -146,14 +146,14 @@ export function VideoPlayer({
       {/* Full Screen Overlay with Close Button */}
       {isFullScreen && (
         <div className="fixed inset-0 z-50 pointer-events-none">
-          <div className="absolute top-4 right-4 pointer-events-auto">
+          <div className="absolute top-20 right-7 pointer-events-auto">
             <Button
-              variant="outline"
+              variant="mystic"
               size="sm"
               onClick={closeFullScreen}
-              className="bg-black/50 border-white/20 text-white hover:bg-black/70"
+              className="border"
             >
-              <X className="h-4 w-4" />
+              <X/>
             </Button>
           </div>
         </div>
