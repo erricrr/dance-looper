@@ -348,7 +348,7 @@ export function PracticeClips({
 
                 {/* Sequence Selection Display */}
                 {isSequenceMode && (
-                  <div className="bg-muted/30 rounded-lg p-3 border">
+                  <div className="bg-muted/30 rounded-lg p-3 border h-32">
                     <div className="flex items-center gap-2 mb-2 relative">
                       <List className="h-4 w-4" />
                       <span className="text-sm font-medium">Sequence Selection</span>
@@ -370,36 +370,40 @@ export function PracticeClips({
                         </div>
                       )}
                     </div>
-                    {(sequenceStartIndex !== null || sequenceEndIndex !== null) ? (
-                      <div className="space-y-1">
-                        {sequenceStartIndex !== null && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-muted-foreground">Start:</span>
-                            <span className="font-mono bg-background px-2 py-1 rounded">
-                              {formatTime(clips[sequenceStartIndex].startTime)} - {formatTime(clips[sequenceStartIndex].endTime)}
-                            </span>
+                    <div className="h-20 overflow-y-auto">
+                      {(sequenceStartIndex !== null || sequenceEndIndex !== null) ? (
+                        <div className="space-y-1">
+                          <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
+                            {sequenceStartIndex !== null && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <span className="text-muted-foreground">Start:</span>
+                                <span className="font-mono bg-background px-2 py-1 rounded">
+                                  {formatTime(clips[sequenceStartIndex].startTime)} - {formatTime(clips[sequenceStartIndex].endTime)}
+                                </span>
+                              </div>
+                            )}
+                            {sequenceEndIndex !== null && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <span className="text-muted-foreground">End:</span>
+                                <span className="font-mono bg-background px-2 py-1 rounded">
+                                  {formatTime(clips[sequenceEndIndex].startTime)} - {formatTime(clips[sequenceEndIndex].endTime)}
+                                </span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {sequenceEndIndex !== null && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-muted-foreground">End:</span>
-                            <span className="font-mono bg-background px-2 py-1 rounded">
-                              {formatTime(clips[sequenceEndIndex].startTime)} - {formatTime(clips[sequenceEndIndex].endTime)}
-                            </span>
-                          </div>
-                        )}
-                        {sequenceStartIndex !== null && sequenceEndIndex !== null && (
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-muted-foreground">Total clips:</span>
-                            <span className="font-medium">{getSequenceClips().length}</span>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">
-                        Click on clips below to select your sequence start and end points
-                      </div>
-                    )}
+                          {sequenceStartIndex !== null && sequenceEndIndex !== null && (
+                            <div className="flex items-center gap-2 text-sm pt-0 sm:pt-7">
+                              <span className="text-muted-foreground">Total clips:</span>
+                              <span className="font-medium">{getSequenceClips().length}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-muted-foreground">
+                          Click on clips below to select your sequence start and end points
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
