@@ -323,28 +323,7 @@ export function PracticeClips({
                   )}
                 </div>
 
-                                 {/* Loop toggle - always visible in delete mode */}
-                 {isDeleteMode && (
-                   <div className="flex items-center gap-2 relative">
-                     <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                     <button
-                       data-info-button
-                       className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
-                       onClick={() => setShowLoopInfo3(!showLoopInfo3)}
-                     >
-                       <Info className="h-4 w-4 text-muted-foreground" />
-                     </button>
-                     {showLoopInfo3 && (
-                       <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
-                         <div className="text-center">
-                           <p>Repeats the clip automatically</p>
-                           <p>until you stop it.</p>
-                         </div>
-                       </div>
-                     )}
-                     <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
-                   </div>
-                 )}
+
 
                 {/* Sequence Selection Display */}
                 {isSequenceMode && (
@@ -377,6 +356,11 @@ export function PracticeClips({
              <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-4">
          {sequenceStartIndex !== null && (
            <div className="flex items-center gap-2 text-sm">
+             <div className="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+               <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
+                 <path d="M8 5v14l11-7z"/>
+               </svg>
+             </div>
              <span className="text-muted-foreground">Start:</span>
              <span className="font-mono bg-background px-2 py-1 rounded">
                {formatTime(clips[sequenceStartIndex].startTime)} - {formatTime(clips[sequenceStartIndex].endTime)}
@@ -385,6 +369,9 @@ export function PracticeClips({
          )}
          {sequenceEndIndex !== null && (
            <div className="flex items-center gap-2 text-sm">
+             <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+               <div className="w-1.5 h-1.5 bg-white rounded-none"></div>
+             </div>
              <span className="text-muted-foreground">End:</span>
              <span className="font-mono bg-background px-2 py-1 rounded">
                {formatTime(clips[sequenceEndIndex].startTime)} - {formatTime(clips[sequenceEndIndex].endTime)}
