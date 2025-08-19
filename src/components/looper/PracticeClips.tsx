@@ -270,7 +270,7 @@ export function PracticeClips({
                        </div>
                      </div>
                   ) : (
-                    <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto">
+                                         <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-2 relative">
                         <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
                         <button
@@ -295,7 +295,7 @@ export function PracticeClips({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 shrink-0"
+                          className="h-9 w-9 shrink-0 transition-none"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleDeleteMode();
