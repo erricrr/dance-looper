@@ -413,8 +413,8 @@ export function PracticeClips({
                       className={cn(
                         "flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-colors",
                         isDeleteMode && selectedClips.includes(index) && "bg-muted/30 border-primary",
-                        isSequenceMode && sequenceStartIndex === index && "bg-blue-50 border-blue-300 dark:bg-blue-950/30 dark:border-blue-700",
-                        isSequenceMode && sequenceEndIndex === index && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
+                        isSequenceMode && sequenceStartIndex === index && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
+                        isSequenceMode && sequenceEndIndex === index && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
                         isSequenceMode && sequenceStartIndex !== null && sequenceEndIndex !== null &&
                           index > sequenceStartIndex && index < sequenceEndIndex && "bg-muted/20 border-muted-foreground/20"
                       )}
