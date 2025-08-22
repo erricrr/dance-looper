@@ -27,6 +27,8 @@ type PracticeClipsProps = {
   practiceClipsRef: React.RefObject<HTMLDivElement>;
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  isSequenceMode: boolean;
+  setIsSequenceMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function PracticeClips({
@@ -38,12 +40,13 @@ export function PracticeClips({
   handleClipPlayback,
   practiceClipsRef,
   setClips,
-  setCurrentClipIndex
+  setCurrentClipIndex,
+  isSequenceMode,
+  setIsSequenceMode
 }: PracticeClipsProps) {
   const isMobile = useIsMobile();
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const [isSequenceMode, setIsSequenceMode] = useState(false);
   const [selectedClips, setSelectedClips] = useState<number[]>([]);
   const [sequenceStartIndex, setSequenceStartIndex] = useState<number | null>(null);
   const [sequenceEndIndex, setSequenceEndIndex] = useState<number | null>(null);

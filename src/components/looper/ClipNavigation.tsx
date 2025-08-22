@@ -13,13 +13,15 @@ type ClipNavigationProps = {
   currentClipIndex: number | null;
   setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
   handleClipPlayback: (startTime: number, endTime: number) => void;
+  isSequenceMode: boolean;
 };
 
 export function ClipNavigation({
   clips,
   currentClipIndex,
   setCurrentClipIndex,
-  handleClipPlayback
+  handleClipPlayback,
+  isSequenceMode
 }: ClipNavigationProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -87,8 +89,8 @@ export function ClipNavigation({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [navigateToPreviousClip, navigateToNextClip, navigateToFirstClip, navigateToLastClip]);
 
-  // Don't render if no clips
-  if (clips.length === 0) {
+  // Don't render if no clips or if in sequence mode
+  if (clips.length === 0 || isSequenceMode) {
     return null;
   }
 
@@ -108,9 +110,12 @@ export function ClipNavigation({
 
           {/* Minimized view */}
           {!isExpanded && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10 text-primary">
+                          <div className="flex items-center justify-between">
+              <div
+                className="flex items-center gap-3 cursor-pointer flex-1"
+                onClick={() => setIsExpanded(true)}
+              >
+                <div className="flex items-center justify-center w-7 h-7 rounded-md text-primary">
                   <PlayCircle className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col">
@@ -123,23 +128,15 @@ export function ClipNavigation({
                 </div>
               </div>
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
+              <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setIsExpanded(true)}
-                      className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+                      className="h-8 w-8 hover:bg-transparent"
+                      aria-label="Expand section"
                     >
                       <ChevronUp className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">
-                    <p>Expand navigation</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                </Button>
             </div>
           )}
 
@@ -148,39 +145,28 @@ export function ClipNavigation({
             <>
               {/* Header */}
               <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
-                    <PlayCircle className="h-4 w-4" />
+                <div
+                  className="flex items-center gap-3 cursor-pointer flex-1"
+                  onClick={() => setIsExpanded(false)}
+                >
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg text-primary">
+                    <PlayCircle className="h-5 w-5" />
                   </div>
                   <div className="flex flex-col">
                     <Label className="text-base font-semibold text-foreground">Clip Navigation</Label>
-                    <div className="text-xs text-muted-foreground flex items-center gap-2">
-                      <span>Use arrow keys or buttons</span>
-                      <div className="flex gap-1">
-                        <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">←</kbd>
-                        <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">→</kbd>
-                      </div>
-                    </div>
+
                   </div>
                 </div>
 
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
+                <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setIsExpanded(false)}
-                        className="h-9 w-9 rounded-lg hover:bg-accent/50 transition-colors"
+                        className="h-9 w-9 hover:bg-transparent"
+                        aria-label="Collapse section"
                       >
                         <ChevronDown className="h-4 w-4" />
                       </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">
-                      <p>Collapse navigation</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
               </div>
 
               {/* Navigation Controls */}

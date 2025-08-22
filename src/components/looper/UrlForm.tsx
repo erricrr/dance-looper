@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ChevronDown, Bookmark, Trash2 } from "lucide-react";
+import { Loader2, ChevronDown, Heart, Trash2 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -126,7 +126,7 @@ export function UrlForm({
                                           disabled={!urlForm.formState.isValid || isUrlLoading}
                                           aria-label="Save video for later"
                                       >
-                                          <Bookmark/>
+                                          <Heart/>
                                       </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -157,7 +157,7 @@ export function UrlForm({
                   <Collapsible open={isSavedVideosOpen} onOpenChange={setIsSavedVideosOpen} className="mt-6">
                       <CollapsibleTrigger className="w-full">
                         <div className="flex items-center gap-2 text-sm font-semibold">
-                            <Bookmark className="h-4 w-4" />
+                            <Heart className="h-4 w-4" />
                             Saved Links ({savedUrls.length}/{MAX_SAVED_URLS})
                             <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
                         </div>

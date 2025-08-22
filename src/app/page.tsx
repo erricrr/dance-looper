@@ -32,6 +32,7 @@ export default function Home() {
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
   const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
+  const [isSequenceMode, setIsSequenceMode] = useState(false);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -232,6 +233,8 @@ export default function Home() {
             practiceClipsRef={practiceClipsRef}
             setClips={setClips}
             setCurrentClipIndex={setCurrentClipIndex}
+            isSequenceMode={isSequenceMode}
+            setIsSequenceMode={setIsSequenceMode}
           />
         </div>
       )}
@@ -241,6 +244,7 @@ export default function Home() {
         currentClipIndex={currentClipIndex}
         setCurrentClipIndex={setCurrentClipIndex}
         handleClipPlayback={handleClipPlayback}
+        isSequenceMode={isSequenceMode}
       />
 
       <AboutDrawer />
