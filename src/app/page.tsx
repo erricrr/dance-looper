@@ -177,12 +177,12 @@ export default function Home() {
   }, [playbackSpeed, player, isPlaying]);
 
     useEffect(() => {
-    if (videoId) {
+    if (videoId && videoDuration > 0) {
       setTimeout(() => {
         clipCreatorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
+      }, 500); // Wait for video to be fully loaded and Create Clips to be expanded
     }
-  }, [videoId]);
+  }, [videoId, videoDuration]);
 
   return (
     <main className="container mx-auto px-4 py-8 md:py-16 pb-24">
@@ -222,6 +222,7 @@ export default function Home() {
               clips={clips}
               setClips={setClips}
               practiceClipsRef={practiceClipsRef}
+              isOpen={true}
             />
           </div>
 

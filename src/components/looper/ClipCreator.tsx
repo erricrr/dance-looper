@@ -22,6 +22,7 @@ type ClipCreatorProps = {
   clips: Clip[];
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   practiceClipsRef: React.RefObject<HTMLDivElement>;
+  isOpen?: boolean;
 };
 
 export function ClipCreator({
@@ -30,12 +31,18 @@ export function ClipCreator({
   isPlayerLoading,
   clips,
   setClips,
-  practiceClipsRef
+  practiceClipsRef,
+  isOpen = true
 }: ClipCreatorProps) {
-  const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(true);
+  const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(isOpen);
   const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<number | null>(null);
   const [showAutoSegmentInfo, setShowAutoSegmentInfo] = useState(false);
+
+  // Ensure Create Clips is open when video is loaded
+  useEffect(() => {
+    setIsCreateClipsOpen(true);
+  }, [videoDuration]);
 
   // Close info panel when clicking outside
   useEffect(() => {
