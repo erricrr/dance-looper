@@ -239,7 +239,25 @@ export function PracticeClips({
                       </Button>
                     </div>
                                      ) : isSequenceMode ? (
-                     <div className="flex items-center justify-start w-full sm:w-auto">
+                     <div className="flex items-center justify-between w-full">
+                       <div className="flex items-center gap-2">
+                       <Button
+                           variant="default"
+                           size="sm"
+                           disabled={sequenceStartIndex === null || sequenceEndIndex === null}
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             playSequence();
+                           }}
+                         >
+                           <Play className="h-4 w-4 mr-1" />
+                           Play Sequence
+                         </Button>
+
+
+
+                       </div>
+
                        <div className="flex items-center gap-2 relative">
                          <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
                          <button
@@ -259,27 +277,24 @@ export function PracticeClips({
                          )}
                          <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
                        </div>
-
-                       <div className="flex items-center gap-2 ml-5">
-                       <Button
-                           variant="default"
-                           size="sm"
-                           disabled={sequenceStartIndex === null || sequenceEndIndex === null}
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             playSequence();
-                           }}
-                         >
-                           <Play className="h-4 w-4 mr-1" />
-                           Play Sequence
-                         </Button>
-
-
-
-                       </div>
                      </div>
                   ) : (
                                          <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2 ml-5">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 shrink-0 transition-none"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleDeleteMode();
+                          }}
+                        >
+                          <Trash2 className="h-5 w-5" />
+                          <span className="sr-only">Delete selected clips</span>
+                        </Button>
+                      </div>
+
                       <div className="flex items-center gap-2 relative">
                         <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
                         <button
@@ -298,21 +313,6 @@ export function PracticeClips({
                           </div>
                         )}
                         <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
-                      </div>
-
-                      <div className="flex items-center gap-2 ml-5">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-9 w-9 shrink-0 transition-none"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleDeleteMode();
-                          }}
-                        >
-                          <Trash2 className="h-5 w-5" />
-                          <span className="sr-only">Delete selected clips</span>
-                        </Button>
                       </div>
                     </div>
                   )}
