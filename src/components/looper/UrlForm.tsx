@@ -169,7 +169,7 @@ export function UrlForm({
                             <div key={url} className="grid grid-cols-[1fr_auto] gap-2 p-2 rounded-md hover:bg-muted items-center">
                               <span className="text-sm text-muted-foreground truncate overflow-hidden" title={url}>{url}</span>
                               <div className="flex gap-1 shrink-0">
-                                <Button size="sm" variant="outline" onClick={() => loadSavedUrl(url)} className="text-xs px-2 py-1 h-6 whitespace-nowrap">
+                                <Button size="sm" variant="mystic" onClick={() => loadSavedUrl(url)} className="text-xs px-2 py-1 h-6 whitespace-nowrap">
                                   Load
                                 </Button>
                                 <Button size="icon" variant="ghost" onClick={() => removeUrl(url)} className="h-6 w-6 shrink-0">
