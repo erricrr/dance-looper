@@ -145,7 +145,6 @@ export function ClipCreator({
                     <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
                   </div>
                 </div>
-                <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isCreateClipsOpen && "rotate-180")} />
               </div>
             </button>
           </CollapsibleTrigger>

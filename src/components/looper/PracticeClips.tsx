@@ -189,7 +189,6 @@ export function PracticeClips({
                     <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
                   </div>
                 </div>
-                <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isPracticeClipsOpen && "rotate-180")} />
               </div>
             </button>
           </CollapsibleTrigger>
