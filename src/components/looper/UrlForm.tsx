@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Heart, Trash2 } from "lucide-react";
+import { Loader2, Heart, Trash2, HeartOff } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -49,25 +49,10 @@ export function UrlForm({
     defaultValues: { youtubeUrl: "" },
   });
 
-  // Scroll-based visibility logic
+  // Static form - always visible
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
-
-      // Show when scrolling up, hide when scrolling down
-      if (scrollDirection === 'up') {
-        setIsVisible(true);
-      } else if (scrollDirection === 'down' && currentScrollY > 100) {
-        setIsVisible(false);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+    setIsVisible(true);
+  }, []);
 
   const saveUrl = () => {
     const urlToSave = urlForm.getValues("youtubeUrl");
@@ -109,10 +94,7 @@ export function UrlForm({
   return (
     <div
       ref={formRef}
-      className={cn(
-        "max-w-2xl mx-auto transition-all duration-300 ease-in-out",
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
-      )}
+      className="max-w-2xl mx-auto"
     >
       <Card className="shadow-lg">
         <Collapsible open={true} onOpenChange={() => {}}>
@@ -186,16 +168,32 @@ export function UrlForm({
                       <ScrollArea className="h-40 rounded-md border">
                         <div className="p-4 space-y-2">
                           {savedUrls.map(url => (
-                            <div key={url} className="grid grid-cols-[1fr_auto] gap-2 p-2 rounded-md hover:bg-muted items-center">
-                              <span className="text-sm text-muted-foreground truncate overflow-hidden" title={url}>{url}</span>
-                              <div className="flex gap-1 shrink-0">
-                                <Button size="sm" variant="mystic" onClick={() => loadSavedUrl(url)} className="text-xs px-2 py-1 h-6 whitespace-nowrap">
-                                  Load
-                                </Button>
-                                <Button size="icon" variant="ghost" onClick={() => removeUrl(url)} className="h-6 w-6 shrink-0">
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </div>
+                            <div key={url} className="flex items-center justify-between p-2 rounded-md hover:bg-muted group">
+                              <button
+                                onClick={() => {
+                                  urlForm.setValue("youtubeUrl", url);
+                                  // Focus the input field
+                                  const input = document.querySelector('input[placeholder*="youtube.com"]') as HTMLInputElement;
+                                  if (input) {
+                                    input.focus();
+                                  }
+                                }}
+                                className="flex-1 text-left text-sm text-muted-foreground hover:text-foreground transition-colors truncate"
+                                title={url}
+                              >
+                                {url}
+                              </button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => removeUrl(url)}
+                                className="h-6 w-6 shrink-0 hover:bg-muted transition-colors group"
+                                aria-label="Remove from saved links"
+                                title="Remove from saved links"
+                              >
+                                <Heart className="h-3 w-3 group-hover:hidden" />
+                                <HeartOff className="h-3 w-3 hidden group-hover:block" />
+                              </Button>
                             </div>
                           ))}
                         </div>
