@@ -66,6 +66,8 @@ export function PracticeClips({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+
+
   const toggleDeleteMode = () => {
     setIsDeleteMode(!isDeleteMode);
     setSelectedClips([]);
@@ -115,6 +117,7 @@ export function PracticeClips({
     setClips(newClips);
     setSelectedClips([]);
     setIsDeleteMode(false);
+
   };
 
   const playSequence = () => {
@@ -126,8 +129,6 @@ export function PracticeClips({
     // Play from the start of the first clip to the end of the last clip
     handleClipPlayback(startClip.startTime, endClip.endTime);
   };
-
-
 
   const getSequenceClips = () => {
     if (sequenceStartIndex === null || sequenceEndIndex === null) return [];
@@ -390,6 +391,7 @@ export function PracticeClips({
                       key={index}
                       className={cn(
                         "flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-colors",
+
                         isDeleteMode && selectedClips.includes(index) && "bg-muted/30 border-primary",
                         isSequenceMode && sequenceStartIndex === index && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
                         isSequenceMode && sequenceEndIndex === index && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
@@ -430,6 +432,7 @@ export function PracticeClips({
                             <ArrowRight className="w-3 h-3 text-muted-foreground" />
                           </div>
                         )}
+
                         <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
                           {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
                         </span>

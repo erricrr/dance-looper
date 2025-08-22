@@ -14,6 +14,7 @@ import { UrlForm } from "@/components/looper/UrlForm";
 import { ClipCreator } from "@/components/looper/ClipCreator";
 import { VideoPlayer } from "@/components/looper/VideoPlayer";
 import { PracticeClips } from "@/components/looper/PracticeClips";
+import { ClipNavigation } from "@/components/looper/ClipNavigation";
 import { AboutDrawer } from "@/components/AboutDrawer";
 
 export default function Home() {
@@ -25,11 +26,12 @@ export default function Home() {
   const [player, setPlayer] = useState<YouTubePlayer | null>(null);
   const [currentClip, setCurrentClip] = useState<{startTime: number, endTime: number} | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(0.5);
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
   const [isLooping, setIsLooping] = useState(false);
   const [isMirrored, setIsMirrored] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
+  const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -165,7 +167,7 @@ export default function Home() {
   }, [videoId]);
 
   return (
-    <main className="container mx-auto px-4 py-8 md:py-16">
+    <main className="container mx-auto px-4 py-8 md:py-16 pb-24">
       <header className="text-center mb-12">
         <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-tight mb-4">
           Dalooper
@@ -225,6 +227,13 @@ export default function Home() {
           />
         </div>
       )}
+
+      <ClipNavigation
+        clips={clips}
+        currentClipIndex={currentClipIndex}
+        setCurrentClipIndex={setCurrentClipIndex}
+        handleClipPlayback={handleClipPlayback}
+      />
 
       <AboutDrawer />
     </main>

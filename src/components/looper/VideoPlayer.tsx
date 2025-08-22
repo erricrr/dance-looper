@@ -110,6 +110,7 @@ export function VideoPlayer({
               />
             </div>
           </CardContent>
+
           <CardFooter className="flex justify-between pt-1">
             <div className="flex items-center gap-2 relative">
               <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
