@@ -312,7 +312,7 @@ export function PracticeClips({
 
           {/* Sequence Selection Display */}
           {isSequenceMode && (
-            <div className="bg-muted/30 rounded-lg p-3 border h-32 sm:h-20">
+            <div className="bg-secondary-foreground/10 rounded-lg p-3 border h-32 sm:h-20 my-2">
               <div className="flex items-center gap-2 mb-2 relative">
                 <List className="h-4 w-4" />
                 <span className="text-sm font-medium">Sequence Selection</span>
@@ -381,7 +381,7 @@ export function PracticeClips({
           )}
 
           {/* Clips List */}
-          <ScrollArea className="h-[400px]">
+          <ScrollArea className="h-[400px] ">
             <div className="space-y-2">
               {clips.map((clip, index) => (
                 <div
@@ -430,7 +430,7 @@ export function PracticeClips({
                       </div>
                     )}
 
-                    <span className="font-mono text-sm bg-muted px-2 py-1 rounded-md">
+                    <span className="font-mono text-sm bg-secondary-foreground/10 px-2 py-1 rounded-md">
                       {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
                     </span>
                   </div>
