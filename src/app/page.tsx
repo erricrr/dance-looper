@@ -16,6 +16,7 @@ import { VideoPlayer } from "@/components/looper/VideoPlayer";
 import { PracticeClips } from "@/components/looper/PracticeClips";
 import { ClipNavigation } from "@/components/looper/ClipNavigation";
 import { AboutDrawer } from "@/components/AboutDrawer";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function Home() {
   const [isUrlLoading, setIsUrlLoading] = useState(false);
@@ -189,83 +190,85 @@ export default function Home() {
   }, [videoId, videoDuration]);
 
   return (
-    <main className="container mx-auto px-4 py-8 md:py-16 pb-24">
-      <header className="text-center mb-12">
-        <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-tight mb-4">
-          Dalooper
-        </h1>
-        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-        Paste a YouTube link to break videos into clips — loop them as you learn.
-        </p>
-      </header>
+    <ErrorBoundary>
+      <main className="container mx-auto px-4 py-8 md:py-16 pb-24">
+        <header className="text-center mb-12">
+          <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-tight mb-4">
+            Dalooper
+          </h1>
+          <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          Paste a YouTube link to break videos into clips — loop them as you learn.
+          </p>
+        </header>
 
-      <UrlForm
-        isUrlLoading={isUrlLoading}
-        onUrlSubmit={onUrlSubmit}
-        savedUrls={savedUrls}
-        setSavedUrls={setSavedUrls}
-        loadSavedUrl={loadSavedUrl}
-        isFormOpen={isFormOpen}
-        setIsFormOpen={setIsFormOpen}
-      />
+        <UrlForm
+          isUrlLoading={isUrlLoading}
+          onUrlSubmit={onUrlSubmit}
+          savedUrls={savedUrls}
+          setSavedUrls={setSavedUrls}
+          loadSavedUrl={loadSavedUrl}
+          isFormOpen={isFormOpen}
+          setIsFormOpen={setIsFormOpen}
+        />
 
-      {isUrlLoading && !videoId && (
-         <div className="mt-12 max-w-2xl mx-auto text-center">
-            <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
-            <p className="text-muted-foreground mt-2">Loading video...</p>
-        </div>
-      )}
+        {isUrlLoading && !videoId && (
+           <div className="mt-12 max-w-2xl mx-auto text-center">
+              <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+              <p className="text-muted-foreground mt-2">Loading video...</p>
+          </div>
+        )}
 
-      {videoId && (
-        <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
-          <div ref={clipCreatorRef}>
-            <ClipCreator
-              player={player}
-              videoDuration={videoDuration}
+        {videoId && (
+          <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
+            <div ref={clipCreatorRef}>
+              <ClipCreator
+                player={player}
+                videoDuration={videoDuration}
+                isPlayerLoading={isPlayerLoading}
+                clips={clips}
+                setClips={setClips}
+                practiceClipsRef={practiceClipsRef}
+                isOpen={true}
+                resetKey={clipCreatorResetKey}
+              />
+            </div>
+
+            <VideoPlayer
+              videoId={videoId}
               isPlayerLoading={isPlayerLoading}
+              isMirrored={isMirrored}
+              setIsMirrored={setIsMirrored}
+              onPlayerReady={onPlayerReady}
+              onPlayerStateChange={onPlayerStateChange}
+              videoPlayerRef={videoPlayerRef}
+            />
+
+            <PracticeClips
               clips={clips}
-              setClips={setClips}
+              playbackSpeed={playbackSpeed}
+              setPlaybackSpeed={setPlaybackSpeed}
+              isLooping={isLooping}
+              setIsLooping={setIsLooping}
+              handleClipPlayback={handleClipPlayback}
               practiceClipsRef={practiceClipsRef}
-              isOpen={true}
-              resetKey={clipCreatorResetKey}
+              setClips={setClips}
+              setCurrentClipIndex={setCurrentClipIndex}
+              isSequenceMode={isSequenceMode}
+              setIsSequenceMode={setIsSequenceMode}
             />
           </div>
+        )}
 
-          <VideoPlayer
-            videoId={videoId}
-            isPlayerLoading={isPlayerLoading}
-            isMirrored={isMirrored}
-            setIsMirrored={setIsMirrored}
-            onPlayerReady={onPlayerReady}
-            onPlayerStateChange={onPlayerStateChange}
-            videoPlayerRef={videoPlayerRef}
-          />
+        <ClipNavigation
+          clips={clips}
+          currentClipIndex={currentClipIndex}
+          setCurrentClipIndex={setCurrentClipIndex}
+          handleClipPlayback={handleClipPlayback}
+          isSequenceMode={isSequenceMode}
+        />
 
-          <PracticeClips
-            clips={clips}
-            playbackSpeed={playbackSpeed}
-            setPlaybackSpeed={setPlaybackSpeed}
-            isLooping={isLooping}
-            setIsLooping={setIsLooping}
-            handleClipPlayback={handleClipPlayback}
-            practiceClipsRef={practiceClipsRef}
-            setClips={setClips}
-            setCurrentClipIndex={setCurrentClipIndex}
-            isSequenceMode={isSequenceMode}
-            setIsSequenceMode={setIsSequenceMode}
-          />
-        </div>
-      )}
-
-      <ClipNavigation
-        clips={clips}
-        currentClipIndex={currentClipIndex}
-        setCurrentClipIndex={setCurrentClipIndex}
-        handleClipPlayback={handleClipPlayback}
-        isSequenceMode={isSequenceMode}
-      />
-
-      <AboutDrawer />
-    </main>
+        <AboutDrawer />
+      </main>
+    </ErrorBoundary>
   );
 }

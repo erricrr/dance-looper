@@ -20,6 +20,24 @@ export const metadata: Metadata = {
   description: 'Turn YouTube into your personal tutor — one loop at a time.',
 };
 
+// Global error handler for unhandled promise rejections
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    // Check if it's a messaging-related error
+    if (event.reason && typeof event.reason === 'object' &&
+        event.reason.message &&
+        (event.reason.message.includes('message channel closed') ||
+         event.reason.message.includes('asynchronous response'))) {
+      console.warn('Caught messaging-related error (likely from browser extension):', event.reason);
+      event.preventDefault(); // Prevent the error from being logged as unhandled
+      return;
+    }
+
+    // For other errors, log them but don't prevent default behavior
+    console.error('Unhandled promise rejection:', event.reason);
+  });
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
