@@ -173,37 +173,35 @@ export function UrlForm({
                         )}
                       >
                         <div className="overflow-hidden pb-1">
-                          <ScrollArea className="h-40 rounded-md border">
-                            <div className="p-4 space-y-2">
-                              {savedUrls.map(url => (
-                                <div key={url} className="flex items-center justify-between p-2 rounded-md hover:bg-muted group">
-                                  <button
-                                    onClick={() => {
-                                      urlForm.setValue("youtubeUrl", url);
-                                      // Focus the input field
-                                      const input = document.querySelector('input[placeholder*="youtube.com"]') as HTMLInputElement;
-                                      if (input) {
-                                        input.focus();
-                                      }
-                                    }}
-                                    className="flex-1 text-left text-sm text-muted-foreground hover:text-foreground transition-colors truncate"
-                                    title={url}
-                                  >
-                                    {url}
-                                  </button>
-                                  <Button
+                          <div className="max-h-40 overflow-y-auto rounded-md border p-4 space-y-2">
+                            {savedUrls.map(url => (
+                              <div key={url} className="flex items-center gap-2 p-2 rounded-md hover:bg-muted group w-full">
+                                <button
+                                  onClick={() => {
+                                    urlForm.setValue("youtubeUrl", url);
+                                    // Focus the input field
+                                    const input = document.querySelector('input[placeholder*="youtube.com"]') as HTMLInputElement;
+                                    if (input) {
+                                      input.focus();
+                                    }
+                                  }}
+                                  className="flex-1 text-left text-sm text-muted-foreground hover:text-foreground transition-colors truncate pr-2"
+                                  title={url}
+                                >
+                                  {url}
+                                </button>
+                                                                  <Button
                                     size="icon"
                                     variant="ghost"
                                     onClick={() => removeUrl(url)}
-                                    className="h-6 w-6 shrink-0"
+                                    className="h-8 w-8 shrink-0"
                                     aria-label="Remove from saved links"
                                   >
-                                    <HeartOff className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          </ScrollArea>
+                                  <HeartOff className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                   </div>
