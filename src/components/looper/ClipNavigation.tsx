@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, PlayCircle } from "lucide-react";
 import { Clip } from "@/lib/types";
 import { formatTime } from "@/lib/utils";
@@ -172,46 +171,28 @@ export function ClipNavigation({
               {/* Navigation Controls */}
               <div className="flex items-center justify-center gap-2 sm:gap-3">
                 {/* First button */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={navigateToFirstClip}
-                        disabled={clips.length === 0}
-                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
-                      >
-                        <SkipBack className="h-4 w-4" />
-                        <span className="hidden sm:inline ml-2 text-sm font-medium">First</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">
-                      <p>Jump to first clip (Home)</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={navigateToFirstClip}
+                  disabled={clips.length === 0}
+                  className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                >
+                  <SkipBack className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-2 text-sm font-medium">First</span>
+                </Button>
 
                 {/* Previous button */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={navigateToPreviousClip}
-                        disabled={clips.length === 0}
-                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                        <span className="hidden sm:inline ml-2 text-sm font-medium">Previous</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">
-                      <p>Previous clip (←)</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={navigateToPreviousClip}
+                  disabled={clips.length === 0}
+                  className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-2 text-sm font-medium">Previous</span>
+                </Button>
 
                 {/* Current clip indicator */}
                 <div className="px-3 sm:px-6 py-2 sm:py-3 bg-background/95 backdrop-blur-sm rounded-xl border border-border shadow-sm min-w-[120px] sm:min-w-[160px] text-center">
@@ -234,46 +215,28 @@ export function ClipNavigation({
                 </div>
 
                 {/* Next button */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={navigateToNextClip}
-                        disabled={clips.length === 0}
-                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
-                      >
-                        <span className="hidden sm:inline mr-2 text-sm font-medium">Next</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">
-                      <p>Next clip (→)</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={navigateToNextClip}
+                  disabled={clips.length === 0}
+                  className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                >
+                  <span className="hidden sm:inline mr-2 text-sm font-medium">Next</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
 
                 {/* Last button */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={navigateToLastClip}
-                        disabled={clips.length === 0}
-                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
-                      >
-                        <span className="hidden sm:inline mr-2 text-sm font-medium">Last</span>
-                        <SkipForward className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">
-                      <p>Jump to last clip (End)</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={navigateToLastClip}
+                  disabled={clips.length === 0}
+                  className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                >
+                  <span className="hidden sm:inline mr-2 text-sm font-medium">Last</span>
+                  <SkipForward className="h-4 w-4" />
+                </Button>
               </div>
             </>
           )}

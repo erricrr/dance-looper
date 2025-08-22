@@ -60,7 +60,16 @@ export function ClipCreator({
 
   const scrollToPracticeClips = () => {
     setTimeout(() => {
-      practiceClipsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (practiceClipsRef.current) {
+        const element = practiceClipsRef.current;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - 150; // Account for fixed nav
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
     }, 100);
   };
 

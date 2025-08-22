@@ -39,6 +39,7 @@ export default function Home() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const practiceClipsRef = useRef<HTMLDivElement>(null);
   const videoPlayerRef = useRef<HTMLDivElement>(null);
+  const clipCreatorRef = useRef<HTMLDivElement>(null);
 
   const urlForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +58,25 @@ export default function Home() {
   }, []);
 
   const onUrlSubmit = async (values: z.infer<typeof formSchema>) => {
+    const extractedVideoId = getYoutubeVideoId(values.youtubeUrl);
+    if (!extractedVideoId) {
+      toast({
+        variant: "destructive",
+        title: "Invalid URL",
+        description: "Could not extract video ID from the YouTube URL.",
+      });
+      return;
+    }
+
+    // Check if the same video is already loaded
+    if (videoId === extractedVideoId) {
+      toast({
+        title: "Video Already Loaded",
+        description: "This video is already loaded and ready to use.",
+      });
+      return;
+    }
+
     setIsUrlLoading(true);
     setIsPlayerLoading(true);
     setClips([]);
@@ -65,16 +85,6 @@ export default function Home() {
     setCurrentClip(null);
     if(player) player.stopVideo();
 
-    const extractedVideoId = getYoutubeVideoId(values.youtubeUrl);
-    if (!extractedVideoId) {
-      toast({
-        variant: "destructive",
-        title: "Invalid URL",
-        description: "Could not extract video ID from the YouTube URL.",
-      });
-      setIsUrlLoading(false);
-      return;
-    }
     setVideoId(extractedVideoId);
   };
 
@@ -166,10 +176,10 @@ export default function Home() {
     }
   }, [playbackSpeed, player, isPlaying]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (videoId) {
       setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        clipCreatorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
     }
   }, [videoId]);
@@ -204,14 +214,16 @@ export default function Home() {
 
       {videoId && (
         <div ref={resultsRef} className="mt-8 max-w-4xl mx-auto">
-          <ClipCreator
-            player={player}
-            videoDuration={videoDuration}
-            isPlayerLoading={isPlayerLoading}
-            clips={clips}
-            setClips={setClips}
-            practiceClipsRef={practiceClipsRef}
-          />
+          <div ref={clipCreatorRef}>
+            <ClipCreator
+              player={player}
+              videoDuration={videoDuration}
+              isPlayerLoading={isPlayerLoading}
+              clips={clips}
+              setClips={setClips}
+              practiceClipsRef={practiceClipsRef}
+            />
+          </div>
 
           <VideoPlayer
             videoId={videoId}
