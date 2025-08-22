@@ -157,47 +157,56 @@ export function UrlForm({
                 </form>
               </Form>
               {savedUrls.length > 0 && (
-                  <Collapsible open={isSavedVideosOpen} onOpenChange={setIsSavedVideosOpen} className="mt-6">
-                      <CollapsibleTrigger className="w-full">
-                        <div className="flex items-center gap-2 text-sm font-semibold">
-                            <Heart className="h-4 w-4" />
-                            Saved Links ({savedUrls.length}/{MAX_SAVED_URLS})
-                        </div>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4">
-                      <ScrollArea className="h-40 rounded-md border">
-                        <div className="p-4 space-y-2">
-                          {savedUrls.map(url => (
-                            <div key={url} className="flex items-center justify-between p-2 rounded-md hover:bg-muted group">
-                              <button
-                                onClick={() => {
-                                  urlForm.setValue("youtubeUrl", url);
-                                  // Focus the input field
-                                  const input = document.querySelector('input[placeholder*="youtube.com"]') as HTMLInputElement;
-                                  if (input) {
-                                    input.focus();
-                                  }
-                                }}
-                                className="flex-1 text-left text-sm text-muted-foreground hover:text-foreground transition-colors truncate"
-                                title={url}
-                              >
-                                {url}
-                              </button>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => removeUrl(url)}
-                                className="h-6 w-6 shrink-0"
-                                aria-label="Remove from saved links"
-                              >
-                                <HeartOff className="h-3 w-3" />
-                              </Button>
+                  <div className="mt-6">
+                      <button
+                        onClick={() => setIsSavedVideosOpen(!isSavedVideosOpen)}
+                        className="w-full flex items-center gap-2 text-sm font-semibold hover:bg-muted/50 rounded-md p-2 transition-colors"
+                      >
+                        <Heart className="h-4 w-4" />
+                        Saved Links ({savedUrls.length}/{MAX_SAVED_URLS})
+                      </button>
+
+                      <div
+                        className={cn(
+                          "grid transition-all duration-300 ease-in-out overflow-hidden",
+                          isSavedVideosOpen ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0"
+                        )}
+                      >
+                        <div className="overflow-hidden pb-1">
+                          <ScrollArea className="h-40 rounded-md border">
+                            <div className="p-4 space-y-2">
+                              {savedUrls.map(url => (
+                                <div key={url} className="flex items-center justify-between p-2 rounded-md hover:bg-muted group">
+                                  <button
+                                    onClick={() => {
+                                      urlForm.setValue("youtubeUrl", url);
+                                      // Focus the input field
+                                      const input = document.querySelector('input[placeholder*="youtube.com"]') as HTMLInputElement;
+                                      if (input) {
+                                        input.focus();
+                                      }
+                                    }}
+                                    className="flex-1 text-left text-sm text-muted-foreground hover:text-foreground transition-colors truncate"
+                                    title={url}
+                                  >
+                                    {url}
+                                  </button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => removeUrl(url)}
+                                    className="h-6 w-6 shrink-0"
+                                    aria-label="Remove from saved links"
+                                  >
+                                    <HeartOff className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          </ScrollArea>
                         </div>
-                      </ScrollArea>
-                    </CollapsibleContent>
-                  </Collapsible>
+                      </div>
+                  </div>
               )}
             </CardContent>
           </CollapsibleContent>
