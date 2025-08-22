@@ -168,10 +168,10 @@ export function ClipCreator({
                         control={customClipForm.control}
                         name="startTime"
                         render={({ field }) => (
-                          <FormItem className="flex-1 min-w-0">
+                          <FormItem className="w-[100px]">
                             <FormLabel>Start</FormLabel>
                             <FormControl>
-                              <Input placeholder="MM:SS" {...field} />
+                              <Input placeholder="MM:SS" {...field} className="w-[100px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -182,10 +182,10 @@ export function ClipCreator({
                         control={customClipForm.control}
                         name="endTime"
                         render={({ field }) => (
-                          <FormItem className="flex-1 min-w-0">
+                          <FormItem className="w-[100px]">
                             <FormLabel>End</FormLabel>
                             <FormControl>
-                              <Input placeholder="MM:SS" {...field} />
+                              <Input placeholder="MM:SS" {...field} className="w-[100px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
