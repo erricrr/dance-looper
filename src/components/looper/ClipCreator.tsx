@@ -36,15 +36,13 @@ export function ClipCreator({
   isOpen = true,
   resetKey
 }: ClipCreatorProps) {
-  const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(isOpen);
+
+
   const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<number | null>(null);
   const [showAutoSegmentInfo, setShowAutoSegmentInfo] = useState(false);
 
-  // Ensure Create Clips is open when video is loaded
-  useEffect(() => {
-    setIsCreateClipsOpen(true);
-  }, [videoDuration]);
+
 
   // Close info panel when clicking outside
   useEffect(() => {
@@ -149,22 +147,12 @@ export function ClipCreator({
 
   return (
     <div className="mt-8">
-      <Collapsible open={isCreateClipsOpen} onOpenChange={setIsCreateClipsOpen} disabled={!player || !videoDuration || isPlayerLoading}>
-        <Card className="shadow-lg">
-          <CollapsibleTrigger asChild>
-            <button className="w-full p-6">
-              <div className="flex justify-between items-center">
-                <div className="text-left flex items-center gap-4">
-                  <div>
-                    <CardTitle>Create Clips</CardTitle>
-                    <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
-                  </div>
-                </div>
-              </div>
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-6 pt-2">
+      <Card className="shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle>Create Clips</CardTitle>
+          <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
               <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
                 <div>
                   <div className="flex items-center gap-2 relative">
@@ -236,9 +224,7 @@ export function ClipCreator({
                 </Collapsible>
               </fieldset>
             </CardContent>
-          </CollapsibleContent>
         </Card>
-      </Collapsible>
     </div>
   );
 }
