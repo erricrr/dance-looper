@@ -97,12 +97,12 @@ export function ClipNavigation({
       {/* Backdrop with subtle gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-background/98 via-background/95 to-transparent backdrop-blur-md border-t border-border/50" />
 
-      <div className={`relative container mx-auto transition-all duration-500 ease-out ${isExpanded ? 'px-6 py-4' : 'px-4 py-2'}`}>
+      <div className={`relative container mx-auto transition-all duration-500 ease-out ${isExpanded ? 'px-3 sm:px-6 py-4' : 'px-3 sm:px-4 py-2'}`}>
         <div className={`
           relative overflow-hidden rounded-xl transition-all duration-500 ease-out
           ${isExpanded
-            ? 'bg-card/90 backdrop-blur-sm border border-border/60 shadow-lg shadow-black/5 p-5'
-            : 'bg-card/80 backdrop-blur-sm border border-border/40 shadow-md shadow-black/3 p-3'
+            ? 'bg-card/90 backdrop-blur-sm border border-border/60 shadow-lg shadow-black/5 p-3 sm:p-5'
+            : 'bg-card/80 backdrop-blur-sm border border-border/40 shadow-md shadow-black/3 p-2 sm:p-3'
           }
         `}>
 
@@ -147,7 +147,7 @@ export function ClipNavigation({
           {isExpanded && (
             <>
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
                     <PlayCircle className="h-4 w-4" />
@@ -184,7 +184,7 @@ export function ClipNavigation({
               </div>
 
               {/* Navigation Controls */}
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
                 {/* First button */}
                 <TooltipProvider>
                   <Tooltip>
@@ -194,7 +194,7 @@ export function ClipNavigation({
                         size="sm"
                         onClick={navigateToFirstClip}
                         disabled={clips.length === 0}
-                        className="h-10 px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
                       >
                         <SkipBack className="h-4 w-4" />
                         <span className="hidden sm:inline ml-2 text-sm font-medium">First</span>
@@ -215,7 +215,7 @@ export function ClipNavigation({
                         size="sm"
                         onClick={navigateToPreviousClip}
                         disabled={clips.length === 0}
-                        className="h-10 px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
                       >
                         <ChevronLeft className="h-4 w-4" />
                         <span className="hidden sm:inline ml-2 text-sm font-medium">Previous</span>
@@ -228,7 +228,7 @@ export function ClipNavigation({
                 </TooltipProvider>
 
                 {/* Current clip indicator */}
-                <div className="px-6 py-3 bg-background/95 backdrop-blur-sm rounded-xl border border-border shadow-sm min-w-[160px] text-center">
+                <div className="px-3 sm:px-6 py-2 sm:py-3 bg-background/95 backdrop-blur-sm rounded-xl border border-border shadow-sm min-w-[120px] sm:min-w-[160px] text-center">
                   <div className="text-sm font-semibold text-foreground">
                     {currentClipIndex !== null ? (
                       <>
@@ -256,7 +256,7 @@ export function ClipNavigation({
                         size="sm"
                         onClick={navigateToNextClip}
                         disabled={clips.length === 0}
-                        className="h-10 px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
                       >
                         <span className="hidden sm:inline mr-2 text-sm font-medium">Next</span>
                         <ChevronRight className="h-4 w-4" />
@@ -277,7 +277,7 @@ export function ClipNavigation({
                         size="sm"
                         onClick={navigateToLastClip}
                         disabled={clips.length === 0}
-                        className="h-10 px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
+                        className="h-9 sm:h-10 px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50"
                       >
                         <span className="hidden sm:inline mr-2 text-sm font-medium">Last</span>
                         <SkipForward className="h-4 w-4" />
