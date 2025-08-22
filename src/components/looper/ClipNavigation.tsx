@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Navigation } from "lucide-react";
+import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, PlayCircle } from "lucide-react";
 import { Clip } from "@/lib/types";
 import { formatTime } from "@/lib/utils";
 
@@ -111,7 +111,7 @@ export function ClipNavigation({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10 text-primary">
-                  <Navigation className="h-4 w-4" />
+                  <PlayCircle className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-foreground">Clip Navigation</span>
@@ -150,7 +150,7 @@ export function ClipNavigation({
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
-                    <Navigation className="h-4 w-4" />
+                    <PlayCircle className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col">
                     <Label className="text-base font-semibold text-foreground">Clip Navigation</Label>
@@ -228,7 +228,7 @@ export function ClipNavigation({
                 </TooltipProvider>
 
                 {/* Current clip indicator */}
-                <div className="px-6 py-3 bg-accent/30 rounded-xl border border-border/40 min-w-[160px] text-center backdrop-blur-sm">
+                <div className="px-6 py-3 bg-background/95 backdrop-blur-sm rounded-xl border border-border shadow-sm min-w-[160px] text-center">
                   <div className="text-sm font-semibold text-foreground">
                     {currentClipIndex !== null ? (
                       <>

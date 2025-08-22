@@ -89,6 +89,13 @@ export default function Home() {
       player.setPlaybackRate(playbackSpeed);
     }
     setCurrentClip({startTime, endTime});
+
+    // Find the clip index that matches the start and end times
+    const clipIndex = clips.findIndex(clip =>
+      Math.abs(clip.startTime - startTime) < 0.1 && Math.abs(clip.endTime - endTime) < 0.1
+    );
+    setCurrentClipIndex(clipIndex >= 0 ? clipIndex : null);
+
     player.seekTo(startTime, true);
     player.playVideo();
     videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -224,6 +231,7 @@ export default function Home() {
             handleClipPlayback={handleClipPlayback}
             practiceClipsRef={practiceClipsRef}
             setClips={setClips}
+            setCurrentClipIndex={setCurrentClipIndex}
           />
         </div>
       )}

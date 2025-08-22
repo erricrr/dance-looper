@@ -26,6 +26,7 @@ type PracticeClipsProps = {
   handleClipPlayback: (startTime: number, endTime: number) => void;
   practiceClipsRef: React.RefObject<HTMLDivElement>;
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
+  setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 export function PracticeClips({
@@ -36,7 +37,8 @@ export function PracticeClips({
   setIsLooping,
   handleClipPlayback,
   practiceClipsRef,
-  setClips
+  setClips,
+  setCurrentClipIndex
 }: PracticeClipsProps) {
   const isMobile = useIsMobile();
   const [isPracticeClipsOpen, setIsPracticeClipsOpen] = useState(true);
@@ -125,6 +127,9 @@ export function PracticeClips({
 
     const startClip = clips[sequenceStartIndex];
     const endClip = clips[sequenceEndIndex];
+
+    // Set the current clip index to the start of the sequence
+    setCurrentClipIndex(sequenceStartIndex);
 
     // Play from the start of the first clip to the end of the last clip
     handleClipPlayback(startClip.startTime, endClip.endTime);
@@ -402,6 +407,7 @@ export function PracticeClips({
                         if (isDeleteMode || isSequenceMode) {
                           toggleClipSelection(index);
                         } else {
+                          setCurrentClipIndex(index);
                           handleClipPlayback(clip.startTime, clip.endTime);
                         }
                       }}
@@ -438,7 +444,10 @@ export function PracticeClips({
                         </span>
                       </div>
                       {!isDeleteMode && !isSequenceMode && (
-                        <Button onClick={() => handleClipPlayback(clip.startTime, clip.endTime)} size="sm" variant="mystic">
+                        <Button onClick={() => {
+                          setCurrentClipIndex(index);
+                          handleClipPlayback(clip.startTime, clip.endTime);
+                        }} size="sm" variant="mystic">
                           <Play className="mr-2 h-4 w-4" />
                           Play Clip
                         </Button>
