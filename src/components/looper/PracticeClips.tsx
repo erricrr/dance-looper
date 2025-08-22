@@ -17,6 +17,41 @@ import { Clip, PlaybackSpeed } from "@/lib/types";
 import { formatTime } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Reusable Loop component
+function LoopControls({
+  isLooping,
+  setIsLooping,
+  showInfo,
+  setShowInfo
+}: {
+  isLooping: boolean;
+  setIsLooping: React.Dispatch<React.SetStateAction<boolean>>;
+  showInfo: boolean;
+  setShowInfo: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  return (
+    <div className="flex items-center gap-2 relative">
+      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
+      <button
+        data-info-button
+        className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+        onClick={() => setShowInfo(!showInfo)}
+      >
+        <Info className="h-4 w-4 text-muted-foreground" />
+      </button>
+      {showInfo && (
+        <div className="absolute top-full right-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+          <div className="text-center">
+            <p>Repeats the clip automatically</p>
+            <p>until you stop it.</p>
+          </div>
+        </div>
+      )}
+      <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
+    </div>
+  );
+}
+
 type PracticeClipsProps = {
   clips: Clip[];
   playbackSpeed: PlaybackSpeed;
@@ -50,9 +85,7 @@ export function PracticeClips({
   const [selectedClips, setSelectedClips] = useState<number[]>([]);
   const [sequenceStartIndex, setSequenceStartIndex] = useState<number | null>(null);
   const [sequenceEndIndex, setSequenceEndIndex] = useState<number | null>(null);
-  const [showLoopInfo1, setShowLoopInfo1] = useState(false);
-  const [showLoopInfo2, setShowLoopInfo2] = useState(false);
-  const [showLoopInfo3, setShowLoopInfo3] = useState(false);
+  const [showLoopInfo, setShowLoopInfo] = useState(false);
   const [showSequenceInfo, setShowSequenceInfo] = useState(false);
 
   // Close info panels when clicking outside
@@ -60,9 +93,7 @@ export function PracticeClips({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
       if (!target.closest('[data-info-button]')) {
-        setShowLoopInfo1(false);
-        setShowLoopInfo2(false);
-        setShowLoopInfo3(false);
+        setShowLoopInfo(false);
         setShowSequenceInfo(false);
       }
     };
@@ -258,25 +289,12 @@ export function PracticeClips({
 
                        </div>
 
-                       <div className="flex items-center gap-2 relative">
-                         <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                         <button
-                           data-info-button
-                           className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
-                           onClick={() => setShowLoopInfo1(!showLoopInfo1)}
-                         >
-                           <Info className="h-4 w-4 text-muted-foreground" />
-                         </button>
-                         {showLoopInfo1 && (
-                           <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
-                             <div className="text-center">
-                               <p>Repeats the clip automatically</p>
-                               <p>until you stop it.</p>
-                             </div>
-                           </div>
-                         )}
-                         <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
-                       </div>
+                       <LoopControls
+                         isLooping={isLooping}
+                         setIsLooping={setIsLooping}
+                         showInfo={showLoopInfo}
+                         setShowInfo={setShowLoopInfo}
+                       />
                      </div>
                   ) : (
                                          <div className="flex items-center justify-between w-full">
@@ -295,25 +313,12 @@ export function PracticeClips({
                         </Button>
                       </div>
 
-                      <div className="flex items-center gap-2 relative">
-                        <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
-                        <button
-                          data-info-button
-                          className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
-                          onClick={() => setShowLoopInfo2(!showLoopInfo2)}
-                        >
-                          <Info className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                        {showLoopInfo2 && (
-                          <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
-                            <div className="text-center">
-                              <p>Repeats the clip automatically</p>
-                              <p>until you stop it.</p>
-                            </div>
-                          </div>
-                        )}
-                        <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
-                      </div>
+                      <LoopControls
+                        isLooping={isLooping}
+                        setIsLooping={setIsLooping}
+                        showInfo={showLoopInfo}
+                        setShowInfo={setShowLoopInfo}
+                      />
                     </div>
                   )}
                 </div>
