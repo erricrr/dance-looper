@@ -33,6 +33,7 @@ export default function Home() {
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
   const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
   const [isSequenceMode, setIsSequenceMode] = useState(false);
+  const [clipCreatorResetKey, setClipCreatorResetKey] = useState(0);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -83,6 +84,9 @@ export default function Home() {
     setVideoId(null);
     setVideoDuration(0);
     setCurrentClip(null);
+    setCurrentClipIndex(null);
+    setIsSequenceMode(false);
+    setClipCreatorResetKey(prev => prev + 1); // Reset ClipCreator state
     if(player) player.stopVideo();
 
     setVideoId(extractedVideoId);
@@ -223,6 +227,7 @@ export default function Home() {
               setClips={setClips}
               practiceClipsRef={practiceClipsRef}
               isOpen={true}
+              resetKey={clipCreatorResetKey}
             />
           </div>
 

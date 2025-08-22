@@ -23,6 +23,7 @@ type ClipCreatorProps = {
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   practiceClipsRef: React.RefObject<HTMLDivElement>;
   isOpen?: boolean;
+  resetKey?: number; // Add reset key to trigger state reset
 };
 
 export function ClipCreator({
@@ -32,7 +33,8 @@ export function ClipCreator({
   clips,
   setClips,
   practiceClipsRef,
-  isOpen = true
+  isOpen = true,
+  resetKey
 }: ClipCreatorProps) {
   const [isCreateClipsOpen, setIsCreateClipsOpen] = useState(isOpen);
   const [isCustomClipOpen, setIsCustomClipOpen] = useState(false);
@@ -64,6 +66,19 @@ export function ClipCreator({
       endTime: ""
     }
   });
+
+  // Reset state when a new video is loaded (moved after customClipForm initialization)
+  useEffect(() => {
+    if (resetKey !== undefined) {
+      setSelectedSegment(null);
+      setIsCustomClipOpen(false);
+      setShowAutoSegmentInfo(false);
+      customClipForm.reset({
+        startTime: "",
+        endTime: ""
+      });
+    }
+  }, [resetKey, customClipForm]);
 
   const scrollToPracticeClips = () => {
     setTimeout(() => {

@@ -187,12 +187,10 @@ export function UrlForm({
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => removeUrl(url)}
-                                className="h-6 w-6 shrink-0 hover:bg-muted transition-colors group"
+                                className="h-6 w-6 shrink-0"
                                 aria-label="Remove from saved links"
-                                title="Remove from saved links"
                               >
-                                <Heart className="h-3 w-3 group-hover:hidden" />
-                                <HeartOff className="h-3 w-3 hidden group-hover:block" />
+                                <HeartOff className="h-3 w-3" />
                               </Button>
                             </div>
                           ))}
