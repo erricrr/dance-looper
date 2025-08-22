@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ChevronDown, Heart, Trash2 } from "lucide-react";
+import { Loader2, Heart, Trash2 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -39,12 +39,35 @@ export function UrlForm({
   setIsFormOpen
 }: UrlFormProps) {
   const [isSavedVideosOpen, setIsSavedVideosOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const formRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const urlForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { youtubeUrl: "" },
   });
+
+  // Scroll-based visibility logic
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+
+      // Show when scrolling up, hide when scrolling down
+      if (scrollDirection === 'up') {
+        setIsVisible(true);
+      } else if (scrollDirection === 'down' && currentScrollY > 100) {
+        setIsVisible(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const saveUrl = () => {
     const urlToSave = urlForm.getValues("youtubeUrl");
@@ -84,23 +107,21 @@ export function UrlForm({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div
+      ref={formRef}
+      className={cn(
+        "max-w-2xl mx-auto transition-all duration-300 ease-in-out",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+      )}
+    >
       <Card className="shadow-lg">
-        <Collapsible open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <CollapsibleTrigger asChild>
-              <button className="w-full p-6">
-                  <div className="flex justify-between items-center">
-                      <div className="text-left flex items-center gap-4">
-                        <div>
-                            <CardTitle>Paste a YouTube Link</CardTitle>
-                            <CardDescription className={cn("pt-1", !isFormOpen && "hidden")}>Or pick from your saved links (if you have any)</CardDescription>
-                            <CardDescription className={cn("pt-1", isFormOpen && "hidden")}>Click to change video</CardDescription>
-                        </div>
-                      </div>
-                      <ChevronDown className={cn("h-6 w-6 transition-transform duration-200", isFormOpen && "rotate-180")} />
-                  </div>
-              </button>
-          </CollapsibleTrigger>
+        <Collapsible open={true} onOpenChange={() => {}}>
+          <div className="p-6">
+            <div className="text-left">
+              <CardTitle>Paste a YouTube Link</CardTitle>
+              <CardDescription className="pt-1">Or pick from your saved links (if you have any)</CardDescription>
+            </div>
+          </div>
           <CollapsibleContent>
             <CardContent className="p-6 pt-0">
               <Form {...urlForm}>
@@ -159,7 +180,6 @@ export function UrlForm({
                         <div className="flex items-center gap-2 text-sm font-semibold">
                             <Heart className="h-4 w-4" />
                             Saved Links ({savedUrls.length}/{MAX_SAVED_URLS})
-                            <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isSavedVideosOpen && "rotate-180")} />
                         </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-4">

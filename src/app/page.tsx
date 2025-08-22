@@ -29,7 +29,7 @@ export default function Home() {
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
   const [isLooping, setIsLooping] = useState(false);
   const [isMirrored, setIsMirrored] = useState(false);
-  const [isFormOpen, setIsFormOpen] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(true); // Keeping for compatibility but not used
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
   const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
   const [isSequenceMode, setIsSequenceMode] = useState(false);
@@ -122,7 +122,7 @@ export default function Home() {
     }
     setIsUrlLoading(false);
     setIsPlayerLoading(false);
-    setIsFormOpen(false);
+    // Form is now always open, no need to close it
   };
 
   const onPlayerStateChange = (event: { data: number }) => {
