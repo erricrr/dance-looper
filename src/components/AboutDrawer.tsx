@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function AboutDrawer() {
   return (
-    <div className="mt-10 flex justify-center">
+    <div className="absolute top-4 right-4 z-50">
       <Sheet>
   <SheetTrigger asChild>
     <Button

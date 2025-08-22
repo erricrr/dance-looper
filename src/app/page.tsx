@@ -191,7 +191,8 @@ export default function Home() {
 
   return (
     <ErrorBoundary>
-      <main className="container mx-auto px-4 py-8 md:py-16 pb-24">
+      <main className="container mx-auto px-4 py-8 md:py-16 pb-24 relative">
+        <AboutDrawer />
         <header className="text-center mb-12">
           <h1 className="text-5xl md:text-6xl font-bold font-headline tracking-tight mb-4">
             Dalooper
@@ -266,8 +267,6 @@ export default function Home() {
           handleClipPlayback={handleClipPlayback}
           isSequenceMode={isSequenceMode}
         />
-
-        <AboutDrawer />
       </main>
     </ErrorBoundary>
   );
