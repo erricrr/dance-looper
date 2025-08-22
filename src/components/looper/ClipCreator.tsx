@@ -161,37 +161,37 @@ export function ClipCreator({
                   isCustomClipOpen ? "grid-rows-[1fr] opacity-100 mt-4" : "grid-rows-[0fr] opacity-0"
                 )}
               >
-                <div className="overflow-hidden">
+                <div className="overflow-hidden pb-1">
                   <Form {...customClipForm}>
-                    <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-end gap-2 pt-2">
+                    <form onSubmit={customClipForm.handleSubmit(handleCustomClipSubmit)} className="flex items-center gap-2 pt-2">
                       <FormField
                         control={customClipForm.control}
                         name="startTime"
                         render={({ field }) => (
-                          <FormItem className="w-[100px]">
-                            <FormLabel>Start</FormLabel>
+                          <FormItem className="flex items-center gap-2">
+                            <FormLabel className="text-sm font-medium whitespace-nowrap">Start:</FormLabel>
                             <FormControl>
-                              <Input placeholder="MM:SS" {...field} className="w-[100px]" />
+                              <Input placeholder="MM:SS" {...field} className="w-[80px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      <ChevronsRight className="h-6 w-6 mb-2" />
+                      <ChevronsRight className="h-4 w-4" />
                       <FormField
                         control={customClipForm.control}
                         name="endTime"
                         render={({ field }) => (
-                          <FormItem className="w-[100px]">
-                            <FormLabel>End</FormLabel>
+                          <FormItem className="flex items-center gap-2">
+                            <FormLabel className="text-sm font-medium whitespace-nowrap">End:</FormLabel>
                             <FormControl>
-                              <Input placeholder="MM:SS" {...field} className="w-[100px]" />
+                              <Input placeholder="MM:SS" {...field} className="w-[80px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      <Button type="submit" variant="mystic" size="icon" className="mb-1 active:scale-95 transition-transform">
+                      <Button type="submit" variant="mystic" size="icon" className="active:scale-95 transition-transform">
                         <Plus />
                       </Button>
                     </form>
