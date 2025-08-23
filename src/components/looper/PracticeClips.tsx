@@ -41,7 +41,7 @@ function LoopControls({
       <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
 
       {showInfo && (
-                <div className="absolute top-full -right-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-60">
+                <div className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-60">
           <div className="text-center">
             <p>Repeats the clip automatically</p>
             <p>until you stop it.</p>
@@ -248,8 +248,32 @@ export function PracticeClips({
             </div>
 
             {/* Loop, Sequence, and Delete Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 pb-2">
-              <div className="flex items-center gap-2 flex-wrap h-9">
+            <div className="flex items-center justify-between gap-5 pb-2">
+              <div className="flex items-center gap-4 h-9">
+                <LoopControls
+                  isLooping={isLooping}
+                  setIsLooping={setIsLooping}
+                  showInfo={showLoopInfo}
+                  setShowInfo={setShowLoopInfo}
+                />
+
+                {isSequenceMode ? (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    disabled={sequenceStartIndex === null || sequenceEndIndex === null}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      playSequence();
+                    }}
+                  >
+                    <Play className="h-4 w-4 mr-1" />
+                    Play Sequence
+                  </Button>
+                ) : null}
+              </div>
+
+              <div className="flex items-center gap-2 h-9">
                 {isDeleteMode ? (
                   <>
                     <Button
@@ -276,29 +300,7 @@ export function PracticeClips({
                       Delete
                     </Button>
                   </>
-                ) : isSequenceMode ? (
-                  <Button
-                    variant="default"
-                    size="sm"
-                    disabled={sequenceStartIndex === null || sequenceEndIndex === null}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playSequence();
-                    }}
-                  >
-                    <Play className="h-4 w-4 mr-1" />
-                    Play Sequence
-                  </Button>
                 ) : null}
-              </div>
-
-              <div className="flex items-center h-9">
-                <LoopControls
-                  isLooping={isLooping}
-                  setIsLooping={setIsLooping}
-                  showInfo={showLoopInfo}
-                  setShowInfo={setShowLoopInfo}
-                />
               </div>
             </div>
           </div>
@@ -397,13 +399,6 @@ export function PracticeClips({
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    {isDeleteMode && (
-                      <Checkbox
-                        checked={selectedClips.includes(index)}
-                        onCheckedChange={() => toggleClipSelection(index)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    )}
                     {isSequenceMode && sequenceStartIndex === index && (
                       <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -427,15 +422,24 @@ export function PracticeClips({
                       {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
                     </span>
                   </div>
-                  {!isDeleteMode && !isSequenceMode && (
-                    <Button onClick={() => {
-                      setCurrentClipIndex(index);
-                      handleClipPlayback(clip.startTime, clip.endTime);
-                    }} size="sm" variant="mystic">
-                      <Play className="mr-2 h-4 w-4" />
-                      Play Clip
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {isDeleteMode && (
+                      <Checkbox
+                        checked={selectedClips.includes(index)}
+                        onCheckedChange={() => toggleClipSelection(index)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    )}
+                    {!isDeleteMode && !isSequenceMode && (
+                      <Button onClick={() => {
+                        setCurrentClipIndex(index);
+                        handleClipPlayback(clip.startTime, clip.endTime);
+                      }} size="sm" variant="mystic">
+                        <Play className="mr-2 h-4 w-4" />
+                        Play Clip
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
