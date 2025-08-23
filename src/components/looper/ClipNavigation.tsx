@@ -176,7 +176,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToFirstClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <SkipBack className="h-3 w-3 xs:h-4 xs:w-4" />
                   <span className="hidden md:inline ml-1 xs:ml-2 text-xs xs:text-sm font-medium">First</span>
@@ -188,7 +188,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToPreviousClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <ChevronLeft className="h-3 w-3 xs:h-4 xs:w-4" />
                   <span className="hidden md:inline ml-1 xs:ml-2 text-xs xs:text-sm font-medium">Previous</span>
@@ -220,7 +220,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToNextClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <span className="hidden md:inline mr-1 xs:mr-2 text-xs xs:text-sm font-medium">Next</span>
                   <ChevronRight className="h-3 w-3 xs:h-4 xs:w-4" />
@@ -232,7 +232,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToLastClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-accent/50 hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <span className="hidden md:inline mr-1 xs:mr-2 text-xs xs:text-sm font-medium">Last</span>
                   <SkipForward className="h-3 w-3 xs:h-4 xs:w-4" />
