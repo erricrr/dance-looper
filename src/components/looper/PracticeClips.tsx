@@ -181,8 +181,24 @@ export function PracticeClips({
     <div className="mt-8" ref={practiceClipsRef}>
       <Card className="shadow-lg">
         <CardHeader className="pb-4">
-          <CardTitle>Your Clips</CardTitle>
-          <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Your Clips</CardTitle>
+              <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
+            </div>
+            {!isDeleteMode && !isSequenceMode && (
+              <button
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent hover:bg-transparent hover:text-primary h-8 w-8 shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDeleteMode();
+                }}
+              >
+                <Trash2 className="h-5 w-5" />
+                <span className="sr-only">Delete selected clips</span>
+              </button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="px-6 pb-6 pt-0">
           {/* Controls Section */}
@@ -233,79 +249,57 @@ export function PracticeClips({
 
             {/* Loop, Sequence, and Delete Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 pb-2">
-              {isDeleteMode ? (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleDeleteMode();
-                    }}
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    disabled={selectedClips.length === 0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteSelectedClips();
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              ) : isSequenceMode ? (
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap h-9">
+                {isDeleteMode ? (
+                  <>
                     <Button
-                      variant="default"
+                      variant="outline"
                       size="sm"
-                      disabled={sequenceStartIndex === null || sequenceEndIndex === null}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        playSequence();
-                      }}
-                    >
-                      <Play className="h-4 w-4 mr-1" />
-                      Play Sequence
-                    </Button>
-                  </div>
-
-                  <LoopControls
-                    isLooping={isLooping}
-                    setIsLooping={setIsLooping}
-                    showInfo={showLoopInfo}
-                    setShowInfo={setShowLoopInfo}
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center justify-between w-full mb-2">
-                  <div className="flex items-center gap-2 ml-5">
-                    <button
-                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent hover:bg-transparent hover:text-primary h-5 w-5 shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleDeleteMode();
                       }}
                     >
-                      <Trash2 className="h-5 w-5" />
-                      <span className="sr-only">Delete selected clips</span>
-                    </button>
-                  </div>
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      disabled={selectedClips.length === 0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSelectedClips();
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </>
+                ) : isSequenceMode ? (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    disabled={sequenceStartIndex === null || sequenceEndIndex === null}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      playSequence();
+                    }}
+                  >
+                    <Play className="h-4 w-4 mr-1" />
+                    Play Sequence
+                  </Button>
+                ) : null}
+              </div>
 
-                  <LoopControls
-                    isLooping={isLooping}
-                    setIsLooping={setIsLooping}
-                    showInfo={showLoopInfo}
-                    setShowInfo={setShowLoopInfo}
-                  />
-                </div>
-              )}
+              <div className="flex items-center h-9">
+                <LoopControls
+                  isLooping={isLooping}
+                  setIsLooping={setIsLooping}
+                  showInfo={showLoopInfo}
+                  setShowInfo={setShowLoopInfo}
+                />
+              </div>
             </div>
           </div>
 
