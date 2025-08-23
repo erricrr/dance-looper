@@ -135,6 +135,7 @@ export default function Home() {
     console.log('handleResume called');
     if (!player) return;
     player.playVideo();
+    videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
