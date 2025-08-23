@@ -72,4 +72,12 @@
     @apply bg-gradient-to-br from-accent/80 to-primary text-primary-foreground shadow-md transition-all duration-300 ease-in-out;
     @apply hover:shadow-lg hover:from-primary hover:to-accent;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
