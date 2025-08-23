@@ -283,7 +283,7 @@ export function PracticeClips({
                   />
                 </div>
               ) : (
-                <div className="flex items-center justify-between w-full">
+                <div className="flex items-center justify-between w-full mb-2">
                   <div className="flex items-center gap-2 ml-5">
                     <Button
                       variant="ghost"
