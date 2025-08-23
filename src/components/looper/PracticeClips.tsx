@@ -59,7 +59,7 @@ type PracticeClipsProps = {
   setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeed>>;
   isLooping: boolean;
   setIsLooping: React.Dispatch<React.SetStateAction<boolean>>;
-  handleClipPlayback: (startTime: number, endTime: number) => void;
+  handleClipPlayback: (startTime: number, endTime: number, shouldPlay?: boolean) => void;
   practiceClipsRef: React.RefObject<HTMLDivElement>;
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
@@ -433,7 +433,7 @@ export function PracticeClips({
                     {!isDeleteMode && !isSequenceMode && (
                       <Button onClick={() => {
                         setCurrentClipIndex(index);
-                        handleClipPlayback(clip.startTime, clip.endTime);
+                        handleClipPlayback(clip.startTime, clip.endTime, true);
                       }} size="sm" variant="mystic">
                         <Play className="mr-1" />
                         Play

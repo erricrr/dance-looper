@@ -35,6 +35,7 @@ export default function Home() {
   const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
   const [isSequenceMode, setIsSequenceMode] = useState(false);
   const [clipCreatorResetKey, setClipCreatorResetKey] = useState(0);
+  const [isResumingFromPause, setIsResumingFromPause] = useState(false);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
@@ -98,13 +99,14 @@ export default function Home() {
     onUrlSubmit({ youtubeUrl: url });
   };
 
-  const handleClipPlayback = (startTime: number, endTime: number) => {
+  const handleClipPlayback = (startTime: number, endTime: number, shouldPlay: boolean = true) => {
     if (!player) return;
+
+    console.log('handleClipPlayback called:', { startTime, endTime, shouldPlay });
 
     if (player && typeof player.setPlaybackRate === 'function') {
       player.setPlaybackRate(playbackSpeed);
     }
-    setCurrentClip({startTime, endTime});
 
     // Find the clip index that matches the start and end times
     const clipIndex = clips.findIndex(clip =>
@@ -112,9 +114,27 @@ export default function Home() {
     );
     setCurrentClipIndex(clipIndex >= 0 ? clipIndex : null);
 
+    // Always seek to start time and set current clip when this function is called
+    setCurrentClip({startTime, endTime});
     player.seekTo(startTime, true);
-    player.playVideo();
+
+    if (shouldPlay) {
+      player.playVideo();
+    }
+
     videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const handlePause = () => {
+    console.log('handlePause called');
+    if (!player) return;
+    player.pauseVideo();
+  };
+
+  const handleResume = () => {
+    console.log('handleResume called');
+    if (!player) return;
+    player.playVideo();
   };
 
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
@@ -265,7 +285,11 @@ export default function Home() {
           currentClipIndex={currentClipIndex}
           setCurrentClipIndex={setCurrentClipIndex}
           handleClipPlayback={handleClipPlayback}
+          handlePause={handlePause}
+          handleResume={handleResume}
+          currentClip={currentClip}
           isSequenceMode={isSequenceMode}
+          isPlaying={isPlaying}
         />
       </main>
     </ErrorBoundary>

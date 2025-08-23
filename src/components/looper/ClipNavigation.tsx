@@ -1,9 +1,8 @@
 "use client";
-
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, PlayCircle } from "lucide-react";
+import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, PlayCircle, PauseCircle } from "lucide-react";
 import { Clip } from "@/lib/types";
 import { formatTime } from "@/lib/utils";
 
@@ -11,8 +10,12 @@ type ClipNavigationProps = {
   clips: Clip[];
   currentClipIndex: number | null;
   setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
-  handleClipPlayback: (startTime: number, endTime: number) => void;
+  handleClipPlayback: (startTime: number, endTime: number, shouldPlay?: boolean) => void;
+  handlePause: () => void;
+  handleResume: () => void;
+  currentClip: {startTime: number, endTime: number} | null;
   isSequenceMode: boolean;
+  isPlaying: boolean;
 };
 
 export function ClipNavigation({
@@ -20,50 +23,74 @@ export function ClipNavigation({
   currentClipIndex,
   setCurrentClipIndex,
   handleClipPlayback,
-  isSequenceMode
+  handlePause,
+  handleResume,
+  currentClip,
+  isSequenceMode,
+  isPlaying,
 }: ClipNavigationProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Navigation functions
   const navigateToPreviousClip = useCallback(() => {
     if (currentClipIndex === null || currentClipIndex <= 0) {
       setCurrentClipIndex(clips.length - 1);
-      handleClipPlayback(clips[clips.length - 1].startTime, clips[clips.length - 1].endTime);
+      handleClipPlayback(clips[clips.length - 1].startTime, clips[clips.length - 1].endTime, true);
     } else {
       setCurrentClipIndex(currentClipIndex - 1);
-      handleClipPlayback(clips[currentClipIndex - 1].startTime, clips[currentClipIndex - 1].endTime);
+      handleClipPlayback(clips[currentClipIndex - 1].startTime, clips[currentClipIndex - 1].endTime, true);
     }
   }, [currentClipIndex, clips, handleClipPlayback, setCurrentClipIndex]);
 
   const navigateToNextClip = useCallback(() => {
     if (currentClipIndex === null || currentClipIndex >= clips.length - 1) {
       setCurrentClipIndex(0);
-      handleClipPlayback(clips[0].startTime, clips[0].endTime);
+      handleClipPlayback(clips[0].startTime, clips[0].endTime, true);
     } else {
       setCurrentClipIndex(currentClipIndex + 1);
-      handleClipPlayback(clips[currentClipIndex + 1].startTime, clips[currentClipIndex + 1].endTime);
+      handleClipPlayback(clips[currentClipIndex + 1].startTime, clips[currentClipIndex + 1].endTime, true);
     }
   }, [currentClipIndex, clips, handleClipPlayback, setCurrentClipIndex]);
 
   const navigateToFirstClip = useCallback(() => {
     if (clips.length > 0) {
       setCurrentClipIndex(0);
-      handleClipPlayback(clips[0].startTime, clips[0].endTime);
+      handleClipPlayback(clips[0].startTime, clips[0].endTime, true);
     }
   }, [clips, handleClipPlayback, setCurrentClipIndex]);
 
   const navigateToLastClip = useCallback(() => {
     if (clips.length > 0) {
       setCurrentClipIndex(clips.length - 1);
-      handleClipPlayback(clips[clips.length - 1].startTime, clips[clips.length - 1].endTime);
+      handleClipPlayback(clips[clips.length - 1].startTime, clips[clips.length - 1].endTime, true);
     }
   }, [clips, handleClipPlayback, setCurrentClipIndex]);
 
-  // Keyboard navigation
+  const togglePlayPause = useCallback(() => {
+    console.log('togglePlayPause called:', { currentClipIndex, isPlaying });
+    if (currentClipIndex !== null) {
+      if (isPlaying) {
+        console.log('Calling handlePause');
+        handlePause();
+      } else {
+        // Check if we have a current clip and are resuming
+        if (currentClip && isPlaying === false) {
+          console.log('Calling handleResume');
+          handleResume();
+        } else {
+          console.log('Calling handleClipPlayback with shouldPlay: true');
+          handleClipPlayback(
+            clips[currentClipIndex].startTime,
+            clips[currentClipIndex].endTime,
+            true
+          );
+        }
+      }
+    }
+  }, [currentClipIndex, clips, isPlaying, handleClipPlayback, handlePause, handleResume]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (clips.length === 0) return;
-
       switch (event.key) {
         case 'ArrowLeft':
           event.preventDefault();
@@ -81,23 +108,23 @@ export function ClipNavigation({
           event.preventDefault();
           navigateToLastClip();
           break;
+        case ' ':
+          event.preventDefault();
+          togglePlayPause();
+          break;
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [navigateToPreviousClip, navigateToNextClip, navigateToFirstClip, navigateToLastClip]);
+  }, [navigateToPreviousClip, navigateToNextClip, navigateToFirstClip, navigateToLastClip, togglePlayPause]);
 
-  // Don't render if no clips or if in sequence mode
   if (clips.length === 0 || isSequenceMode) {
     return null;
   }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
-      {/* Backdrop with subtle gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-background/98 via-background/95 to-transparent backdrop-blur-md border-t border-border/50" />
-
       <div className={`relative container mx-auto transition-all duration-500 ease-out ${isExpanded ? 'px-2 xs:px-3 sm:px-6 py-4' : 'px-2 xs:px-3 sm:px-4 py-2'}`}>
         <div className={`
           relative overflow-hidden rounded-xl transition-all duration-500 ease-out
@@ -106,136 +133,141 @@ export function ClipNavigation({
             : 'bg-card/80 backdrop-blur-sm border border-border/40 shadow-md shadow-black/3 p-2 xs:p-3'
           }
         `}>
-
           {/* Minimized view */}
           {!isExpanded && (
-                          <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <div
                 className="flex items-center gap-3 cursor-pointer flex-1"
                 onClick={() => setIsExpanded(true)}
               >
                 <div className="flex items-center justify-center w-7 h-7 rounded-md text-primary">
-                  <PlayCircle className="h-4 w-4" />
+                  {isPlaying ? (
+                    <PauseCircle className="h-4 w-4" />
+                  ) : (
+                    <PlayCircle className="h-4 w-4" />
+                  )}
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-foreground">Clip Navigation</span>
-                  {currentClipIndex !== null && (
+                  {currentClipIndex !== null ? (
                     <span className="text-xs text-muted-foreground">
                       {currentClipIndex + 1} of {clips.length}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                      No clip selected
                     </span>
                   )}
                 </div>
               </div>
-
-              <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setIsExpanded(true)}
-                      className="h-8 w-8 hover:bg-transparent"
-                      aria-label="Expand section"
-                    >
-                      <ChevronUp className="h-4 w-4" />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsExpanded(true)}
+                  className="h-8 w-8 hover:bg-transparent"
+                  aria-label="Expand section"
+                >
+                  <ChevronUp className="h-4 w-4" />
                 </Button>
+              </div>
             </div>
           )}
-
           {/* Expanded view */}
           {isExpanded && (
             <>
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <div
-                  className="flex items-center gap-3 cursor-pointer flex-1"
-                  onClick={() => setIsExpanded(false)}
-                >
+              {/* Header and Clip Info (inline) */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3 cursor-pointer flex-1">
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg text-primary">
-                    <PlayCircle className="h-5 w-5" />
+                    {isPlaying ? (
+                      <PauseCircle className="h-5 w-5" />
+                    ) : (
+                      <PlayCircle className="h-5 w-5" />
+                    )}
                   </div>
-                  <div className="flex flex-col">
-                    <Label className="text-base font-semibold text-foreground">Clip Navigation</Label>
-
-                  </div>
+                  <Label className="text-base font-semibold text-foreground">Clip Navigation</Label>
+                  {currentClipIndex !== null ? (
+                    <div className="flex items-center gap-2 ml-4 text-sm">
+                      <span className="text-primary font-semibold">{currentClipIndex + 1}</span>
+                      <span className="text-muted-foreground">of {clips.length}</span>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        {formatTime(clips[currentClipIndex].startTime)} - {formatTime(clips[currentClipIndex].endTime)}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 ml-4 text-sm">
+                      <span className="text-muted-foreground">No clip selected</span>
+                    </div>
+                  )}
                 </div>
-
                 <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsExpanded(false)}
-                        className="h-9 w-9 hover:bg-transparent"
-                        aria-label="Collapse section"
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsExpanded(false)}
+                  className="h-9 w-9 hover:bg-transparent"
+                  aria-label="Collapse section"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
               </div>
-
               {/* Navigation Controls */}
-              <div className="flex items-center justify-center gap-1 xs:gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
-                {/* First button */}
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={navigateToFirstClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
-                  <SkipBack className="h-3 w-3 xs:h-4 xs:w-4" />
-                  <span className="hidden md:inline ml-1 xs:ml-2 text-xs xs:text-sm font-medium">First</span>
+                  <SkipBack className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-2 text-sm font-medium">First</span>
                 </Button>
-
-                {/* Previous button */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={navigateToPreviousClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
-                  <ChevronLeft className="h-3 w-3 xs:h-4 xs:w-4" />
-                  <span className="hidden md:inline ml-1 xs:ml-2 text-xs xs:text-sm font-medium">Previous</span>
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-2 text-sm font-medium">Previous</span>
                 </Button>
-
-                {/* Current clip indicator */}
-                <div className="px-2 xs:px-3 sm:px-6 py-1 xs:py-2 sm:py-3 bg-background/95 backdrop-blur-sm rounded-xl border border-border shadow-sm min-w-[80px] xs:min-w-[120px] sm:min-w-[160px] text-center flex-shrink-0">
-                  <div className="text-xs xs:text-sm font-semibold text-foreground">
-                    {currentClipIndex !== null ? (
-                      <>
-                        <span className="text-primary">{currentClipIndex + 1}</span>
-                        <span className="text-muted-foreground mx-1">of</span>
-                        <span>{clips.length}</span>
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground">No clip selected</span>
-                    )}
-                  </div>
-                  {currentClipIndex !== null && (
-                    <div className="text-xs text-muted-foreground mt-1 font-mono">
-                      {formatTime(clips[currentClipIndex].startTime)} - {formatTime(clips[currentClipIndex].endTime)}
-                    </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={togglePlayPause}
+                  disabled={currentClipIndex === null}
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                >
+                  {isPlaying ? (
+                    <PauseCircle className="h-4 w-4" />
+                  ) : (
+                    <PlayCircle className="h-4 w-4" />
                   )}
-                </div>
-
-                {/* Next button */}
+                  <span className="hidden sm:inline ml-2 text-sm font-medium">
+                    {isPlaying ? "Pause" : "Play"}
+                  </span>
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={navigateToNextClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
-                  <span className="hidden md:inline mr-1 xs:mr-2 text-xs xs:text-sm font-medium">Next</span>
-                  <ChevronRight className="h-3 w-3 xs:h-4 xs:w-4" />
+                  <span className="hidden sm:inline mr-2 text-sm font-medium">Next</span>
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
-
-                {/* Last button */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={navigateToLastClip}
                   disabled={clips.length === 0}
-                  className="h-8 xs:h-9 sm:h-10 px-1 xs:px-2 sm:px-4 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
-                  <span className="hidden md:inline mr-1 xs:mr-2 text-xs xs:text-sm font-medium">Last</span>
-                  <SkipForward className="h-3 w-3 xs:h-4 xs:w-4" />
+                  <span className="hidden sm:inline mr-2 text-sm font-medium">Last</span>
+                  <SkipForward className="h-4 w-4" />
                 </Button>
               </div>
             </>
