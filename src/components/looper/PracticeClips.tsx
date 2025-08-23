@@ -213,21 +213,21 @@ export function PracticeClips({
                     </TabsList>
                   </Tabs>
                 )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleSequenceMode();
-                  }}
-                  className={cn(
-                    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 shrink-0",
-                    isSequenceMode
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
-                      : "border border-input bg-background hover:bg-muted/50 hover:border-muted-foreground/30 hover:shadow-sm"
-                  )}
-                >
-                  <List className={cn("h-4 w-4 mr-2 transition-transform duration-200", isSequenceMode && "scale-110")} />
-                  Create Sequence
-                </button>
+               <button
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleSequenceMode();
+  }}
+  className={cn(
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 shrink-0",
+    isSequenceMode
+      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+      : "border border-input bg-background hover:bg-muted/50 hover:border-muted-foreground/30 hover:shadow-sm"
+  )}
+>
+  <List className={cn("h-4 w-4 mr-2 transition-transform duration-200", isSequenceMode && "scale-110")} />
+  Create Sequence
+</button>
               </div>
             </div>
 
@@ -286,10 +286,8 @@ export function PracticeClips({
               ) : (
                 <div className="flex items-center justify-between w-full mb-2">
                   <div className="flex items-center gap-2 ml-5">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 shrink-0"
+                    <button
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent hover:bg-transparent hover:text-primary h-5 w-5 shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleDeleteMode();
@@ -297,7 +295,7 @@ export function PracticeClips({
                     >
                       <Trash2 className="h-5 w-5" />
                       <span className="sr-only">Delete selected clips</span>
-                    </Button>
+                    </button>
                   </div>
 
                   <LoopControls
