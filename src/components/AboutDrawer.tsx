@@ -22,7 +22,7 @@ export function AboutDrawer() {
     <Button
       variant="outline"
       size="icon"
-      className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border-border/50 hover:bg-accent/80 shadow-lg"
+      className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border-border/50 hover:bg-primary shadow-lg"
       aria-label="About this app"
     >
       <HelpCircle className="h-5 w-5" />
