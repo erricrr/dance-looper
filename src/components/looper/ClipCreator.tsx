@@ -116,16 +116,17 @@ export function ClipCreator({
           <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
             <div>
               <div className="flex items-center gap-2 relative">
-                <Label className="font-semibold">Auto-Segment Video</Label>
                 <button
                   data-info-button
-                  className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                  className="p-1"
                   onClick={() => setShowAutoSegmentInfo(!showAutoSegmentInfo)}
                 >
-                  <Info className="h-4 w-4 text-muted-foreground" />
-                </button>
+        <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
+        </button>
+        <Label className="font-semibold">Auto-Segment Video</Label>
+
                 {showAutoSegmentInfo && (
-                  <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80 transition-opacity duration-200 opacity-100">
+                <div className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-64">
                     <div className="text-center">
                       <p>Clip end times may appear 1 second</p>
                       <p>longer due to fractional seconds</p>

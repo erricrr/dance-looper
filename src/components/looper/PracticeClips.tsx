@@ -31,16 +31,17 @@ function LoopControls({
 }) {
   return (
     <div className="flex items-center gap-2 relative">
-      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
       <button
         data-info-button
-        className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+        className="p-1"
         onClick={() => setShowInfo(!showInfo)}
       >
-        <Info className="h-4 w-4 text-muted-foreground" />
+        <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
       </button>
+      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
+
       {showInfo && (
-        <div className="absolute top-full right-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 w-80">
+                <div className="absolute top-full -right-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-60">
           <div className="text-center">
             <p>Repeats the clip automatically</p>
             <p>until you stop it.</p>
@@ -318,14 +319,14 @@ export function PracticeClips({
                 <span className="text-sm font-medium">Sequence Selection</span>
                 <button
                   data-info-button
-                  className="p-1 rounded-md hover:bg-muted active:bg-muted transition-colors"
+                  className="p-1"
                   onClick={() => setShowSequenceInfo(!showSequenceInfo)}
                 >
-                  <Info className="h-4 w-4 text-muted-foreground" />
-                </button>
+        <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
+        </button>
                 {showSequenceInfo && (
-                  <div className="absolute top-full left-0 mt-1 bg-background border rounded-md p-2 text-sm shadow-lg z-50 max-w-xs">
-                    <div className="text-center">
+                <div className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-96">
+                    <div className="p-1">
                       <p className="font-medium mb-1">How to create a sequence:</p>
                       <p>1. Click on the first clip you want to start with</p>
                       <p>2. Click on the last clip you want to end with</p>
