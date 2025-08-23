@@ -43,7 +43,7 @@
     --secondary-foreground: 290 15% 90%;
     --muted: 288 10% 20%;
     --muted-foreground: 288 10% 65%;
-    --accent: 316 68% 66%;
+    --accent: 300 68% 70%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -69,7 +69,7 @@
 
 @layer components {
   .btn-mystic {
-    @apply bg-gradient-to-br from-primary to-purple-400 text-primary-foreground shadow-md transition-all duration-300 ease-in-out;
-    @apply hover:shadow-lg hover:from-primary hover:to-purple-500;
+    @apply bg-gradient-to-br from-accent/80 to-primary text-primary-foreground shadow-md transition-all duration-300 ease-in-out;
+    @apply hover:shadow-lg hover:from-primary hover:to-accent;
   }
 }

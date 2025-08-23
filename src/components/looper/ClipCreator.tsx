@@ -136,13 +136,13 @@ export function ClipCreator({
                 )}
               </div>
               <div className="grid grid-cols-3 gap-2 mt-2">
-                <Button variant={selectedSegment === 3 ? "mystic" : "outline"} onClick={() => segmentVideo(3)}>
+                <Button variant={selectedSegment === 3 ? "default" : "outline"} onClick={() => segmentVideo(3)}>
                   Every 3 Secs
                 </Button>
-                <Button variant={selectedSegment === 5 ? "mystic" : "outline"} onClick={() => segmentVideo(5)}>
+                <Button variant={selectedSegment === 5 ? "default" : "outline"} onClick={() => segmentVideo(5)}>
                   Every 5 Secs
                 </Button>
-                <Button variant={selectedSegment === 10 ? "mystic" : "outline"} onClick={() => segmentVideo(10)}>
+                <Button variant={selectedSegment === 10 ? "default" : "outline"} onClick={() => segmentVideo(10)}>
                   Every 10 Secs
                 </Button>
               </div>

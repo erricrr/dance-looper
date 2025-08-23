@@ -259,7 +259,7 @@ export function PracticeClips({
 
                 {isSequenceMode ? (
                   <Button
-                    variant="default"
+                    variant="mystic"
                     size="sm"
                     disabled={sequenceStartIndex === null || sequenceEndIndex === null}
                     onClick={(e) => {
@@ -435,8 +435,8 @@ export function PracticeClips({
                         setCurrentClipIndex(index);
                         handleClipPlayback(clip.startTime, clip.endTime);
                       }} size="sm" variant="mystic">
-                        <Play className="mr-2 h-4 w-4" />
-                        Play Clip
+                        <Play className="mr-1" />
+                        Play
                       </Button>
                     )}
                   </div>
