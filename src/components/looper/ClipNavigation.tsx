@@ -192,8 +192,8 @@ export function ClipNavigation({
                       <span className="text-primary font-semibold">{currentClipIndex + 1}</span>
                       <span className="text-muted-foreground">of {clips.length}</span>
                       <span className="text-xs text-muted-foreground font-mono">
-                        {formatTime(clips[currentClipIndex].startTime)} - {formatTime(clips[currentClipIndex].endTime)}
-                      </span>
+                        ({formatTime(clips[currentClipIndex].startTime)} - {formatTime(clips[currentClipIndex].endTime)})
+                    </span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 ml-4 text-sm">
