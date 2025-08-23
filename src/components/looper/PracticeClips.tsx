@@ -232,7 +232,7 @@ export function PracticeClips({
             </div>
 
             {/* Loop, Sequence, and Delete Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 pb-2">
               {isDeleteMode ? (
                 <div className="flex items-center gap-2 flex-wrap">
                   <Button
