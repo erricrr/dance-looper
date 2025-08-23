@@ -73,7 +73,7 @@ export function UrlForm({
       const newUrls = [urlToSave, ...savedUrls];
       setSavedUrls(newUrls);
       localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-      toast({ title: "Link Saved!", description: "It has been added to your saved list." });
+      toast({ title: "Link Saved", description: "It has been added to your saved list." });
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "Could not save the URL."});
       console.error("Failed to save URL to localStorage", error);
@@ -85,7 +85,8 @@ export function UrlForm({
       const newUrls = savedUrls.filter(url => url !== urlToRemove);
       setSavedUrls(newUrls);
       localStorage.setItem("danceLooperUrls", JSON.stringify(newUrls));
-      toast({ title: "Link removed from saved list." });
+      toast({ title: "Link Removed", description: "It has been removed from your saved list." });
+
     } catch (error) {
       console.error("Failed to remove link from localStorage", error);
     }
@@ -118,12 +119,9 @@ export function UrlForm({
                             <FormControl>
                               <Input placeholder="https://www.youtube.com/watch?v=..." {...field} disabled={isUrlLoading} />
                             </FormControl>
-                            <TooltipProvider>
-                              <Tooltip>
-                                  <TooltipTrigger asChild>
-                                      <Button
+                            <Button
                                           type="button"
-                                          variant="outline"
+                                          variant="ghost"
                                           size="icon"
                                           onClick={saveUrl}
                                           disabled={!urlForm.formState.isValid || isUrlLoading}
@@ -131,14 +129,6 @@ export function UrlForm({
                                       >
                                           <Heart/>
                                       </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                      <div className="text-center">
-                                        <p>Save video for later</p>
-                                      </div>
-                                  </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
                         </div>
                         <FormMessage />
                       </FormItem>
