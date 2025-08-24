@@ -63,6 +63,7 @@ type PracticeClipsProps = {
   practiceClipsRef: React.RefObject<HTMLDivElement>;
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  currentClipIndex: number | null;
   isSequenceMode: boolean;
   setIsSequenceMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -77,6 +78,7 @@ export function PracticeClips({
   practiceClipsRef,
   setClips,
   setCurrentClipIndex,
+  currentClipIndex,
   isSequenceMode,
   setIsSequenceMode
 }: PracticeClipsProps) {
@@ -184,7 +186,7 @@ export function PracticeClips({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Your Clips</CardTitle>
-              <CardDescription>Click a clip to play. Adjust speed or loop it.</CardDescription>
+              <CardDescription>Click a clip to play. Adjust speed or loop it. Numbers show clip order.</CardDescription>
             </div>
             {!isDeleteMode && !isSequenceMode && (
               <button
@@ -343,7 +345,7 @@ export function PracticeClips({
                           </div>
                           <span className="text-muted-foreground">Start:</span>
                           <span className="font-mono bg-background px-2 py-1 rounded">
-                            {formatTime(clips[sequenceStartIndex].startTime)} - {formatTime(clips[sequenceStartIndex].endTime)}
+                            {clips[sequenceStartIndex] ? `${formatTime(clips[sequenceStartIndex].startTime)} - ${formatTime(clips[sequenceStartIndex].endTime)}` : 'Invalid clip'}
                           </span>
                         </div>
                       )}
@@ -354,7 +356,7 @@ export function PracticeClips({
                           </div>
                           <span className="text-muted-foreground">End:</span>
                           <span className="font-mono bg-background px-2 py-1 rounded">
-                            {formatTime(clips[sequenceEndIndex].startTime)} - {formatTime(clips[sequenceEndIndex].endTime)}
+                            {clips[sequenceEndIndex] ? `${formatTime(clips[sequenceEndIndex].startTime)} - ${formatTime(clips[sequenceEndIndex].endTime)}` : 'Invalid clip'}
                           </span>
                         </div>
                       )}
@@ -387,7 +389,8 @@ export function PracticeClips({
                     isSequenceMode && sequenceStartIndex === index && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
                     isSequenceMode && sequenceEndIndex === index && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
                     isSequenceMode && sequenceStartIndex !== null && sequenceEndIndex !== null &&
-                      index > sequenceStartIndex && index < sequenceEndIndex && "bg-muted/20 border-muted-foreground/20"
+                      index > sequenceStartIndex && index < sequenceEndIndex && "bg-muted/20 border-muted-foreground/20",
+                    currentClipIndex === index && !isDeleteMode && !isSequenceMode && "bg-primary/10 border-primary/50 shadow-sm"
                   )}
                   onClick={() => {
                     if (isDeleteMode || isSequenceMode) {
@@ -399,6 +402,19 @@ export function PracticeClips({
                   }}
                 >
                   <div className="flex items-center gap-2">
+                    {/* Clip number */}
+                    <div className={cn(
+                      "flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold border relative",
+                      currentClipIndex === index && !isDeleteMode && !isSequenceMode
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted text-muted-foreground border-border"
+                    )}>
+                      {index + 1}
+                      {currentClipIndex === index && !isDeleteMode && !isSequenceMode && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse"></div>
+                      )}
+                    </div>
+
                     {isSequenceMode && sequenceStartIndex === index && (
                       <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -418,9 +434,16 @@ export function PracticeClips({
                       </div>
                     )}
 
-                    <span className="font-mono text-sm bg-secondary-foreground/10 px-2 py-1 rounded-md">
-                      {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-sm bg-secondary-foreground/10 px-2 py-1 rounded-md">
+                        {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
+                      </span>
+                      {currentClipIndex === index && !isDeleteMode && !isSequenceMode && (
+                        <span className="text-xs text-primary font-medium animate-pulse">
+                          Playing
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {isDeleteMode && (

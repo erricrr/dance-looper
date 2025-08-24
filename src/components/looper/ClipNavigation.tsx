@@ -32,36 +32,56 @@ export function ClipNavigation({
   const [isExpanded, setIsExpanded] = useState(true);
 
   const navigateToPreviousClip = useCallback(() => {
+    if (clips.length === 0) return;
     if (currentClipIndex === null || currentClipIndex <= 0) {
-      setCurrentClipIndex(clips.length - 1);
-      handleClipPlayback(clips[clips.length - 1].startTime, clips[clips.length - 1].endTime, true);
+      const lastClip = clips[clips.length - 1];
+      if (lastClip) {
+        setCurrentClipIndex(clips.length - 1);
+        handleClipPlayback(lastClip.startTime, lastClip.endTime, true);
+      }
     } else {
-      setCurrentClipIndex(currentClipIndex - 1);
-      handleClipPlayback(clips[currentClipIndex - 1].startTime, clips[currentClipIndex - 1].endTime, true);
+      const prevClip = clips[currentClipIndex - 1];
+      if (prevClip) {
+        setCurrentClipIndex(currentClipIndex - 1);
+        handleClipPlayback(prevClip.startTime, prevClip.endTime, true);
+      }
     }
   }, [currentClipIndex, clips, handleClipPlayback, setCurrentClipIndex]);
 
   const navigateToNextClip = useCallback(() => {
+    if (clips.length === 0) return;
     if (currentClipIndex === null || currentClipIndex >= clips.length - 1) {
-      setCurrentClipIndex(0);
-      handleClipPlayback(clips[0].startTime, clips[0].endTime, true);
+      const firstClip = clips[0];
+      if (firstClip) {
+        setCurrentClipIndex(0);
+        handleClipPlayback(firstClip.startTime, firstClip.endTime, true);
+      }
     } else {
-      setCurrentClipIndex(currentClipIndex + 1);
-      handleClipPlayback(clips[currentClipIndex + 1].startTime, clips[currentClipIndex + 1].endTime, true);
+      const nextClip = clips[currentClipIndex + 1];
+      if (nextClip) {
+        setCurrentClipIndex(currentClipIndex + 1);
+        handleClipPlayback(nextClip.startTime, nextClip.endTime, true);
+      }
     }
   }, [currentClipIndex, clips, handleClipPlayback, setCurrentClipIndex]);
 
   const navigateToFirstClip = useCallback(() => {
     if (clips.length > 0) {
-      setCurrentClipIndex(0);
-      handleClipPlayback(clips[0].startTime, clips[0].endTime, true);
+      const firstClip = clips[0];
+      if (firstClip) {
+        setCurrentClipIndex(0);
+        handleClipPlayback(firstClip.startTime, firstClip.endTime, true);
+      }
     }
   }, [clips, handleClipPlayback, setCurrentClipIndex]);
 
   const navigateToLastClip = useCallback(() => {
     if (clips.length > 0) {
-      setCurrentClipIndex(clips.length - 1);
-      handleClipPlayback(clips[clips.length - 1].startTime, clips[clips.length - 1].endTime, true);
+      const lastClip = clips[clips.length - 1];
+      if (lastClip) {
+        setCurrentClipIndex(clips.length - 1);
+        handleClipPlayback(lastClip.startTime, lastClip.endTime, true);
+      }
     }
   }, [clips, handleClipPlayback, setCurrentClipIndex]);
 
@@ -78,11 +98,14 @@ export function ClipNavigation({
           handleResume();
         } else {
           console.log('Calling handleClipPlayback with shouldPlay: true');
-          handleClipPlayback(
-            clips[currentClipIndex].startTime,
-            clips[currentClipIndex].endTime,
-            true
-          );
+          const currentClipData = clips[currentClipIndex];
+          if (currentClipData) {
+            handleClipPlayback(
+              currentClipData.startTime,
+              currentClipData.endTime,
+              true
+            );
+          }
         }
       }
     }
@@ -187,7 +210,7 @@ export function ClipNavigation({
                     )}
                   </div>
                   <Label className="text-base font-semibold text-foreground">Clip Navigation</Label>
-                  {currentClipIndex !== null ? (
+                  {currentClipIndex !== null && clips[currentClipIndex] ? (
                     <div className="flex items-center gap-2 ml-4 text-sm">
                       <span className="text-primary font-semibold">{currentClipIndex + 1}</span>
                       <span className="text-muted-foreground">of {clips.length}</span>
