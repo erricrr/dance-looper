@@ -60,12 +60,15 @@ type PracticeClipsProps = {
   isLooping: boolean;
   setIsLooping: React.Dispatch<React.SetStateAction<boolean>>;
   handleClipPlayback: (startTime: number, endTime: number, shouldPlay?: boolean) => void;
+  handleSequencePlayback: (sequenceClips: Clip[]) => void;
   practiceClipsRef: React.RefObject<HTMLDivElement>;
   setClips: React.Dispatch<React.SetStateAction<Clip[]>>;
   setCurrentClipIndex: React.Dispatch<React.SetStateAction<number | null>>;
   currentClipIndex: number | null;
   isSequenceMode: boolean;
   setIsSequenceMode: React.Dispatch<React.SetStateAction<boolean>>;
+  sequenceClips: Clip[];
+  currentSequenceIndex: number;
 };
 
 export function PracticeClips({
@@ -75,12 +78,15 @@ export function PracticeClips({
   isLooping,
   setIsLooping,
   handleClipPlayback,
+  handleSequencePlayback,
   practiceClipsRef,
   setClips,
   setCurrentClipIndex,
   currentClipIndex,
   isSequenceMode,
-  setIsSequenceMode
+  setIsSequenceMode,
+  sequenceClips,
+  currentSequenceIndex
 }: PracticeClipsProps) {
   const isMobile = useIsMobile();
 
@@ -162,14 +168,11 @@ export function PracticeClips({
   const playSequence = () => {
     if (sequenceStartIndex === null || sequenceEndIndex === null) return;
 
-    const startClip = clips[sequenceStartIndex];
-    const endClip = clips[sequenceEndIndex];
+    // Get all clips in the sequence (inclusive of start and end)
+    const sequenceClips = clips.slice(sequenceStartIndex, sequenceEndIndex + 1);
 
-    // Set the current clip index to the start of the sequence
-    setCurrentClipIndex(sequenceStartIndex);
-
-    // Play from the start of the first clip to the end of the last clip
-    handleClipPlayback(startClip.startTime, endClip.endTime);
+    // Use the new sequence playback handler
+    handleSequencePlayback(sequenceClips);
   };
 
   const getSequenceClips = () => {
@@ -390,7 +393,11 @@ export function PracticeClips({
                     isSequenceMode && sequenceEndIndex === index && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
                     isSequenceMode && sequenceStartIndex !== null && sequenceEndIndex !== null &&
                       index > sequenceStartIndex && index < sequenceEndIndex && "bg-muted/20 border-muted-foreground/20",
-                    currentClipIndex === index && !isDeleteMode && !isSequenceMode && "bg-primary/10 border-primary/50 shadow-sm"
+                    currentClipIndex === index && !isDeleteMode && !isSequenceMode && "bg-primary/10 border-primary/50 shadow-sm",
+                    isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
+                      Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
+                      Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1 &&
+                      "bg-blue-50 border-blue-300 dark:bg-blue-950/30 dark:border-blue-700 shadow-sm"
                   )}
                   onClick={() => {
                     if (isDeleteMode || isSequenceMode) {
@@ -405,12 +412,18 @@ export function PracticeClips({
                     {/* Clip number */}
                     <div className={cn(
                       "flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold border relative",
-                      currentClipIndex === index && !isDeleteMode && !isSequenceMode
+                      (currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
+                      (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
+                       Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
+                       Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1)
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-muted text-muted-foreground border-border"
                     )}>
                       {index + 1}
-                      {currentClipIndex === index && !isDeleteMode && !isSequenceMode && (
+                      {(currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
+                       (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
+                        Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
+                        Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1) && (
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse"></div>
                       )}
                     </div>
@@ -438,7 +451,10 @@ export function PracticeClips({
                       <span className="font-mono text-sm bg-secondary-foreground/10 px-2 py-1 rounded-md">
                         {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
                       </span>
-                      {currentClipIndex === index && !isDeleteMode && !isSequenceMode && (
+                      {(currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
+                       (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
+                        Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
+                        Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1) && (
                         <span className="text-xs text-primary font-medium animate-pulse">
                           Playing
                         </span>

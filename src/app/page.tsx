@@ -34,6 +34,8 @@ export default function Home() {
   const [savedUrls, setSavedUrls] = useState<string[]>([]);
   const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
   const [isSequenceMode, setIsSequenceMode] = useState(false);
+  const [sequenceClips, setSequenceClips] = useState<Clip[]>([]);
+  const [currentSequenceIndex, setCurrentSequenceIndex] = useState<number>(0);
   const [clipCreatorResetKey, setClipCreatorResetKey] = useState(0);
   const [isResumingFromPause, setIsResumingFromPause] = useState(false);
   const clipIntervalRef = useRef<NodeJS.Timeout>();
@@ -97,6 +99,11 @@ export default function Home() {
       }
     }
 
+    // Clear sequence state when loading new video
+    setIsSequenceMode(false);
+    setSequenceClips([]);
+    setCurrentSequenceIndex(0);
+
     setVideoId(extractedVideoId);
   };
 
@@ -111,6 +118,13 @@ export default function Home() {
     console.log('handleClipPlayback called:', { startTime, endTime, shouldPlay });
 
     try {
+      // Exit sequence mode if we're manually playing a clip
+      if (isSequenceMode) {
+        setIsSequenceMode(false);
+        setSequenceClips([]);
+        setCurrentSequenceIndex(0);
+      }
+
       if (player && typeof player.setPlaybackRate === 'function') {
         player.setPlaybackRate(playbackSpeed);
       }
@@ -154,6 +168,32 @@ export default function Home() {
       videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
       console.error('Error in handleResume:', error);
+    }
+  };
+
+  const handleSequencePlayback = (sequenceClips: Clip[]) => {
+    if (!player || sequenceClips.length === 0) return;
+
+    console.log('handleSequencePlayback called:', sequenceClips);
+
+    setSequenceClips(sequenceClips);
+    setCurrentSequenceIndex(0);
+    setIsSequenceMode(true);
+
+    // Play the first clip in the sequence
+    const firstClip = sequenceClips[0];
+    setCurrentClip({ startTime: firstClip.startTime, endTime: firstClip.endTime });
+    setCurrentClipIndex(null); // Clear individual clip index since we're in sequence mode
+
+    try {
+      player.setPlaybackRate(playbackSpeed);
+      player.seekTo(firstClip.startTime, true);
+      player.playVideo();
+
+      // Auto-scroll to video player
+      videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (error) {
+      console.error('Error in handleSequencePlayback:', error);
     }
   };
 
@@ -207,9 +247,37 @@ export default function Home() {
                     const isAtVideoEnd = Math.abs(currentTime - videoDuration) < 0.5;
 
                     if (isClipFinished || (isLastClip && isAtVideoEnd)) {
-                        if (isLooping) {
+                        if (isSequenceMode && sequenceClips.length > 0) {
+                          // Handle sequence mode - advance to next clip
+                          const nextIndex = currentSequenceIndex + 1;
+                          if (nextIndex < sequenceClips.length) {
+                            // Play next clip in sequence
+                            const nextClip = sequenceClips[nextIndex];
+                            setCurrentSequenceIndex(nextIndex);
+                            setCurrentClip({ startTime: nextClip.startTime, endTime: nextClip.endTime });
+                            player.seekTo(nextClip.startTime, true);
+                          } else {
+                            // Sequence is complete
+                            if (isLooping) {
+                              // Restart sequence from beginning
+                              const firstClip = sequenceClips[0];
+                              setCurrentSequenceIndex(0);
+                              setCurrentClip({ startTime: firstClip.startTime, endTime: firstClip.endTime });
+                              player.seekTo(firstClip.startTime, true);
+                            } else {
+                              // Stop sequence
+                              player.pauseVideo();
+                              setCurrentClip(null);
+                              setIsSequenceMode(false);
+                              setSequenceClips([]);
+                              setCurrentSequenceIndex(0);
+                            }
+                          }
+                        } else if (isLooping) {
+                          // Handle single clip looping
                           player.seekTo(currentClip.startTime, true);
                         } else {
+                          // Handle single clip completion
                           player.pauseVideo();
                           setCurrentClip(null);
                         }
@@ -232,7 +300,7 @@ export default function Home() {
         clipIntervalRef.current = undefined;
       }
     };
-  }, [isPlaying, currentClip, player, isLooping, videoDuration]);
+  }, [isPlaying, currentClip, player, isLooping, videoDuration, isSequenceMode, sequenceClips, currentSequenceIndex]);
 
   useEffect(() => {
     if (player && typeof player.setPlaybackRate === 'function' && isPlaying) {
@@ -330,12 +398,15 @@ export default function Home() {
               isLooping={isLooping}
               setIsLooping={setIsLooping}
               handleClipPlayback={handleClipPlayback}
+              handleSequencePlayback={handleSequencePlayback}
               practiceClipsRef={practiceClipsRef}
               setClips={setClips}
               setCurrentClipIndex={setCurrentClipIndex}
               currentClipIndex={currentClipIndex}
               isSequenceMode={isSequenceMode}
               setIsSequenceMode={setIsSequenceMode}
+              sequenceClips={sequenceClips}
+              currentSequenceIndex={currentSequenceIndex}
             />
           </div>
         )}
