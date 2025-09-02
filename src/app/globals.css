@@ -92,16 +92,41 @@
 
 @layer components {
   .btn-mystic {
-    @apply relative overflow-hidden bg-gradient-to-br from-accent/80 to-primary text-primary-foreground shadow-md transition-all duration-300 ease-in-out rounded-lg;
+    @apply relative overflow-hidden bg-gradient-to-br from-chart-4 to-primary text-primary-foreground shadow-md transition-all duration-300 ease-out rounded-lg font-medium;
 
-    /* Let the gradient animate smoothly */
+    /* Smooth gradient animation */
     background-size: 200% 200%;
     background-position: left center;
+
+    /* Subtle enhancement */
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-mystic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease-out;
+    pointer-events: none;
   }
 
   .btn-mystic:hover {
     @apply shadow-lg;
     background-position: right center;
+    transform: translateY(-1px);
+  }
+
+  .btn-mystic:hover::before {
+    left: 100%;
+  }
+
+  .btn-mystic:active {
+    transform: translateY(0px);
+    transition-duration: 0.1s;
   }
 
   .scrollbar-hide {
