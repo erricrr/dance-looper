@@ -17,6 +17,7 @@ import { PracticeClips } from "@/components/looper/PracticeClips";
 import { ClipNavigation } from "@/components/looper/ClipNavigation";
 import { AboutDrawer } from "@/components/AboutDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SequencePlayer } from "@/components/looper/SequencePlayer";
 
 export default function Home() {
   const [isUrlLoading, setIsUrlLoading] = useState(false);
@@ -35,10 +36,9 @@ export default function Home() {
   const [currentClipIndex, setCurrentClipIndex] = useState<number | null>(null);
   const [isSequenceMode, setIsSequenceMode] = useState(false);
   const [sequenceClips, setSequenceClips] = useState<Clip[]>([]);
-  const [currentSequenceIndex, setCurrentSequenceIndex] = useState<number>(0);
+
   const [clipCreatorResetKey, setClipCreatorResetKey] = useState(0);
   const [isResumingFromPause, setIsResumingFromPause] = useState(false);
-  const clipIntervalRef = useRef<NodeJS.Timeout>();
 
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -61,6 +61,8 @@ export default function Home() {
       console.error("Failed to load saved URLs from localStorage", error);
     }
   }, []);
+
+
 
   const onUrlSubmit = async (values: z.infer<typeof formSchema>) => {
     const extractedVideoId = getYoutubeVideoId(values.youtubeUrl);
@@ -102,7 +104,6 @@ export default function Home() {
     // Clear sequence state when loading new video
     setIsSequenceMode(false);
     setSequenceClips([]);
-    setCurrentSequenceIndex(0);
 
     setVideoId(extractedVideoId);
   };
@@ -120,9 +121,9 @@ export default function Home() {
     try {
       // Exit sequence mode if we're manually playing a clip
       if (isSequenceMode) {
+        console.log('Exiting sequence mode due to manual clip playback');
         setIsSequenceMode(false);
         setSequenceClips([]);
-        setCurrentSequenceIndex(0);
       }
 
       if (player && typeof player.setPlaybackRate === 'function') {
@@ -143,6 +144,14 @@ export default function Home() {
         player.playVideo();
       }
 
+      console.log('Clip playback started successfully:', {
+        startTime,
+        endTime,
+        shouldPlay,
+        playerState: player.getPlayerState(),
+        currentTime: player.getCurrentTime()
+      });
+
       videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
       console.error('Error in handleClipPlayback:', error);
@@ -155,6 +164,16 @@ export default function Home() {
     if (!player) return;
     try {
       player.pauseVideo();
+
+      // Log current state for debugging
+      if (currentClip) {
+        console.log('Paused clip:', {
+          startTime: currentClip.startTime,
+          endTime: currentClip.endTime,
+          isSequence: isSequenceMode,
+          currentTime: player.getCurrentTime()
+        });
+      }
     } catch (error) {
       console.error('Error in handlePause:', error);
     }
@@ -165,35 +184,161 @@ export default function Home() {
     if (!player) return;
     try {
       player.playVideo();
+
+      // Log current state for debugging
+      if (currentClip) {
+        console.log('Resumed clip:', {
+          startTime: currentClip.startTime,
+          endTime: currentClip.endTime,
+          isSequence: isSequenceMode,
+          currentTime: player.getCurrentTime()
+        });
+      }
+
       videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (error) {
       console.error('Error in handleResume:', error);
     }
   };
 
+  const [sequenceStartFunction, setSequenceStartFunction] = useState<((clips: Clip[]) => void) | null>(null);
+  const fallbackSequenceIntervalRef = useRef<NodeJS.Timeout>();
+
+  // Debug when sequence function becomes available
+  useEffect(() => {
+    if (sequenceStartFunction) {
+      console.log('Sequence start function is now ready');
+    } else {
+      console.log('Sequence start function is NOT ready');
+    }
+  }, [sequenceStartFunction]);
+
+  // Debug component mounting and player state
+  useEffect(() => {
+    console.log('Main page state update:', {
+      player: !!player,
+      videoDuration,
+      sequenceStartFunction: !!sequenceStartFunction,
+      isSequenceMode
+    });
+  }, [player, videoDuration, sequenceStartFunction, isSequenceMode]);
+
+  // Cleanup fallback sequence interval when sequence mode changes
+  useEffect(() => {
+    return () => {
+      if (fallbackSequenceIntervalRef.current) {
+        clearInterval(fallbackSequenceIntervalRef.current);
+        fallbackSequenceIntervalRef.current = undefined;
+      }
+    };
+  }, [isSequenceMode]);
+
   const handleSequencePlayback = (sequenceClips: Clip[]) => {
-    if (!player || sequenceClips.length === 0) return;
+    console.log('handleSequencePlayback called with:', {
+      sequenceClips,
+      type: typeof sequenceClips,
+      isArray: Array.isArray(sequenceClips),
+      length: sequenceClips?.length
+    });
 
-    console.log('handleSequencePlayback called:', sequenceClips);
+    if (!player || !sequenceClips || sequenceClips.length === 0) {
+      console.error('Invalid sequence clips:', sequenceClips);
+      return;
+    }
 
-    setSequenceClips(sequenceClips);
-    setCurrentSequenceIndex(0);
-    setIsSequenceMode(true);
+    console.log('Starting sequence playback for clips:', sequenceClips);
 
-    // Play the first clip in the sequence
-    const firstClip = sequenceClips[0];
-    setCurrentClip({ startTime: firstClip.startTime, endTime: firstClip.endTime });
-    setCurrentClipIndex(null); // Clear individual clip index since we're in sequence mode
-
-    try {
-      player.setPlaybackRate(playbackSpeed);
-      player.seekTo(firstClip.startTime, true);
-      player.playVideo();
-
-      // Auto-scroll to video player
+    // Use the SequencePlayer component to handle the sequence
+    if (sequenceStartFunction) {
+      console.log('Calling sequenceStartFunction with:', sequenceClips);
+      sequenceStartFunction(sequenceClips);
       videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    } catch (error) {
-      console.error('Error in handleSequencePlayback:', error);
+        } else {
+      console.log('SequencePlayer not ready - using fallback sequence logic');
+
+      // Fallback: implement basic sequence logic directly here
+      try {
+        const firstClip = sequenceClips[0];
+        const lastClip = sequenceClips[sequenceClips.length - 1];
+        const startTime = firstClip.startTime;
+        const endTime = Math.min(lastClip.endTime, videoDuration);
+
+        console.log('Fallback sequence created:', { startTime, endTime, videoDuration });
+
+        // Set as current clip
+        setCurrentClip({ startTime, endTime });
+        setCurrentClipIndex(null);
+        setIsSequenceMode(true);
+        setSequenceClips(sequenceClips);
+
+                // Start playback
+        player.setPlaybackRate(playbackSpeed);
+        player.seekTo(startTime, true);
+        player.playVideo();
+
+        videoPlayerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+
+                console.log('Fallback sequence started successfully');
+        console.log('Fallback sequence monitoring active - will stop at:', endTime.toFixed(2));
+
+        // Set up monitoring for the fallback sequence
+        fallbackSequenceIntervalRef.current = setInterval(() => {
+          if (!player || !isSequenceMode) {
+            if (fallbackSequenceIntervalRef.current) {
+              clearInterval(fallbackSequenceIntervalRef.current);
+              fallbackSequenceIntervalRef.current = undefined;
+            }
+            return;
+          }
+
+          try {
+            const currentTime = player.getCurrentTime();
+            const playerState = player.getPlayerState();
+
+            // Check if player is actually playing
+            if (playerState !== YouTube.PlayerState.PLAYING) {
+              return;
+            }
+
+            // Check if sequence should end
+            if (currentTime >= endTime) {
+              console.log('Fallback sequence ending at:', currentTime.toFixed(2));
+
+              if (isLooping) {
+                // Loop the sequence
+                console.log('Looping fallback sequence from:', startTime);
+                player.seekTo(startTime, true);
+              } else {
+                // End the sequence but stay in sequence mode
+                console.log('Ending fallback sequence');
+                player.pauseVideo();
+                setCurrentClip(null);
+                // Don't exit sequence mode - keep the user in "Create Sequence" mode
+                // setIsSequenceMode(false);
+                // setSequenceClips([]);
+              }
+
+              if (fallbackSequenceIntervalRef.current) {
+                clearInterval(fallbackSequenceIntervalRef.current);
+                fallbackSequenceIntervalRef.current = undefined;
+              }
+            }
+          } catch (error) {
+            console.error('Error in fallback sequence monitoring:', error);
+            if (fallbackSequenceIntervalRef.current) {
+              clearInterval(fallbackSequenceIntervalRef.current);
+              fallbackSequenceIntervalRef.current = undefined;
+            }
+          }
+        }, 100); // Check every 100ms
+      } catch (error) {
+        console.error('Error in fallback sequence logic:', error);
+        toast({
+          variant: "destructive",
+          title: "Sequence Error",
+          description: "Failed to start sequence. Please try again.",
+        });
+      }
     }
   };
 
@@ -210,7 +355,6 @@ export default function Home() {
       }
       setIsUrlLoading(false);
       setIsPlayerLoading(false);
-      // Form is now always open, no need to close it
     } catch (error) {
       console.error('Error in onPlayerReady:', error);
       setIsUrlLoading(false);
@@ -225,6 +369,11 @@ export default function Home() {
     // Handle video ending - if we're looping and have a current clip, restart it
     if (event.data === YouTube.PlayerState.ENDED && isLooping && currentClip && player) {
       try {
+        // Restart any clip from its start time
+        console.log('Video ended, restarting clip:', {
+          startTime: currentClip.startTime,
+          endTime: currentClip.endTime
+        });
         player.seekTo(currentClip.startTime, true);
         player.playVideo();
       } catch (error) {
@@ -233,77 +382,49 @@ export default function Home() {
     }
   };
 
+  // Monitor individual clips (not sequences)
   useEffect(() => {
-    if (isPlaying && currentClip && player) {
-        // Use a more frequent interval for smoother transitions
-        const intervalTime = 16; // ~60fps for smooth transitions
+    let intervalId: NodeJS.Timeout | undefined;
 
-        clipIntervalRef.current = setInterval(() => {
+    if (isPlaying && currentClip && player && !isSequenceMode) {
+        console.log('Starting individual clip monitoring for:', {
+            startTime: currentClip.startTime,
+            endTime: currentClip.endTime
+        });
+
+        const intervalTime = 100; // Check every 100ms
+
+        intervalId = setInterval(() => {
             if (player && typeof player.getCurrentTime === 'function' && currentClip) {
                 try {
                     const currentTime = player.getCurrentTime();
-                    // Use a smaller tolerance for more precise transitions
-                    const tolerance = 0.05;
-                    const isClipFinished = currentTime >= (currentClip.endTime - tolerance);
+                    const playerState = player.getPlayerState();
 
-                    // Special handling for clips that end at or very close to video duration
-                    const isLastClip = Math.abs(currentClip.endTime - videoDuration) < 0.5;
-                    const isAtVideoEnd = Math.abs(currentTime - videoDuration) < 0.5;
+                    // Check if player is actually playing
+                    if (playerState !== YouTube.PlayerState.PLAYING) {
+                        return;
+                    }
 
-                    if (isClipFinished || (isLastClip && isAtVideoEnd)) {
-                        if (isSequenceMode && sequenceClips.length > 0) {
-                          // Handle sequence mode - advance to next clip
-                          const nextIndex = currentSequenceIndex + 1;
-                          if (nextIndex < sequenceClips.length) {
-                                                        // Play next clip in sequence - batch state updates for smooth transition
-                            const nextClip = sequenceClips[nextIndex];
+                    // Simple: clip is finished when we reach or pass the end time
+                    const isClipFinished = currentTime >= currentClip.endTime;
 
-                            // Update all state at once to prevent hiccups
-                            setCurrentSequenceIndex(nextIndex);
-                            setCurrentClip({ startTime: nextClip.startTime, endTime: nextClip.endTime });
+                    if (isClipFinished) {
+                        console.log('Individual clip finished at:', currentTime.toFixed(2));
 
-                            // Seek immediately without delays for smooth transition
-                            if (player && typeof player.seekTo === 'function') {
-                              player.seekTo(nextClip.startTime, true);
-                            }
-                          } else {
-                            // Sequence is complete
-                            if (isLooping) {
-                                                            // Restart sequence from beginning
-                              const firstClip = sequenceClips[0];
-
-                              // Update all state at once to prevent hiccups
-                              setCurrentSequenceIndex(0);
-                              setCurrentClip({ startTime: firstClip.startTime, endTime: firstClip.endTime });
-
-                              // Seek immediately without delays for smooth transition
-                              if (player && typeof player.seekTo === 'function') {
-                                player.seekTo(firstClip.startTime, true);
-                              }
-                            } else {
-                              // Stop sequence
-                              player.pauseVideo();
-                              setCurrentClip(null);
-                              setIsSequenceMode(false);
-                              setSequenceClips([]);
-                              setCurrentSequenceIndex(0);
-                            }
-                          }
-                        } else if (isLooping) {
-                          // Handle single clip looping
-                          player.seekTo(currentClip.startTime, true);
+                        if (isLooping) {
+                            // Loop the clip
+                            player.seekTo(currentClip.startTime, true);
                         } else {
-                          // Handle single clip completion
-                          player.pauseVideo();
-                          setCurrentClip(null);
+                            // Stop the clip
+                            player.pauseVideo();
+                            setCurrentClip(null);
                         }
                     }
                 } catch (error) {
                     console.error('Error in clip interval:', error);
-                    // Clear the interval if there's an error to prevent repeated failures
-                    if (clipIntervalRef.current) {
-                        clearInterval(clipIntervalRef.current);
-                        clipIntervalRef.current = undefined;
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                        intervalId = undefined;
                     }
                 }
             }
@@ -311,17 +432,19 @@ export default function Home() {
     }
 
     return () => {
-      if(clipIntervalRef.current) {
-        clearInterval(clipIntervalRef.current);
-        clipIntervalRef.current = undefined;
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = undefined;
       }
     };
-  }, [isPlaying, currentClip, player, isLooping, videoDuration, isSequenceMode, sequenceClips, currentSequenceIndex]);
+  }, [isPlaying, currentClip, player, isLooping, isSequenceMode]);
+
+
 
   // Handle looping the entire video when no clips exist
   useEffect(() => {
     if (isPlaying && isLooping && clips.length === 0 && player && !currentClip) {
-        const intervalTime = 16; // Use same 60fps interval for consistency
+        const intervalTime = 100; // Use same interval for consistency
 
         const fullVideoLoopInterval = setInterval(() => {
             if (player && typeof player.getCurrentTime === 'function') {
@@ -449,7 +572,24 @@ export default function Home() {
               isSequenceMode={isSequenceMode}
               setIsSequenceMode={setIsSequenceMode}
               sequenceClips={sequenceClips}
-              currentSequenceIndex={currentSequenceIndex}
+            />
+
+            {/* Hidden SequencePlayer component to handle sequence logic */}
+            <SequencePlayer
+              player={player}
+              sequenceClips={sequenceClips}
+              isSequenceMode={isSequenceMode}
+              setIsSequenceMode={setIsSequenceMode}
+              setSequenceClips={setSequenceClips}
+              setCurrentClip={setCurrentClip}
+              setCurrentClipIndex={setCurrentClipIndex}
+              isLooping={isLooping}
+              playbackSpeed={playbackSpeed}
+              videoDuration={videoDuration}
+              onSequenceEnd={() => {
+                console.log('Sequence ended callback');
+              }}
+              onStartSequence={setSequenceStartFunction}
             />
           </div>
         )}

@@ -152,7 +152,7 @@ export function ClipCreator({
                   Every 10 Secs
                 </Button>
                 <Button variant={selectedSegment === null ? "default" : "outline"} onClick={clearSegmentation}>
-                  No Segmentation
+                  None
                 </Button>
               </div>
             </div>

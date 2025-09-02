@@ -100,6 +100,7 @@ export function VideoPlayer({
                 )}
                 onReady={onPlayerReady}
                 onStateChange={onPlayerStateChange}
+
                 opts={{
                   playerVars: {
                     controls: 1,
@@ -115,6 +116,10 @@ export function VideoPlayer({
                     // Optimize for mobile/touch performance
                     fs: 1,
                     autoplay: 0,
+                    // Reduce console errors
+                    disablekb: 0,
+                    // Better error handling
+                    hl: 'en',
                   },
                 }}
               />
