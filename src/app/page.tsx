@@ -197,6 +197,8 @@ export default function Home() {
     }
   };
 
+
+
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
     try {
       const readyPlayer = event.target;
@@ -233,13 +235,15 @@ export default function Home() {
 
   useEffect(() => {
     if (isPlaying && currentClip && player) {
+        // Use a more frequent interval for smoother transitions
+        const intervalTime = 16; // ~60fps for smooth transitions
+
         clipIntervalRef.current = setInterval(() => {
             if (player && typeof player.getCurrentTime === 'function' && currentClip) {
                 try {
                     const currentTime = player.getCurrentTime();
-                    // Add a small tolerance (0.1 seconds) to handle cases where currentTime
-                    // might not exactly reach endTime, especially for clips ending at video duration
-                    const tolerance = 0.1;
+                    // Use a smaller tolerance for more precise transitions
+                    const tolerance = 0.05;
                     const isClipFinished = currentTime >= (currentClip.endTime - tolerance);
 
                     // Special handling for clips that end at or very close to video duration
@@ -251,19 +255,31 @@ export default function Home() {
                           // Handle sequence mode - advance to next clip
                           const nextIndex = currentSequenceIndex + 1;
                           if (nextIndex < sequenceClips.length) {
-                            // Play next clip in sequence
+                                                        // Play next clip in sequence - batch state updates for smooth transition
                             const nextClip = sequenceClips[nextIndex];
+
+                            // Update all state at once to prevent hiccups
                             setCurrentSequenceIndex(nextIndex);
                             setCurrentClip({ startTime: nextClip.startTime, endTime: nextClip.endTime });
-                            player.seekTo(nextClip.startTime, true);
+
+                            // Seek immediately without delays for smooth transition
+                            if (player && typeof player.seekTo === 'function') {
+                              player.seekTo(nextClip.startTime, true);
+                            }
                           } else {
                             // Sequence is complete
                             if (isLooping) {
-                              // Restart sequence from beginning
+                                                            // Restart sequence from beginning
                               const firstClip = sequenceClips[0];
+
+                              // Update all state at once to prevent hiccups
                               setCurrentSequenceIndex(0);
                               setCurrentClip({ startTime: firstClip.startTime, endTime: firstClip.endTime });
-                              player.seekTo(firstClip.startTime, true);
+
+                              // Seek immediately without delays for smooth transition
+                              if (player && typeof player.seekTo === 'function') {
+                                player.seekTo(firstClip.startTime, true);
+                              }
                             } else {
                               // Stop sequence
                               player.pauseVideo();
@@ -291,7 +307,7 @@ export default function Home() {
                     }
                 }
             }
-        }, 100);
+        }, intervalTime);
     }
 
     return () => {
@@ -301,6 +317,33 @@ export default function Home() {
       }
     };
   }, [isPlaying, currentClip, player, isLooping, videoDuration, isSequenceMode, sequenceClips, currentSequenceIndex]);
+
+  // Handle looping the entire video when no clips exist
+  useEffect(() => {
+    if (isPlaying && isLooping && clips.length === 0 && player && !currentClip) {
+        const intervalTime = 16; // Use same 60fps interval for consistency
+
+        const fullVideoLoopInterval = setInterval(() => {
+            if (player && typeof player.getCurrentTime === 'function') {
+                try {
+                    const currentTime = player.getCurrentTime();
+                    const isVideoEnd = Math.abs(currentTime - videoDuration) < 0.5;
+
+                    if (isVideoEnd) {
+                        // Loop the entire video from the beginning
+                        player.seekTo(0, true);
+                    }
+                } catch (error) {
+                    console.error('Error in full video loop interval:', error);
+                }
+            }
+        }, intervalTime);
+
+        return () => {
+            clearInterval(fullVideoLoopInterval);
+        };
+    }
+  }, [isPlaying, isLooping, clips.length, player, currentClip, videoDuration]);
 
   useEffect(() => {
     if (player && typeof player.setPlaybackRate === 'function' && isPlaying) {
@@ -411,17 +454,19 @@ export default function Home() {
           </div>
         )}
 
-        <ClipNavigation
-          clips={clips}
-          currentClipIndex={currentClipIndex}
-          setCurrentClipIndex={setCurrentClipIndex}
-          handleClipPlayback={handleClipPlayback}
-          handlePause={handlePause}
-          handleResume={handleResume}
-          currentClip={currentClip}
-          isSequenceMode={isSequenceMode}
-          isPlaying={isPlaying}
-        />
+        {clips.length > 0 && (
+          <ClipNavigation
+            clips={clips}
+            currentClipIndex={currentClipIndex}
+            setCurrentClipIndex={setCurrentClipIndex}
+            handleClipPlayback={handleClipPlayback}
+            handlePause={handlePause}
+            handleResume={handleResume}
+            currentClip={currentClip}
+            isSequenceMode={isSequenceMode}
+            isPlaying={isPlaying}
+          />
+        )}
       </main>
     </ErrorBoundary>
   );

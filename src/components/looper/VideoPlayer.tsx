@@ -105,6 +105,16 @@ export function VideoPlayer({
                     controls: 1,
                     modestbranding: 1,
                     rel: 0,
+                    // Touch-optimized settings for smoother playback
+                    playsinline: 1,
+                    enablejsapi: 1,
+                    origin: typeof window !== 'undefined' ? window.location.origin : '',
+                    // Reduce potential hiccups on touch devices
+                    iv_load_policy: 3,
+                    cc_load_policy: 0,
+                    // Optimize for mobile/touch performance
+                    fs: 1,
+                    autoplay: 0,
                   },
                 }}
               />

@@ -85,6 +85,12 @@ export function ClipCreator({
     scrollToPracticeClips();
   };
 
+  const clearSegmentation = () => {
+    setSelectedSegment(null);
+    setClips([]);
+    scrollToPracticeClips();
+  };
+
   const handleCustomClipSubmit = (values: z.infer<typeof customClipSchema>) => {
     if (!player || !videoDuration) return;
     const parseTime = (timeStr: string): number => {
@@ -110,7 +116,7 @@ export function ClipCreator({
       <Card className="shadow-lg">
         <CardHeader className="pb-4">
           <CardTitle>Create Clips</CardTitle>
-          <CardDescription>Automatically segment the video or create your own custom clips.</CardDescription>
+          <CardDescription>Automatically segment the video, create your own custom clips, or choose not to segment at all.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <fieldset disabled={!player || !videoDuration || isPlayerLoading}>
@@ -135,7 +141,7 @@ export function ClipCreator({
                   </div>
                 )}
               </div>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-4 gap-2 mt-2">
                 <Button variant={selectedSegment === 3 ? "default" : "outline"} onClick={() => segmentVideo(3)}>
                   Every 3 Secs
                 </Button>
@@ -144,6 +150,9 @@ export function ClipCreator({
                 </Button>
                 <Button variant={selectedSegment === 10 ? "default" : "outline"} onClick={() => segmentVideo(10)}>
                   Every 10 Secs
+                </Button>
+                <Button variant={selectedSegment === null ? "default" : "outline"} onClick={clearSegmentation}>
+                  No Segmentation
                 </Button>
               </div>
             </div>

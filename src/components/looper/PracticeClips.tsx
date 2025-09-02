@@ -180,7 +180,68 @@ export function PracticeClips({
     return clips.slice(sequenceStartIndex, sequenceEndIndex + 1);
   };
 
-  if (clips.length === 0) return null;
+  if (clips.length === 0) {
+    return (
+      <div className="mt-8" ref={practiceClipsRef}>
+        <Card className="shadow-lg">
+                  <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Your Clips</CardTitle>
+              <CardDescription className="mt-2">No clips created yet. Use the "Create Clips" section above to segment the video, create custom clips, or choose "No Segmentation" to loop the entire video.</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+          <CardContent className="px-6 pb-6 pt-0">
+            {/* Show Loop controls and Playback Speed when no clips exist */}
+            <div className="pt-1 space-y-4">
+              {/* Playback Speed Controls */}
+              <div>
+                <Label className="mb-2 block text-sm font-medium">Playback Speed</Label>
+                <div className="flex items-center gap-4">
+                  {isMobile ? (
+                    <Select value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select speed" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0.25">0.25x</SelectItem>
+                        <SelectItem value="0.5">0.5x</SelectItem>
+                        <SelectItem value="0.75">0.75x</SelectItem>
+                        <SelectItem value="1">1x</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Tabs value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)} className="w-full">
+                      <TabsList className="grid w-full grid-cols-4 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
+                        <TabsTrigger value="0.25">0.25x</TabsTrigger>
+                        <TabsTrigger value="0.5">0.5x</TabsTrigger>
+                        <TabsTrigger value="0.75">0.75x</TabsTrigger>
+                        <TabsTrigger value="1">1x</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  )}
+                </div>
+              </div>
+
+              {/* Loop Controls */}
+              <div>
+                <Label className="mb-2 block text-sm font-medium">Loop Controls</Label>
+                <div className="flex items-center gap-4">
+                  <LoopControls
+                    isLooping={isLooping}
+                    setIsLooping={setIsLooping}
+                    showInfo={showLoopInfo}
+                    setShowInfo={setShowLoopInfo}
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8" ref={practiceClipsRef}>
@@ -189,7 +250,7 @@ export function PracticeClips({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Your Clips</CardTitle>
-              <CardDescription>Click a clip to play. Adjust speed or loop it. Numbers show clip order.</CardDescription>
+              <CardDescription className="mt-2">Click a clip to play. Adjust speed or loop it. Numbers show clip order.</CardDescription>
             </div>
             {!isDeleteMode && !isSequenceMode && (
               <button
@@ -387,7 +448,7 @@ export function PracticeClips({
                 <div
                   key={index}
                   className={cn(
-                    "flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-colors",
+                    "flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-all duration-200 ease-in-out",
                     isDeleteMode && selectedClips.includes(index) && "bg-muted/30 border-primary",
                     isSequenceMode && sequenceStartIndex === index && "bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700",
                     isSequenceMode && sequenceEndIndex === index && "bg-red-50 border-red-300 dark:bg-red-950/30 dark:border-red-700",
@@ -411,7 +472,7 @@ export function PracticeClips({
                   <div className="flex items-center gap-2">
                     {/* Clip number */}
                     <div className={cn(
-                      "flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold border relative",
+                      "flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold border relative transition-all duration-200 ease-in-out",
                       (currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
                       (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
                        Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
@@ -424,7 +485,7 @@ export function PracticeClips({
                        (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
                         Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
                         Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1) && (
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse"></div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse transition-all duration-200 ease-in-out"></div>
                       )}
                     </div>
 
@@ -455,7 +516,7 @@ export function PracticeClips({
                        (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
                         Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
                         Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1) && (
-                        <span className="text-xs text-primary font-medium animate-pulse">
+                        <span className="text-xs text-primary font-medium animate-pulse transition-all duration-200 ease-in-out">
                           Playing
                         </span>
                       )}
