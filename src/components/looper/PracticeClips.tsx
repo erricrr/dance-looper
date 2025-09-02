@@ -68,7 +68,6 @@ type PracticeClipsProps = {
   isSequenceMode: boolean;
   setIsSequenceMode: React.Dispatch<React.SetStateAction<boolean>>;
   sequenceClips: Clip[];
-  currentSequenceIndex: number;
 };
 
 export function PracticeClips({
@@ -85,8 +84,7 @@ export function PracticeClips({
   currentClipIndex,
   isSequenceMode,
   setIsSequenceMode,
-  sequenceClips,
-  currentSequenceIndex
+  sequenceClips
 }: PracticeClipsProps) {
   const isMobile = useIsMobile();
 
@@ -122,7 +120,15 @@ export function PracticeClips({
   };
 
   const toggleSequenceMode = () => {
-    setIsSequenceMode(!isSequenceMode);
+    const newSequenceMode = !isSequenceMode;
+    console.log('Toggling sequence mode:', {
+      from: isSequenceMode,
+      to: newSequenceMode,
+      currentStartIndex: sequenceStartIndex,
+      currentEndIndex: sequenceEndIndex
+    });
+
+    setIsSequenceMode(newSequenceMode);
     setSelectedClips([]);
     setIsDeleteMode(false);
     setSequenceStartIndex(null);
@@ -138,17 +144,21 @@ export function PracticeClips({
       );
     } else if (isSequenceMode) {
       if (sequenceStartIndex === null) {
+        console.log('Setting sequence start index:', index);
         setSequenceStartIndex(index);
       } else if (sequenceEndIndex === null) {
         if (index >= sequenceStartIndex) {
+          console.log('Setting sequence end index:', index);
           setSequenceEndIndex(index);
         } else {
           // If selected index is before start, make it the new start
+          console.log('Swapping sequence indices - new start:', index, 'new end:', sequenceStartIndex);
           setSequenceStartIndex(index);
           setSequenceEndIndex(sequenceStartIndex);
         }
       } else {
         // Reset and start over
+        console.log('Resetting sequence - new start:', index);
         setSequenceStartIndex(index);
         setSequenceEndIndex(null);
       }
@@ -170,6 +180,13 @@ export function PracticeClips({
 
     // Get all clips in the sequence (inclusive of start and end)
     const sequenceClips = clips.slice(sequenceStartIndex, sequenceEndIndex + 1);
+
+    console.log('Playing sequence:', {
+      startIndex: sequenceStartIndex,
+      endIndex: sequenceEndIndex,
+      sequenceClips: sequenceClips,
+      totalClips: clips.length
+    });
 
     // Use the new sequence playback handler
     handleSequencePlayback(sequenceClips);
@@ -455,9 +472,8 @@ export function PracticeClips({
                     isSequenceMode && sequenceStartIndex !== null && sequenceEndIndex !== null &&
                       index > sequenceStartIndex && index < sequenceEndIndex && "bg-muted/20 border-muted-foreground/20",
                     currentClipIndex === index && !isDeleteMode && !isSequenceMode && "bg-primary/10 border-primary/50 shadow-sm",
-                    isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
-                      Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
-                      Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1 &&
+                    isSequenceMode && sequenceClips.length > 0 &&
+                      index >= (sequenceStartIndex || 0) && index <= (sequenceEndIndex || 0) &&
                       "bg-blue-50 border-blue-300 dark:bg-blue-950/30 dark:border-blue-700 shadow-sm"
                   )}
                   onClick={() => {
@@ -474,19 +490,13 @@ export function PracticeClips({
                     <div className={cn(
                       "flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold border relative transition-all duration-200 ease-in-out",
                       (currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
-                      (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
-                       Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
-                       Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1)
+                      (isSequenceMode && sequenceClips.length > 0 &&
+                       index >= (sequenceStartIndex || 0) && index <= (sequenceEndIndex || 0))
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-muted text-muted-foreground border-border"
                     )}>
                       {index + 1}
-                      {(currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
-                       (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
-                        Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
-                        Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1) && (
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse transition-all duration-200 ease-in-out"></div>
-                      )}
+
                     </div>
 
                     {isSequenceMode && sequenceStartIndex === index && (
@@ -512,14 +522,7 @@ export function PracticeClips({
                       <span className="font-mono text-sm bg-secondary-foreground/10 px-2 py-1 rounded-md">
                         {formatTime(clip.startTime)} - {formatTime(clip.endTime)}
                       </span>
-                      {(currentClipIndex === index && !isDeleteMode && !isSequenceMode) ||
-                       (isSequenceMode && sequenceClips.length > 0 && sequenceClips[currentSequenceIndex] &&
-                        Math.abs(clips[index].startTime - sequenceClips[currentSequenceIndex].startTime) < 0.1 &&
-                        Math.abs(clips[index].endTime - sequenceClips[currentSequenceIndex].endTime) < 0.1) && (
-                        <span className="text-xs text-primary font-medium animate-pulse transition-all duration-200 ease-in-out">
-                          Playing
-                        </span>
-                      )}
+
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
