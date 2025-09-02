@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, ChevronsRight, Info } from "lucide-react";
+import { Plus, ChevronsRight, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Clip, customClipSchema } from "@/lib/types";
 
@@ -38,6 +38,7 @@ export function ClipCreator({
   const [selectedSegment, setSelectedSegment] = useState<number | null>(null);
   const [showAutoSegmentInfo, setShowAutoSegmentInfo] = useState(false);
   const customClipRef = useRef<HTMLDivElement>(null);
+  const infoBoxRef = useRef<HTMLDivElement>(null);
 
   const customClipForm = useForm<z.infer<typeof customClipSchema>>({
     resolver: zodResolver(customClipSchema),
@@ -58,6 +59,31 @@ export function ClipCreator({
       });
     }
   }, [resetKey, customClipForm]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const button = document.querySelector('[data-info-button]');
+
+      // Don't close if clicking on the button itself
+      if (button && button.contains(target)) {
+        return;
+      }
+
+      // Close if clicking outside the info box
+      if (infoBoxRef.current && !infoBoxRef.current.contains(target)) {
+        setShowAutoSegmentInfo(false);
+      }
+    };
+
+    if (showAutoSegmentInfo) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAutoSegmentInfo]);
 
   const scrollToPracticeClips = () => {
     setTimeout(() => {
@@ -127,12 +153,12 @@ export function ClipCreator({
                   className="p-1"
                   onClick={() => setShowAutoSegmentInfo(!showAutoSegmentInfo)}
                 >
-        <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
+        <AlertTriangle className="h-4 w-4 text-muted-foreground hover:text-primary" />
         </button>
         <Label className="font-semibold">Auto-Segment Video</Label>
 
                 {showAutoSegmentInfo && (
-                <div className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-64">
+                <div ref={infoBoxRef} className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-64">
                     <div className="text-center">
                       <p>Clip end times may appear 1 second</p>
                       <p>longer due to fractional seconds</p>
@@ -143,13 +169,13 @@ export function ClipCreator({
               </div>
               <div className="grid grid-cols-4 gap-2 mt-2">
                 <Button variant={selectedSegment === 3 ? "default" : "outline"} onClick={() => segmentVideo(3)}>
-                  Every 3 Secs
+                  3 Secs
                 </Button>
                 <Button variant={selectedSegment === 5 ? "default" : "outline"} onClick={() => segmentVideo(5)}>
-                  Every 5 Secs
+                  5 Secs
                 </Button>
                 <Button variant={selectedSegment === 10 ? "default" : "outline"} onClick={() => segmentVideo(10)}>
-                  Every 10 Secs
+                  10 Secs
                 </Button>
                 <Button variant={selectedSegment === null ? "default" : "outline"} onClick={clearSegmentation}>
                   None
