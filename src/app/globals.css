@@ -31,31 +31,41 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 288 10% 10%;
-    --foreground: 288 15% 90%;
-    --card: 288 10% 15%;
-    --card-foreground: 288 15% 90%;
-    --popover: 288 10% 15%;
-    --popover-foreground: 288 15% 90%;
-    --primary: 288 51% 53%;
+    --background: 260 20% 12%; /* deep indigo (wisdom, focus) */
+    --foreground: 260 20% 92%; /* light lavender (clarity) */
+
+    --card: 260 20% 16%;
+    --card-foreground: 260 20% 92%;
+
+    --popover: 260 20% 16%;
+    --popover-foreground: 260 20% 92%;
+
+    --primary: 280 65% 55%; /* vibrant purple (creativity, dance energy) */
     --primary-foreground: 0 0% 100%;
-    --secondary: 290 25% 30%;
-    --secondary-foreground: 290 15% 90%;
-    --muted: 288 10% 20%;
-    --muted-foreground: 288 10% 65%;
-    --accent: 300 68% 70%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
+
+    --secondary: 200 65% 45%; /* turquoise (movement, freshness) */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 260 15% 25%;
+    --muted-foreground: 260 15% 70%;
+
+    --accent: 45 90% 60%; /* golden yellow (learning, inspiration) */
+    --accent-foreground: 0 0% 15%;
+
+    --destructive: 0 70% 40%;
     --destructive-foreground: 0 0% 98%;
-    --border: 288 10% 25%;
-    --input: 288 10% 25%;
-    --ring: 316 68% 66%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+
+    --border: 260 15% 30%;
+    --input: 260 15% 30%;
+    --ring: 200 65% 55%; /* turquoise highlight */
+
+    --chart-1: 280 65% 55%; /* purple (creativity, expression) */
+    --chart-2: 200 65% 45%; /* turquoise (energy, movement) */
+    --chart-3: 45 90% 60%;  /* yellow (learning, brightness) */
+    --chart-4: 160 55% 45%; /* green (growth, knowledge) */
+    --chart-5: 340 70% 55%; /* magenta-pink (passion, dance) */
   }
+
 }
 
 @layer base {
