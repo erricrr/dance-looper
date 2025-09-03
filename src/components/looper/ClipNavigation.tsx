@@ -29,7 +29,7 @@ export function ClipNavigation({
   isSequenceMode,
   isPlaying,
 }: ClipNavigationProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const navigateToPreviousClip = useCallback(() => {
     if (clips.length === 0) return;
@@ -213,7 +213,7 @@ export function ClipNavigation({
                   Clip Navigation
                     </Label>
                   {currentClipIndex !== null && clips[currentClipIndex] ? (
-                    <div className="flex items-center gap-2 ml-12 sm:ml-4 text-sm">
+                    <div className="flex items-center gap-2 -ml-1 sm:ml-4 text-sm">
                       <span className="text-primary font-semibold">{currentClipIndex + 1}</span>
                       <span className="text-muted-foreground">of {clips.length}</span>
                       <span className="text-xs text-muted-foreground font-mono">
@@ -221,7 +221,7 @@ export function ClipNavigation({
                     </span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 ml-16 sm:ml-4 text-sm">
+                    <div className="flex items-center gap-2 -ml-1 sm:ml-4 text-sm">
                       <span className="text-muted-foreground">No clip selected</span>
                     </div>
                   )}
