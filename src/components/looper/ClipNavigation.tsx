@@ -209,9 +209,11 @@ export function ClipNavigation({
                       <PlayCircle className="h-5 w-5" />
                     )}
                   </div>
-                  <Label className="text-base font-semibold text-foreground">Clip Navigation</Label>
+                  <Label className="text-base hidden sm:block text-center font-semibold text-foreground">
+                  Clip Navigation
+                    </Label>
                   {currentClipIndex !== null && clips[currentClipIndex] ? (
-                    <div className="flex items-center gap-2 ml-4 text-sm">
+                    <div className="flex items-center gap-2 ml-12 sm:ml-4 text-sm">
                       <span className="text-primary font-semibold">{currentClipIndex + 1}</span>
                       <span className="text-muted-foreground">of {clips.length}</span>
                       <span className="text-xs text-muted-foreground font-mono">
@@ -219,7 +221,7 @@ export function ClipNavigation({
                     </span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 ml-4 text-sm">
+                    <div className="flex items-center gap-2 ml-16 sm:ml-4 text-sm">
                       <span className="text-muted-foreground">No clip selected</span>
                     </div>
                   )}

@@ -97,6 +97,18 @@
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
+
+    /* Fix for hover state persisting on touch devices - only for specific button types */
+    button[class*="hover:bg-chart-4"]:hover {
+      background-color: hsl(var(--input)) !important;
+      border-color: hsl(var(--border) / 0.6) !important;
+      color: hsl(var(--foreground)) !important;
+    }
+
+    /* Ensure ghost buttons maintain transparency */
+    button[class*="hover:bg-transparent"]:hover {
+      background-color: transparent !important;
+    }
   }
 }
 
