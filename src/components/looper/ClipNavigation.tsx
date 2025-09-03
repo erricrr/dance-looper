@@ -202,11 +202,11 @@ export function ClipNavigation({
               {/* Header and Clip Info (inline) */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3 cursor-pointer flex-1">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg text-chart-4">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg text-primary">
                     {isPlaying ? (
-                      <PauseCircle className="h-5 w-5" />
+                      <PauseCircle className="h-4 w-4" />
                     ) : (
-                      <PlayCircle className="h-5 w-5" />
+                      <PlayCircle className="h-4 w-4" />
                     )}
                   </div>
                   <Label className="text-base hidden sm:block text-center font-semibold text-foreground">
@@ -243,7 +243,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToFirstClip}
                   disabled={clips.length === 0}
-                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-chart-4 hover:border-border hover:text-background transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border hover:text-primary-foreground transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <SkipBack className="h-4 w-4" />
                   <span className="hidden sm:inline ml-2 text-sm font-medium">First</span>
@@ -253,7 +253,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToPreviousClip}
                   disabled={clips.length === 0}
-                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-chart-4 hover:border-border hover:text-background transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border hover:text-primary-foreground transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   <span className="hidden sm:inline ml-2 text-sm font-medium">Previous</span>
@@ -263,7 +263,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={togglePlayPause}
                   disabled={currentClipIndex === null}
-                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-chart-4 hover:border-border hover:text-background transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border hover:text-primary-foreground transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   {isPlaying ? (
                     <PauseCircle className="h-4 w-4" />
@@ -279,7 +279,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToNextClip}
                   disabled={clips.length === 0}
-                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-chart-4 hover:border-border hover:text-background transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border hover:text-primary-foreground transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <span className="hidden sm:inline mr-2 text-sm font-medium">Next</span>
                   <ChevronRight className="h-4 w-4" />
@@ -289,7 +289,7 @@ export function ClipNavigation({
                   size="sm"
                   onClick={navigateToLastClip}
                   disabled={clips.length === 0}
-                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-chart-4 hover:border-border hover:text-background transition-all duration-200 disabled:opacity-50 flex-shrink-0"
+                  className="h-9 px-3 rounded-lg border-border/60 hover:bg-primary hover:border-border hover:text-primary-foreground transition-all duration-200 disabled:opacity-50 flex-shrink-0"
                 >
                   <span className="hidden sm:inline mr-2 text-sm font-medium">Last</span>
                   <SkipForward className="h-4 w-4" />
