@@ -379,7 +379,7 @@ export function PracticeClips({
                       toggleDeleteMode();
                     }}
                   >
-                    <Trash2 className="h-5 w-5" />
+                    <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Delete selected clips</span>
                   </button>
                 ) : null}
