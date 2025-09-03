@@ -269,18 +269,6 @@ export function PracticeClips({
               <CardTitle>Your Clips</CardTitle>
               <CardDescription className="mt-2">Click a clip to play. Adjust speed or loop it. Numbers show clip order.</CardDescription>
             </div>
-            {!isDeleteMode && !isSequenceMode && (
-              <button
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent hover:bg-transparent hover:text-primary h-8 w-8 shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleDeleteMode();
-                }}
-              >
-                <Trash2 className="h-5 w-5" />
-                <span className="sr-only">Delete selected clips</span>
-              </button>
-            )}
           </div>
         </CardHeader>
         <CardContent className="px-6 pb-6 pt-0">
@@ -379,10 +367,21 @@ export function PracticeClips({
                         deleteSelectedClips();
                       }}
                     >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
+                      <Trash2 className="h-4 w-4" />
+                      {!isMobile && "Delete"}
                     </Button>
                   </>
+                ) : !isSequenceMode ? (
+                  <button
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent hover:bg-transparent hover:text-primary h-9 w-9 shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleDeleteMode();
+                    }}
+                  >
+                    <Trash2 className="h-5 w-5" />
+                    <span className="sr-only">Delete selected clips</span>
+                  </button>
                 ) : null}
               </div>
             </div>
