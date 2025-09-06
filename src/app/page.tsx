@@ -511,7 +511,7 @@ export default function Home() {
             Dalooper
           </h1>
           <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Paste a YouTube link to break videos into clips — loop them as you learn.
+          Paste a YouTube link to break videos into clips&mdash;loop them as you learn.
           </p>
         </header>
 

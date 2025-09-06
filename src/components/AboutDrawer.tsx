@@ -52,7 +52,7 @@ export function AboutDrawer() {
       <section>
         <h3 className="text-lg font-semibold mb-3">The Birth of Dalooper</h3>
         <p className="text-muted-foreground leading-relaxed">
-          Born from the desire to master steps in "salsa caleña" videos, Dalooper
+          Born from the desire to master steps in &ldquo;salsa caleña&rdquo; videos, Dalooper
           transforms complex choreography into digestible, loopable moments.
           Mirror the video to follow along naturally, practice at your own rhythm,
           repeat until perfect.
@@ -62,8 +62,7 @@ export function AboutDrawer() {
       <section>
         <h3 className="text-lg font-semibold mb-3">Beyond Dance</h3>
         <p className="text-muted-foreground leading-relaxed">
-          While born for salsa, Dalooper excels with any repetitive learning -
-          language pronunciation, music performances, sports techniques, or
+          While born for salsa, Dalooper excels with any repetitive learning&mdash;language pronunciation, music performances, sports techniques, or
           analyzing detailed movements. Discover your perfect loop.
         </p>
       </section>
@@ -73,7 +72,7 @@ export function AboutDrawer() {
       <section>
         <h3 className="text-lg font-semibold mb-3">Get in Touch</h3>
         <p className="text-muted-foreground leading-relaxed mb-3">
-          Questions, feedback, or improvement ideas? I'd love to hear from you!
+          Questions, feedback, or improvement ideas? I&rsquo;d love to hear from you!
         </p>
         <a
           href="mailto:voicevoz321@gmail.com"
