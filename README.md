@@ -21,7 +21,7 @@ While born for salsa, Dalooper excels with any repetitive learning:
 - **YouTube Integration**: Paste any YouTube link to get started
 - **Clip Creation**: Break videos into custom time segments
 - **Loop Practice**: Repeat specific sections at your own pace
-- **Playback Control**: Adjust speed from 0.25x to 2x
+- **Playback Control**: Adjust speed from 0.25x to 1x
 - **Mirror Mode**: Flip the video horizontally for easier following
 - **URL History**: Save and quickly access your favorite videos
 - **Responsive Design**: Works seamlessly on desktop and mobile
