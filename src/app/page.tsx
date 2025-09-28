@@ -605,6 +605,10 @@ export default function Home() {
             currentClip={currentClip}
             isSequenceMode={isSequenceMode}
             isPlaying={isPlaying}
+            isLooping={isLooping}
+            setIsLooping={setIsLooping}
+            playbackSpeed={playbackSpeed}
+            setPlaybackSpeed={setPlaybackSpeed}
           />
         )}
       </main>

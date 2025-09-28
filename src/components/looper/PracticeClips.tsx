@@ -38,7 +38,9 @@ function LoopControls({
       >
         <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
       </button>
-      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">Loop</Label>
+      <Label htmlFor="loop-switch" className="text-sm font-medium whitespace-nowrap">
+        Loop
+      </Label>
 
       {showInfo && (
                 <div className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-60">
@@ -48,7 +50,11 @@ function LoopControls({
           </div>
         </div>
       )}
-      <Switch id="loop-switch" checked={isLooping} onCheckedChange={setIsLooping} />
+      <Switch id="loop-switch"
+      checked={isLooping}
+      onCheckedChange={setIsLooping}
+      className="data-[state=checked]:bg-foreground"
+       />
     </div>
   );
 }

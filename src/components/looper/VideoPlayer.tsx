@@ -135,7 +135,9 @@ export function VideoPlayer({
               >
         <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
         </button>
-        <Label htmlFor="mirror-switch" className="text-sm font-medium">Mirror</Label>
+        <Label htmlFor="mirror-switch" className="text-sm font-medium">
+          Mirror
+          </Label>
 
               {showMirrorInfo && (
                 <div className="absolute top-full -left-6 mt-1 bg-background border-primary border-2 rounded-md p-2 text-sm shadow-lg z-50 w-60">
@@ -145,7 +147,10 @@ export function VideoPlayer({
                   </div>
                 </div>
               )}
-              <Switch id="mirror-switch" checked={isMirrored} onCheckedChange={setIsMirrored} />
+              <Switch id="mirror-switch"
+              checked={isMirrored}
+              onCheckedChange={setIsMirrored}
+              className="data-[state=checked]:bg-foreground" />
             </div>
             <Button
               variant="outline"

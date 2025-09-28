@@ -2,8 +2,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, PlayCircle, PauseCircle } from "lucide-react";
-import { Clip } from "@/lib/types";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SkipBack, SkipForward, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, PlayCircle, PauseCircle, RotateCcw, Gauge } from "lucide-react";
+import { Clip, PlaybackSpeed } from "@/lib/types";
 import { formatTime } from "@/lib/utils";
 
 type ClipNavigationProps = {
@@ -16,6 +18,10 @@ type ClipNavigationProps = {
   currentClip: {startTime: number, endTime: number} | null;
   isSequenceMode: boolean;
   isPlaying: boolean;
+  isLooping: boolean;
+  setIsLooping: React.Dispatch<React.SetStateAction<boolean>>;
+  playbackSpeed: PlaybackSpeed;
+  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeed>>;
 };
 
 export function ClipNavigation({
@@ -28,6 +34,10 @@ export function ClipNavigation({
   currentClip,
   isSequenceMode,
   isPlaying,
+  isLooping,
+  setIsLooping,
+  playbackSpeed,
+  setPlaybackSpeed,
 }: ClipNavigationProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -294,6 +304,40 @@ export function ClipNavigation({
                   <span className="hidden sm:inline mr-2 text-sm font-medium">Last</span>
                   <SkipForward className="h-4 w-4" />
                 </Button>
+              </div>
+
+              {/* Loop and Speed Controls */}
+              <div className="flex items-center justify-center gap-4 mt-3 pt-3 border-t border-border/30">
+                {/* Loop Control */}
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="loop-toggle" className="text-sm font-medium">
+                    Loop
+                  </Label>
+                  <Switch
+                    id="loop-toggle"
+                    checked={isLooping}
+                    onCheckedChange={setIsLooping}
+                    className="data-[state=checked]:bg-foreground"
+                  />
+                </div>
+
+                {/* Speed Control */}
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="speed-select" className="text-sm font-medium">
+                    Speed
+                  </Label>
+                  <Select value={playbackSpeed.toString()} onValueChange={(val) => setPlaybackSpeed(Number(val) as PlaybackSpeed)}>
+                    <SelectTrigger id="speed-select" className="w-20 h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0.25">0.25x</SelectItem>
+                      <SelectItem value="0.5">0.5x</SelectItem>
+                      <SelectItem value="0.75">0.75x</SelectItem>
+                      <SelectItem value="1">1x</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </>
           )}
